@@ -25,7 +25,7 @@ public class User {
             throw new InValidEmailException(errMsg);
         }
 
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
     private String hashedPassword;

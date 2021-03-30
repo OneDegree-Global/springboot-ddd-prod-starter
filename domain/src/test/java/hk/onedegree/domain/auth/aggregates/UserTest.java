@@ -22,11 +22,20 @@ public class UserTest {
     }
 
     @Test
-    public void setEmail_ValidEmail() throws InValidEmailException {
+    public void construct_ValidEmail() throws InValidEmailException {
         String id = UUID.randomUUID().toString();
         String email = "123@gmail.com";
 
         new User(id, email);
+    }
+
+    @Test
+    public void construct_UppercaseEmail_ConvertToLowercase() throws InValidEmailException {
+        String id = UUID.randomUUID().toString();
+        String email = "123@GMAIL.COM";
+
+        User user = new User(id, email);
+        Assertions.assertEquals(email.toLowerCase(), user.getEmail());
     }
 
     @ParameterizedTest
