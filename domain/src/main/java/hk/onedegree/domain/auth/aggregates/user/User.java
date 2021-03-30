@@ -1,4 +1,4 @@
-package hk.onedegree.domain.auth.aggregates;
+package hk.onedegree.domain.auth.aggregates.user;
 
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;

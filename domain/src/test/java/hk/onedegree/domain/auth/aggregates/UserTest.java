@@ -1,5 +1,6 @@
 package hk.onedegree.domain.auth.aggregates;
 
+import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
 import org.junit.jupiter.api.Assertions;
