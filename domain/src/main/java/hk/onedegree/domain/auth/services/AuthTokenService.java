@@ -68,10 +68,6 @@ class AuthTokenService {
             return Optional.empty();
         }
 
-//        if(!verifySign(signedJWT)) {
-//            return Optional.empty();
-//        }
-
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 
         JWSKeySelector<SecurityContext> jwsKeySelector =
@@ -90,32 +86,6 @@ class AuthTokenService {
         } catch (BadJOSEException | JOSEException | InValidEmailException e) {
             logger.error("Get user from claim set in jwt fails, e: ", e);
             return Optional.empty();
-        }
-    }
-
-    private boolean verifySign(SignedJWT signedJWT ) {
-        JWK jwk = this.jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
-        if (jwk==null) {
-            logger.error("Kid {} not found.", signedJWT.getHeader().getKeyID());
-            return false;
-        }
-
-        JWSVerifier verifier = null;
-        try {
-            verifier = getJWSVerifierByJwk(jwk);
-        } catch (JOSEException e) {
-            logger.error("Get jwt verifier error, exception: ", e);
-            return false;
-        } catch (UnsupportedAlgException e) {
-            logger.error("Unsupported alg in jwk: {}", jwk.getAlgorithm().toString());
-            return false;
-        }
-
-        try {
-            return signedJWT.verify(verifier);
-        } catch (JOSEException e) {
-            logger.error("Verifier jwt error, exception: ", e);
-            return false;
         }
     }
 
