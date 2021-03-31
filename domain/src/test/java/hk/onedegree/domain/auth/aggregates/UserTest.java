@@ -45,7 +45,7 @@ public class UserTest {
             "aaaaaaaaaa", //at least on uppercase English character
             "AAAAAAAAAA", //at least on lowercase English character
             "kkkk  kkkk", //no whitespace
-    }) // six numbers
+    })
     public void setPassword_inValidPassword_ThrowInValidPasswordException(String password) {
 
         Assertions.assertThrows(InValidPasswordException.class, () -> {

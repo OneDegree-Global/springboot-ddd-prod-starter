@@ -1,4 +1,4 @@
-package hk.onedegree.domain.auth.service;
+package hk.onedegree.domain.auth.services;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.ECDSASigner;
@@ -16,16 +16,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.text.ParseException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 class AuthTokenService {
 
     @Inject
-    private JWKSet jwkSet;
+    JWKSet jwkSet;
+
+    Clock clock = Clock.systemUTC();
 
     private static Logger logger = LoggerFactory.getLogger(AuthTokenService.class);
 
@@ -43,26 +43,31 @@ class AuthTokenService {
         try {
             signedJWT = SignedJWT.parse(jwtStr);
         } catch (ParseException e) {
-            logger.debug("Parse jwt str error, exception: ", e);
+            logger.error("Parse jwt str error, exception: ", e);
             return false;
         }
 
         JWK jwk = this.jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
+        if (jwk==null) {
+            logger.error("Kid {} not found.", signedJWT.getHeader().getKeyID());
+            return false;
+        }
+
         JWSVerifier verifier = null;
         try {
             verifier = getJWSVerifierByJwk(jwk);
         } catch (JOSEException e) {
-            logger.debug("Get jwt verifier error, exception: ", e);
+            logger.error("Get jwt verifier error, exception: ", e);
             return false;
         } catch (UnsupportedAlgException e) {
-            logger.debug("Unsupported alg in jwk: {}", jwk.getAlgorithm().toString());
+            logger.error("Unsupported alg in jwk: {}", jwk.getAlgorithm().toString());
             return false;
         }
 
         try {
             return signedJWT.verify(verifier);
         } catch (JOSEException e) {
-            logger.debug("Verifier jwt error, exception: ", e);
+            logger.error("Verifier jwt error, exception: ", e);
             return false;
         }
     }
@@ -77,13 +82,15 @@ class AuthTokenService {
                 .keyID(latestJwk.getKeyID())
                 .build();
 
-        LocalDateTime dateTime = LocalDateTime.now().plus(Duration.of(10, ChronoUnit.MINUTES));
-        Date expireDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        Instant curInstant = clock.instant();
+        long iat = curInstant.toEpochMilli();
+        long exp = curInstant.plus(10, ChronoUnit.MINUTES).toEpochMilli();
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(issuer)
-                .issueTime(new Date())
-                .expirationTime(expireDate)
+                .issuer(issuer)
+                .issueTime(new Date(iat))
+                .expirationTime(new Date(exp))
                 .subject(user.getEmail())
                 .build();
 
@@ -92,20 +99,22 @@ class AuthTokenService {
         try {
             jwt.sign(getSignerByJwk(latestJwk));
         } catch (JOSEException e) {
-            logger.debug("Sign jwt error, exception: ", e);
+            logger.error("Sign jwt error, exception: ", e);
             return "";
         } catch (UnsupportedAlgException e) {
-            logger.debug("Unsupported alg in jwk: {}", latestJwk.getAlgorithm().toString());
+            logger.error("Unsupported alg in jwk: {}", latestJwk.getAlgorithm().toString());
             return "";
         }
 
         return jwt.serialize();
     }
 
+    // 參考 RFC-7518，僅支援最建議的演算法 ES256 和 RS256
     private JWSSigner getSignerByJwk(JWK jwk) throws JOSEException, UnsupportedAlgException {
-        if ("ES256".equals(jwk.getAlgorithm().toString())) {
+        String alg = jwk.getAlgorithm().toString().toUpperCase();
+        if ("ES256".equals(alg)) {
             return new ECDSASigner(jwk.toECKey());
-        } else if ("RS256".equals(jwk.getAlgorithm().toString())) {
+        } else if ("RS256".equals(alg)) {
             return new RSASSASigner(jwk.toRSAKey());
         } else {
             String errMsg = String.format("Not support alg: %s", jwk.getAlgorithm().toString());
@@ -113,10 +122,12 @@ class AuthTokenService {
         }
     }
 
+    // 參考 RFC-7518，僅支援最建議的演算法 ES256 和 RS256
     private JWSVerifier getJWSVerifierByJwk(JWK jwk) throws JOSEException, UnsupportedAlgException {
-        if ("ES256".equals(jwk.getAlgorithm().toString())) {
+        String alg = jwk.getAlgorithm().toString().toUpperCase();
+        if ("ES256".equals(alg)) {
             return new ECDSAVerifier(jwk.toECKey().toECPublicKey());
-        } else if ("RS256".equals(jwk.getAlgorithm().toString())) {
+        } else if ("RS256".equals(alg)) {
             return new RSASSAVerifier(jwk.toRSAKey().toRSAPublicKey());
         } else {
             String errMsg = String.format("Not support alg: %s", jwk.getAlgorithm().toString());
