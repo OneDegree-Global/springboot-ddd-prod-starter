@@ -11,11 +11,11 @@ import javax.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserService {
+public class UserAuthInfoService {
     @Inject
     UserRepository userRepository;
 
-    private static Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static Logger logger = LoggerFactory.getLogger(UserAuthInfoService.class);
 
     public Optional<User> createUser(String email, String password){
         String id = UUID.randomUUID().toString();

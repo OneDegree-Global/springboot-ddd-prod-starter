@@ -16,17 +16,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserAuthInfoServiceTest {
 
     @Mock
     UserRepository mockUserRepository;
 
-    UserService userService;
+    UserAuthInfoService userAuthInfoService;
 
     @BeforeEach
     public void setup(){
-        userService = new UserService();
-        userService.userRepository = this.mockUserRepository;
+        userAuthInfoService = new UserAuthInfoService();
+        userAuthInfoService.userRepository = this.mockUserRepository;
     }
 
     @Test
@@ -35,7 +35,7 @@ public class UserServiceTest {
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
-        Optional<User> result = this.userService.createUser(email, password);
+        Optional<User> result = this.userAuthInfoService.createUser(email, password);
 
         Assertions.assertFalse(result.isEmpty());
         Assertions.assertEquals(email, result.get().getEmail());
@@ -48,7 +48,7 @@ public class UserServiceTest {
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.of(mockUser));
 
-        Optional<User> result = this.userService.createUser(email, password);
+        Optional<User> result = this.userAuthInfoService.createUser(email, password);
 
         Assertions.assertTrue(result.isEmpty());
         verify(this.mockUserRepository, times(0)).save(any());
@@ -60,7 +60,7 @@ public class UserServiceTest {
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
-        Optional<User> result = this.userService.createUser(email, password);
+        Optional<User> result = this.userAuthInfoService.createUser(email, password);
 
         Assertions.assertTrue(result.isEmpty());
         verify(this.mockUserRepository, times(0)).save(any());
@@ -72,7 +72,7 @@ public class UserServiceTest {
         String password = "invalidPassword";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
-        Optional<User> result = this.userService.createUser(email, password);
+        Optional<User> result = this.userAuthInfoService.createUser(email, password);
 
         Assertions.assertTrue(result.isEmpty());
         verify(this.mockUserRepository, times(0)).save(any());
