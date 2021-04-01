@@ -3,13 +3,10 @@ package com.odhk.messaging.implementation;
 import com.odhk.messaging.IMessageCaller;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.GetResponse;
-import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,8 +22,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
             throw new IllegalArgumentException("timeout should not less than 0");
 
         try {
-            AtomicReference<Object> replyMessage = null;
-
+            AtomicReference<Object> replyMessage = new AtomicReference<>();
 
             String replyQueueName = channel.queueDeclare().getQueue();
             final String corrId = UUID.randomUUID().toString();
@@ -37,33 +33,32 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                     .build();
             this.channel.basicPublish("", queueName, props, message);
 
-            Thread t = new Thread( () ->{
-                try {
-                    int counter = 0;
-                    while( timeout > 0 && counter < timeout){
-                        GetResponse response = this.channel.basicGet(replyQueueName, true);
 
-                        if(response == null){
-                            Thread.sleep(1000);
-                            continue;
-                        }
+            try {
+                long limit = System.currentTimeMillis() + timeout;
+                while( timeout == 0 || System.currentTimeMillis() < limit){
+                    GetResponse response = this.channel.basicGet(replyQueueName, true);
 
-                        if(response.getProps().getCorrelationId().equals(corrId)){
-                            replyMessage.set(DecodeObject(response.getBody()));
-                            break;
-                        }
-
+                    if(response == null || response.getMessageCount() <=0 ){
+                        Thread.sleep(1000);
+                        continue;
                     }
-                }catch(IOException | ClassNotFoundException | InterruptedException e) {
-                    // TODO: Log the error
-                    return;
+
+                    if(response.getProps().getCorrelationId().equals(corrId)){
+                        replyMessage.set(DecodeObject(response.getBody()));
+                        break;
+                    }
+
                 }
+            }catch(IOException | ClassNotFoundException | InterruptedException e) {
+                // TODO: Log the error
+                Thread.currentThread().interrupt();
             }
-            );
+
             return Optional.of(replyMessage.get());
         } catch(IOException e){
             // TODO: Log the error
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -79,7 +74,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
             return sendAndGetReply(queueName, bytes, timeout);
         } catch(IOException e) {
             // TODO: Log the error
-            return null;
+            return Optional.empty();
         }
     }
 

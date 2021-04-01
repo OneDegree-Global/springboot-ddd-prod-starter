@@ -26,7 +26,6 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                 callback.onDelivered(message);
             } catch(IOException | ClassNotFoundException e) {
                 // TODO: Log the error
-                return;
             }
             finally {
                 this.channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
@@ -34,9 +33,9 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         };
 
         try {
-            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag -> {
-                callback.onCancel();
-            });
+            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag ->
+                callback.onCancel()
+            );
 
         } catch( IOException e){
             // TODO: Log the error
@@ -56,7 +55,6 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                 callback.onDelivered(message);
             } catch(IOException | ClassNotFoundException e) {
                 // TODO: Log the error
-                return;
             }
             finally {
                 this.channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
@@ -65,13 +63,13 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         };
 
         try {
-            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag -> {
-                callback.onCancel();
-            });
+            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag ->
+                callback.onCancel()
+            );
 
         } catch( IOException e){
             // TODO: Log the error
-            return null;
+            return "";
         }
         return tag;
     }
@@ -83,12 +81,12 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         try {
             response = this.channel.basicGet( queueName, true);
             if(response == null){
-                return null;
+                return Optional.empty();
             }
             message = DecodeObject((response.getBody()));
         } catch(IOException | ClassNotFoundException e) {
             // TODO: Log the error
-            return null;
+            return Optional.empty();
         }
         return Optional.of(message);
     }
@@ -97,26 +95,24 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
     public Optional<Object> receive(String queueName, int timeout) throws IllegalArgumentException {
         if(timeout<0)
             throw new IllegalArgumentException("timeout should not less than 0");
-        AtomicReference<Object> message = null;
+        AtomicReference<Object> message = new AtomicReference<>(null);
 
-        Thread t = new Thread( () ->{
-            try {
-                int counter = 0;
-                while( timeout > 0 && counter < timeout){
-                    GetResponse response = this.channel.basicGet(queueName, true);
-                    if(response == null){
-                        Thread.sleep(1000);
-                        continue;
-                    }
-                    message.set(DecodeObject(response.getBody()));
-                    break;
+
+        try {
+            long limit = System.currentTimeMillis() + timeout;
+            while( timeout == 0  || System.currentTimeMillis() < limit){
+                GetResponse response = this.channel.basicGet(queueName, true);
+                if(response == null || response.getMessageCount() <= 0){
+                    Thread.sleep(1000);
+                    continue;
                 }
-            }catch(IOException | ClassNotFoundException | InterruptedException e) {
-                // TODO: Log the error
-                return;
+                message.set(DecodeObject(response.getBody()));
+                break;
             }
+        }catch(IOException | ClassNotFoundException | InterruptedException e) {
+            // TODO: Log the error
+            Thread.currentThread().interrupt();
         }
-        );
         return Optional.of(message.get());
     }
 

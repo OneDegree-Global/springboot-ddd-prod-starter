@@ -21,12 +21,11 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
     protected ConnectionFactory factory;
     protected Connection connection;
     protected Channel channel;
-    protected List<String> queueNames = new ArrayList<String>();
-    protected List<String> exchangeNames = new ArrayList<String>();
+    protected List<String> queueNames = new ArrayList<>();
+    protected List<String> exchangeNames = new ArrayList<>();
 
     public MessageProxyRBMQImp() throws IOException, TimeoutException {
         this.factory = new ConnectionFactory();
-        this.factory = factory;
         this.factory.setUsername(userName);
         this.factory.setPassword(password);
         this.factory.setHost(host);
@@ -114,7 +113,6 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
     protected Object DecodeObject(byte[] bytes) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream in = new ObjectInputStream(bis);
-        Object message = in.readObject();
-        return message;
+        return in.readObject();
     }
 }

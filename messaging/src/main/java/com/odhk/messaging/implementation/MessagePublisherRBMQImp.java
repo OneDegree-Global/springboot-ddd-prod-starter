@@ -36,7 +36,6 @@ public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMes
             publish(topic, bytes);
         } catch(IOException e) {
             // TODO: Log the error
-            return;
         }
     }
 }

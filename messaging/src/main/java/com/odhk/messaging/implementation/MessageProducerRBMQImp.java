@@ -1,7 +1,6 @@
 package com.odhk.messaging.implementation;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.*;
@@ -21,7 +20,6 @@ public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMess
             this.channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
         } catch(IOException e){
             // TODO: Log the error
-            return;
         }
     }
 
@@ -37,7 +35,6 @@ public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMess
             send(queueName, key, bytes);
         } catch(IOException e) {
             // TODO: Log the error
-            return;
         }
     }
 

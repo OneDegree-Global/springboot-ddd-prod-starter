@@ -1,7 +1,6 @@
 package com.odhk.messaging.implementation;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import com.odhk.messaging.*;
