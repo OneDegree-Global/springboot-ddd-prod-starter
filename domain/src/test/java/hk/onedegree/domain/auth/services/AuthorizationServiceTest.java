@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-// 這裡測試用的 token 從 https://jwt.io/ 產生
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationServiceTest {
 
