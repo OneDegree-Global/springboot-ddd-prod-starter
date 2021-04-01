@@ -52,13 +52,6 @@ class AuthTokenService {
 
     final private String issuer = "cymetrics";
 
-    public boolean isJwtExist(String jwtStr) {
-
-        //TODO: 判斷 jwt token 是否還存在
-        //ex. 用戶登出應該刪除所持有的 jwt，此時即使驗證合法的 jwt 也可能早就不在
-        return false;
-    }
-
     public Optional<User> getUserFromJWT(String jwtStr) {
         SignedJWT signedJWT = null;
         try {
@@ -153,3 +146,4 @@ class AuthTokenService {
         }
     }
 }
+
