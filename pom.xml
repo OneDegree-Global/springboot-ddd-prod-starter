@@ -12,7 +12,7 @@
         <module>domain</module>
         <module>application</module>
         <module>web</module>
-        <module>Messaging</module>
+        <module>messaging</module>
         <module>external</module>
         <module>search</module>
     </modules>
