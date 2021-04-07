@@ -1,26 +1,34 @@
 package hk.onedegree.application.aspect;
 
 import hk.onedegree.application.aspect.annotations.Authorize;
+import hk.onedegree.application.aspect.exception.UnAuthorizeException;
+import hk.onedegree.domain.auth.aggregates.user.User;
+import hk.onedegree.domain.auth.services.AuthenticationService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
+import javax.inject.Inject;
+import java.util.Optional;
+
 @Aspect
 public class AuthorizeAspect {
-    @Pointcut("execution(@hk.onedegree.application.aspect.annotations.Authorize  * *..*.*(..)) && @annotation(authorize)")
-    public void pointCut(Authorize authorize) {
+    @Inject
+    AuthenticationService authenticationService;
+
+    @Pointcut("execution(@hk.onedegree.application.aspect.annotations.Authorize  * *..*.*(..))")
+    public void pointCut() {
 
     }
 
-    @Before("pointCut(authorize)")
-    public void before(Authorize authorize) {
-        System.out.println("執行前，檢查權限" + authorize.operation());
-    }
-
-    @After("pointCut(authorize)")
-    public void after(Authorize authorize) {
-        System.out.println("執行後，檢查權限" + authorize.operation());
+    @Before("pointCut()")
+    public void before(JoinPoint joinPoint) throws UnAuthorizeException {
+        String jwt = joinPoint.getArgs()[0].toString();
+        Optional<User> result = this.authenticationService.authenticate(jwt);
+        if (result.isEmpty()) {
+            throw new UnAuthorizeException("Permission denied");
+        }
     }
 }

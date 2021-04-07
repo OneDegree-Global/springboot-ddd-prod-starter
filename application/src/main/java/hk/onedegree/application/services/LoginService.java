@@ -20,9 +20,4 @@ public class LoginService {
 
         return token;
     }
-
-    public boolean validateToken(String token) {
-        Optional<User> result = this.authenticationService.authenticate(token);
-        return !result.isEmpty();
-    }
 }
