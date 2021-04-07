@@ -55,4 +55,12 @@ public class User {
         return this.passwordEncoder.matches(password, this.hashedPassword);
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
 }

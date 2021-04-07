@@ -38,8 +38,9 @@ public class AuthorizationServiceTest {
     private AuthenticationService authenticationService;
     private ListAppender<ILoggingEvent> appender;
     private Logger appLogger = (Logger) LoggerFactory.getLogger(AuthenticationService.class);
-    private Instant freezeInstant = Instant.ofEpochSecond(1617171335);
+    private Instant freezeInstant = Instant.ofEpochSecond(1617180555);
     @Mock private UserRepository mockUserRepository;
+
 
     @BeforeEach
     public void setup(){
@@ -121,33 +122,11 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public void authenticate_jwt() throws URISyntaxException, IOException, ParseException, InValidEmailException {
-        URL resource = getClass().getClassLoader().getResource("es256_jwks.json");
-        File file = new File(resource.toURI());
-        JWKSet jwkSet = JWKSet.load(file);
-        this.authenticationService.jwkSource = new ImmutableJWKSet<>(jwkSet);
-
-        String email = "whatever@whatever.com";
-        String id = "whatever";
-        User fakeUser = new User(id, email);
-        when(this.mockUserRepository.findById(eq(id))).thenReturn(Optional.of(fakeUser));
-
-        String jwtStr = "eyJraWQiOiIxIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJjeW1ldHJpY3MiLCJzdWIiOiJ3aGF0ZXZlciIsImV4cCI6MTYxNzI1NzczNSwiaWF0IjoxNjE3MTcxMzM1fQ.MjvsPjEinVHxd3A6dPfruAw9VDd4KMGbdokQ3b14DUndpMfqN7-EpZ8OxHVMUFAbxeDZxlif6W6AVf_sDUCS-Q";
-
-        Optional<User> result = this.authenticationService.authenticate(jwtStr);
-
-        Assertions.assertEquals(fakeUser.getId(), result.get().getId());
-        Assertions.assertEquals(fakeUser.getEmail(), result.get().getEmail());
-    }
-
-    @Test
     public void authenticate_JwtInvalidSignature_LogErrorAndReturnEmpty() throws URISyntaxException, IOException, ParseException, InValidEmailException {
         URL resource = getClass().getClassLoader().getResource("rs256_jwks.json");
         File file = new File(resource.toURI());
         JWKSet jwkSet = JWKSet.load(file);
         this.authenticationService.jwkSource = new ImmutableJWKSet<>(jwkSet);
-        //測試即時發的 token (時效內) 可以合法獲得 user，不用鎖死的 freezeInstant
-        this.authenticationService.clock = Clock.systemUTC();
 
         String jwtStr = "eyJraWQiOiIxIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJ3aGF0ZXZlciIsImlzcyI6ImN5bWV0cmljcyIsImV4cCI6MTYxNzE3MTkzNSwiaWF0IjoxNjE3MTcxMzM1LCJlbWFpbCI6IndoYXRldmVyQHdoYXRldmVyLmNvbSJ9.AbvUcqEDuPWtsnU4zBcUtTloKkbKAhnDl3PS2v2X1WFrVwy4JAKndbFeIURaerEKJChOUXGNsq6E39uT59MGhvxCGktlSeres-g9-eo0SA1MgfNkidjPA9WEVgqb1awjjJUNHyVdW4KoaNbUYIEpvZ7ieiku-5l3ghCSlY_6tcpTZkCJ4xXAhZvvfTn0x8e74_TNeH7aIU6lnQImJt9HAQpTiKZvhXSzvniDwK7dv16FJREFvrl0xo8HBKexXZX9NmZwCrayDDeziIIDhsRTpHPVfouTO7kQ-c3YKrK5hueSCXyzHOOE65uU1mgRl3ZOmZ1lRLaxgO_hJWDT_Bt4Gw";
 
