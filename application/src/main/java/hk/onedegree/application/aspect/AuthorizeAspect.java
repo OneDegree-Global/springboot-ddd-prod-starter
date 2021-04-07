@@ -1,11 +1,9 @@
 package hk.onedegree.application.aspect;
 
-import hk.onedegree.application.aspect.annotations.Authorize;
 import hk.onedegree.application.aspect.exception.UnAuthorizeException;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
