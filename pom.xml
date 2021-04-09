@@ -32,6 +32,8 @@
         <springboot.version>2.4.4</springboot.version>
         <log4j.version>2.14.0</log4j.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
+        <!--gen code -->
+        <lombok.version>1.18.18</lombok.version>
         <!-- test -->
         <junit.version>5.7.1</junit.version>
         <assertj-core.version>3.19.0</assertj-core.version>
@@ -61,6 +63,14 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-api.version}</version>
+        </dependency>
+        <!-- Gen code-->
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- test -->
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
@@ -113,6 +123,5 @@
             <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 </project>

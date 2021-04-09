@@ -2,6 +2,9 @@ package hk.onedegree.application.services;
 
 import hk.onedegree.application.aspect.annotations.Authorize;
 
+import javax.inject.Inject;
+
+
 public class OtherService {
 
     @Authorize
@@ -10,8 +13,7 @@ public class OtherService {
         return "how do you do?";
     }
 
-    public static void main(String []args) {
-        OtherService otherService = new OtherService();
-        otherService.doWhateverThing("hio");
+    public String doHello(){
+        return "hello";
     }
 }

@@ -14,6 +14,37 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <spring-boot-starter-web.version>2.4.4</spring-boot-starter-web.version>
+        <application.version>0.0.1</application.version>
+        <persistence.version>0.0.1</persistence.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot-starter-web.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hk.onedegree</groupId>
+            <artifactId>application</artifactId>
+            <version>${application.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hk.onedegree</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${persistence.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-starter-web.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
