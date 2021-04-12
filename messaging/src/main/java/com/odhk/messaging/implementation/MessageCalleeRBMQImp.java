@@ -15,7 +15,6 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
 
     @Override
     public synchronized String consumeAndReply(String queueName, IMessageCallback callback) {
-        Object monitor = new Object();
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()
