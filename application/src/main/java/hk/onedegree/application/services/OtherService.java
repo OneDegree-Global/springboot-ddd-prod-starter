@@ -2,8 +2,6 @@ package hk.onedegree.application.services;
 
 import hk.onedegree.application.aspect.annotations.Authorize;
 
-import javax.inject.Inject;
-
 
 public class OtherService {
 

@@ -17,6 +17,8 @@
         <spring-boot-starter-web.version>2.4.4</spring-boot-starter-web.version>
         <application.version>0.0.1</application.version>
         <persistence.version>0.0.1</persistence.version>
+        <!--gen code -->
+        <lombok.version>1.18.18</lombok.version>
     </properties>
 
     <dependencies>
@@ -34,6 +36,14 @@
             <groupId>hk.onedegree</groupId>
             <artifactId>persistence</artifactId>
             <version>${persistence.version}</version>
+        </dependency>
+        <!-- Gen code-->
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
