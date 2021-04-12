@@ -14,7 +14,7 @@ public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMess
     }
 
     @Override
-    public void send(String queueName, String key, byte[] message) {
+    public synchronized void send(String queueName, byte[] message) {
         try {
             // Use default exchange if using direct send
             this.channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
@@ -24,15 +24,20 @@ public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMess
     }
 
     @Override
-    public void send(String queueName, String key, String message) {
-        send(queueName, key, message.getBytes());
+    public synchronized void send(String queueName, String message) {
+        try {
+            send(queueName, EncodeObject(message));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        //send(queueName, message.getBytes());
     }
 
     @Override
-    public void send(String queueName, String key, Object message) {
+    public synchronized void send(String queueName, Object message) {
         try {
             byte[] bytes = EncodeObject(message);
-            send(queueName, key, bytes);
+            send(queueName, bytes);
         } catch(IOException e) {
             // TODO: Log the error
         }

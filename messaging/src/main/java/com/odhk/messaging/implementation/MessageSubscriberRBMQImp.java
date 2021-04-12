@@ -4,23 +4,29 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import com.odhk.messaging.*;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 
 
-public class MessageSubscriberRBMQImp extends MessageProxyRBMQImp implements IMessageSubscriber {
+public class MessageSubscriberRBMQImp extends MessageConsumerRBMQImp implements IMessageSubscriber {
 
 
     public MessageSubscriberRBMQImp() throws IOException, TimeoutException {
         super();
     }
 
-
     @Override
-    public void subscribe(String topic, String queueName, IMessageCallback callback) {
+    public String subscribe(String topic, String queueName, IMessageCallback callback) {
         try {
             this.channel.queueBind(queueName, topic, "");
+            return super.consume(queueName, callback);
         } catch( IOException e){
+            e.printStackTrace();
             // TODO: log the error
         }
+        return null;
     }
 
     @Override
@@ -28,16 +34,9 @@ public class MessageSubscriberRBMQImp extends MessageProxyRBMQImp implements IMe
         try {
             this.channel.queueUnbind(queueName, topic, "");
         } catch( IOException e){
+            e.printStackTrace();
             // TODO: log the error
         }
     }
 
-    @Override
-    public void removeCallback(String tag) {
-        try {
-            this.channel.basicCancel(tag);
-        } catch( IOException e){
-            // TODO: Log the error
-        }
-    }
 }

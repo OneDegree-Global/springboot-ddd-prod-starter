@@ -3,34 +3,23 @@ package com.odhk.messaging.implementation;
 import com.odhk.messaging.IMessageQueueProxy;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
-public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoCloseable {
 
-    // TODO: Use DI to inject MQ Config
-    protected static String userName = "admin";
-    protected static String password = "admin";
-    protected static String host = "127.0.0.1";
-    protected static int port = 5672;
+public class MessageProxyRBMQImp implements IMessageQueueProxy, AutoCloseable {
 
-    protected ConnectionFactory factory;
-    protected Connection connection;
+    private  Connection connection;
     protected Channel channel;
-    protected List<String> queueNames = new ArrayList<>();
-    protected List<String> exchangeNames = new ArrayList<>();
+    protected CopyOnWriteArrayList<String> queueNames = new CopyOnWriteArrayList<>();
+    protected CopyOnWriteArrayList<String> exchangeNames = new CopyOnWriteArrayList<>();
 
     public MessageProxyRBMQImp() throws IOException, TimeoutException {
-        this.factory = new ConnectionFactory();
-        this.factory.setUsername(userName);
-        this.factory.setPassword(password);
-        this.factory.setHost(host);
-        this.factory.setPort(port);
-        createSession();
+        ChannelPoolRBMQImp connectionPool = ChannelPoolRBMQImp.getInstance();
+        this.connection = connectionPool.getConnection();
+        this.channel = this.connection.createChannel();
     }
 
     @Override
@@ -41,7 +30,6 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
             // TODO: Log the error
             return false;
         }
-        //QueueConfig config = new QueueConfig(name);
         this.queueNames.add(name);
         return true;
     }
@@ -60,6 +48,7 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
 //        this.configs.add(config);
 //        return Optional.of(config);
 //    }
+
     @Override
     public void close(){
 
@@ -69,15 +58,15 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
     public void deleteQueue(String name) {
         try{
             this.channel.queueDelete(name);
-        } catch(IOException e){
+        } catch(IOException  e){
             // TODO: log the error
         }
     }
 
     @Override
-    public boolean createExchange(String name, String type) {
+    public boolean createTopic(String name) {
         try {
-           this.channel.exchangeDeclare(name, type);
+           this.channel.exchangeDeclare(name, "fanout");
         } catch(IOException  e){
             // TODO: Log the error
             return false;
@@ -87,20 +76,12 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
     }
 
     @Override
-    public void deleteExchange(String name) {
+    public void deleteTopic(String name) {
         try{
             this.channel.exchangeDelete(name);
         } catch(IOException e){
             // TODO: log the error
         }
-    }
-
-
-    private void createSession() throws IOException, TimeoutException {
-        if(this.connection == null || !this.connection.isOpen())
-            this.connection = factory.newConnection();
-        if(this.channel == null || !this.channel.isOpen())
-            this.channel = connection.createChannel();
     }
 
     protected byte[] EncodeObject(Object obj) throws IOException {
@@ -110,8 +91,10 @@ public abstract class MessageProxyRBMQImp implements IMessageQueueProxy, AutoClo
         return bos.toByteArray();
     }
 
+
     protected Object DecodeObject(byte[] bytes) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        // TODO: until all message objects have been defined, we cannot create white list
         ObjectInputStream in = new ObjectInputStream(bis);
         return in.readObject();
     }

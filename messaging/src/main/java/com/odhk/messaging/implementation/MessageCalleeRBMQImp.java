@@ -14,7 +14,7 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
     }
 
     @Override
-    public String consumeAndReply(String queueName, IMessageCallback callback) {
+    public synchronized String consumeAndReply(String queueName, IMessageCallback callback) {
         Object monitor = new Object();
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
@@ -22,19 +22,19 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
                     .correlationId(delivery.getProperties().getCorrelationId())
                     .build();
             Object response = new Object();
+            System.out.println("callee corid: "+delivery.getProperties().getCorrelationId());
 
             try {
                 Object message = DecodeObject(delivery.getBody());
                 response = callback.onCalled(message);
             } catch (RuntimeException | ClassNotFoundException e ) {
                 // TODO: Log the error
+                e.printStackTrace();
             } finally {
+                System.out.println("reply to :"+delivery.getProperties().getReplyTo());
                 channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, EncodeObject(response));
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 // RabbitMq consumer worker thread notifies the RPC server owner thread
-                synchronized (monitor) {
-                    monitor.notify();
-                }
             }
         };
 
@@ -42,6 +42,7 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
             return channel.basicConsume(queueName, false, deliverCallback, (consumerTag -> {
             }));
         } catch(IOException e){
+            e.printStackTrace();
             // TODO: Log the error
         }
         return "";

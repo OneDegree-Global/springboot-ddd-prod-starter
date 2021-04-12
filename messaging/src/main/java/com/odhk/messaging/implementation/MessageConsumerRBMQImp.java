@@ -19,26 +19,34 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
     @Override
     public String consume(String queueName,IMessageCallback callback)  {
         String tag;
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            try {
-                GetResponse response = this.channel.basicGet( queueName, false);
-                Object message = DecodeObject(response.getBody());
-                callback.onDelivered(message);
-            } catch(IOException | ClassNotFoundException e) {
-                // TODO: Log the error
+
+        Consumer consumer = new DefaultConsumer(this.channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope,
+                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
+                try {
+                    callback.onDelivered(DecodeObject(body));
+                } catch(IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    // TODO: Log the error
+                }
+                finally {
+                    getChannel().basicAck(envelope.getDeliveryTag(), false);
+                    // log.info("Consumer1 - Ack ok");
+                }
             }
-            finally {
-                this.channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+            @Override
+            public void handleCancel(String consumerTag) throws IOException {
+                callback.onCancel();
             }
         };
 
         try {
-            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag ->
-                callback.onCancel()
-            );
+            tag = this.channel.basicConsume( queueName, false, consumer);
 
         } catch( IOException e){
             // TODO: Log the error
+            e.printStackTrace();
             return null;
         }
         return tag;
@@ -48,27 +56,44 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
     // Consume then immediate cancel consumer after finished
     public String consumeOnce(String queueName, IMessageCallback callback)  {
         String tag;
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            try {
-                GetResponse response = this.channel.basicGet( queueName, false);
-                Object message = DecodeObject(response.getBody());
-                callback.onDelivered(message);
-            } catch(IOException | ClassNotFoundException e) {
-                // TODO: Log the error
+
+        Consumer consumer = new DefaultConsumer(this.channel) {
+
+            boolean isUsed = false;
+
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope,
+                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
+                try {
+                    if(isUsed){
+                        getChannel().basicReject(envelope.getDeliveryTag(), true);
+                        return;
+                    }
+                    callback.onDelivered(DecodeObject(body));
+                    getChannel().basicCancel(consumerTag);
+                } catch(IOException | ClassNotFoundException e) {
+                    // TODO: Log the error
+                    e.printStackTrace();
+                }
+                finally {
+                    if(!isUsed) {
+                        getChannel().basicAck(envelope.getDeliveryTag(), false);
+                        isUsed = true;
+                    }
+                }
             }
-            finally {
-                this.channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                this.channel.basicCancel(consumerTag);
+            @Override
+            public void handleCancel(String consumerTag) throws IOException {
+                callback.onCancel();
             }
         };
 
         try {
-            tag = this.channel.basicConsume( queueName, false, deliverCallback, consumerTag ->
-                callback.onCancel()
-            );
+            tag = this.channel.basicConsume( queueName, false, consumer);
 
         } catch( IOException e){
             // TODO: Log the error
+            e.printStackTrace();
             return "";
         }
         return tag;
@@ -86,9 +111,10 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
             message = DecodeObject((response.getBody()));
         } catch(IOException | ClassNotFoundException e) {
             // TODO: Log the error
+            e.printStackTrace();
             return Optional.empty();
         }
-        return Optional.of(message);
+        return Optional.ofNullable(message);
     }
 
     @Override
@@ -96,7 +122,6 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         if(timeout<0)
             throw new IllegalArgumentException("timeout should not less than 0");
         AtomicReference<Object> message = new AtomicReference<>(null);
-
 
         try {
             long limit = System.currentTimeMillis() + timeout;
@@ -113,7 +138,8 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
             // TODO: Log the error
             Thread.currentThread().interrupt();
         }
-        return Optional.of(message.get());
+        return Optional.ofNullable(message.get());
+
     }
 
     @Override

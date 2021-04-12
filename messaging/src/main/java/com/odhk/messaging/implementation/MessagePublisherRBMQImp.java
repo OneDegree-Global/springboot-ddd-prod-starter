@@ -16,7 +16,7 @@ public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMes
     }
 
     @Override
-    public void publish(String topic, byte[] message) {
+    public synchronized void publish(String topic, byte[] message) {
         try {
             this.channel.basicPublish(topic,"", MessageProperties.PERSISTENT_TEXT_PLAIN, message);
         } catch(IOException e){
@@ -25,12 +25,16 @@ public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMes
     }
 
     @Override
-    public void publish(String topic, String text) {
-        publish(topic, text.getBytes());
+    public synchronized void publish(String topic, String text)  {
+        try {
+            publish(topic, EncodeObject(text));
+        } catch( IOException e ){
+            // TODO: Log the error
+        }
     }
 
     @Override
-    public void publish(String topic, Object message) {
+    public synchronized void publish(String topic, Object message) {
         try {
             byte[] bytes = EncodeObject(message);
             publish(topic, bytes);
