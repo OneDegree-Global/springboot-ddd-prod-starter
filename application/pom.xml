@@ -15,6 +15,10 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <domain.version>0.0.1</domain.version>
+        <spring-aspects.version>5.3.5</spring-aspects.version>
+        <!-- aop -->
+        <aspectjrt.version>1.9.5</aspectjrt.version>
+        <aspectj-maven-plugin.version>1.12.6</aspectj-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -23,5 +27,46 @@
             <artifactId>domain</artifactId>
             <version>${domain.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-aspects -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring-aspects.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectjrt.version}</version>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <!--
+                 使用 aspectj 在 compiler 時將 aop 的 code 編入 application。
+                 一般來說需要使用 org.codehaus.mojo.aspectj-maven-plugin 在 compile 時處理。
+                 因為 asprctj 官方的版本僅支援到 java8，因此使用
+                 com.nickwongdev.aspectj-maven-plugin  這非官方版本。
+                 此版本是已被視為 official unofficial，並被 intellij 採用 ( Ultimate 版)。
+                 參考 https://stackoverflow.com/questions/62976155/aspectj-maven-plugin-1-11-missing-tools-jar-issue-with-jdk-11/62978208
+            -->
+            <plugin>
+                <groupId>com.nickwongdev</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>${aspectj-maven-plugin.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <complianceLevel>${maven.compiler.source}</complianceLevel>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
