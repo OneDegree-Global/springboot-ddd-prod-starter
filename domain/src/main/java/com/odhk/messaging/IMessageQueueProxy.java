@@ -6,6 +6,6 @@ public interface IMessageQueueProxy {
     boolean createQueue(String name);
     void deleteQueue(String name);
 
-    boolean createExchange(String name, String type);
-    void deleteExchange(String name);
+    boolean createTopic(String name);
+    void deleteTopic(String name);
 }
