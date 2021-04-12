@@ -1,6 +1,6 @@
 package hk.onedegree.application.aspect;
 
-import hk.onedegree.application.aspect.exception.UnAuthorizeException;
+import hk.onedegree.application.exception.UnAuthorizeException;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import org.aspectj.lang.JoinPoint;
