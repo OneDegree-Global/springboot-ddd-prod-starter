@@ -1,6 +1,7 @@
 package hk.onedegree.domain.auth.services;
 
 import hk.onedegree.domain.auth.aggregates.user.User;
+import hk.onedegree.domain.auth.exceptions.DuplicatedEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
 import hk.onedegree.domain.auth.repository.UserRepository;
@@ -17,28 +18,18 @@ public class UserAuthInfoService {
 
     private static Logger logger = LoggerFactory.getLogger(UserAuthInfoService.class);
 
-    public Optional<User> createUser(String email, String password){
+    public Optional<User> createUser(String email, String password) throws DuplicatedEmailException, InValidEmailException, InValidPasswordException {
         String id = UUID.randomUUID().toString();
         User user;
 
         if (!this.userRepository.findByEmail(email).isEmpty()) {
             logger.error("Email already exist: {}", email);
-            return Optional.empty();
+            throw  new DuplicatedEmailException(email);
         }
 
-        try {
-            user = new User(id, email);
-        } catch (InValidEmailException e) {
-            logger.error("create user fails, e: ", e);
-            return Optional.empty();
-        }
+        user = new User(id, email);
 
-        try {
-            user.setPassword(password);
-        } catch (InValidPasswordException e) {
-            logger.error("Set password fails, e: ", e);
-            return Optional.empty();
-        }
+        user.setPassword(password);
 
         this.userRepository.save(user);
         return Optional.of(user);
