@@ -24,7 +24,7 @@ public class UserAuthInfoService {
 
         if (!this.userRepository.findByEmail(email).isEmpty()) {
             logger.error("Email already exist: {}", email);
-            throw  new DuplicatedEmailException(email);
+            throw  new DuplicatedEmailException("Email already exist: " + email);
         }
 
         user = new User(id, email);
