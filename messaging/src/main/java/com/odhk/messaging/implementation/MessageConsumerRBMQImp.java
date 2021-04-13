@@ -6,18 +6,24 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.odhk.messaging.*;
 import com.rabbitmq.client.*;
 
 
 public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMessageConsumer, IMessageReceiver {
 
-    public MessageConsumerRBMQImp() throws IOException, TimeoutException {
+    private static Logger logger = LoggerFactory.getLogger(MessageConsumerRBMQImp.class);
+
+    public MessageConsumerRBMQImp() throws ProtocolIOException, QueueLifecycleException {
         super();
     }
 
     @Override
-    public String consume(String queueName,IMessageCallback callback)  {
+    public Optional<String> consume(String queueName,IMessageCallback callback)  {
         String tag;
 
         Consumer consumer = new DefaultConsumer(this.channel) {
@@ -27,8 +33,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                 try {
                     callback.onDelivered(DecodeObject(body));
                 } catch(IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                    // TODO: Log the error
+                    logger.error("Decode byte message body error:"+e);
                 }
                 finally {
                     getChannel().basicAck(envelope.getDeliveryTag(), false);
@@ -43,18 +48,16 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
 
         try {
             tag = this.channel.basicConsume( queueName, false, consumer);
-
         } catch( IOException e){
-            // TODO: Log the error
-            e.printStackTrace();
-            return null;
+            logger.error("channel consume error:"+e);
+            return Optional.empty();
         }
-        return tag;
+        return Optional.ofNullable(tag);
     }
 
     @Override
     // Consume then immediate cancel consumer after finished
-    public String consumeOnce(String queueName, IMessageCallback callback)  {
+    public Optional<String> consumeOnce(String queueName, IMessageCallback callback)  {
         String tag;
 
         Consumer consumer = new DefaultConsumer(this.channel) {
@@ -72,8 +75,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                     callback.onDelivered(DecodeObject(body));
                     getChannel().basicCancel(consumerTag);
                 } catch(IOException | ClassNotFoundException e) {
-                    // TODO: Log the error
-                    e.printStackTrace();
+                    logger.error("Decode byte message body error:"+e);
                 }
                 finally {
                     if(!isUsed) {
@@ -92,11 +94,10 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
             tag = this.channel.basicConsume( queueName, false, consumer);
 
         } catch( IOException e){
-            // TODO: Log the error
-            e.printStackTrace();
-            return "";
+            logger.error("channel consume error:"+e);
+            return Optional.empty();
         }
-        return tag;
+        return Optional.ofNullable(tag);
     }
 
     @Override
@@ -110,8 +111,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
             }
             message = DecodeObject((response.getBody()));
         } catch(IOException | ClassNotFoundException e) {
-            // TODO: Log the error
-            e.printStackTrace();
+            logger.error("Decode byte message body error:"+e);
             return Optional.empty();
         }
         return Optional.ofNullable(message);
@@ -135,7 +135,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                 break;
             }
         }catch(IOException | ClassNotFoundException | InterruptedException e) {
-            // TODO: Log the error
+            logger.error("Consumer receive message error:"+e);
             Thread.currentThread().interrupt();
         }
         return Optional.ofNullable(message.get());
@@ -147,89 +147,9 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         try {
             this.channel.basicCancel(tag);
         } catch( IOException e){
-            // TODO: Log the error
+            logger.error("channel remove consumer error:"+e);
         }
     }
 
 
-    // ONLY for test purpose
-    public static void main(String[] args) throws IOException, TimeoutException {
-
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setUsername("admin");
-        factory.setPassword("admin");
-        factory.setHost("127.0.0.1");
-        factory.setPort(5672);
-
-        Connection connection;
-        try {
-            connection = factory.newConnection();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return;
-        }
-        Channel channel1 = connection.createChannel();
-        Channel channel2 = connection.createChannel();
-
-
-
-        boolean durable = true;
-        channel1.queueDeclare("testQueue", durable, false, false, null);
-
-        Consumer consumer1 = new DefaultConsumer(channel1) {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
-                try {
-                    System.out.println(consumerTag);
-                    System.out.println(envelope.getDeliveryTag());
-                    doWork("Consumer1", body);
-                } finally {
-                    getChannel().basicAck(envelope.getDeliveryTag(), false);
-                    // log.info("Consumer1 - Ack ok");
-                }
-            }
-        };
-
-        Consumer consumer2 = new DefaultConsumer(channel2) {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
-                try {
-                    System.out.println(consumerTag);
-                    System.out.println(envelope.getDeliveryTag());
-                    doWork("Consumer2", body);
-                } finally {
-                    getChannel().basicAck(envelope.getDeliveryTag(), false);
-                    //log.info("Consumer2 - Ack ok");
-                    getChannel().basicAck(envelope.getDeliveryTag(), false); // ack again is ok
-                    //log.info("Consumer2 - Ack again ok");
-                }
-            }
-        };
-
-        boolean autoAck = false;
-
-        GetResponse gr1 = channel1.basicGet("testQueue", true);
-        System.out.println(gr1.toString());
-        System.out.println(new String(gr1.getBody(), StandardCharsets.UTF_8) );
-        GetResponse gr2 = channel2.basicGet("testQueue", true);
-        System.out.println(new String(gr2.getBody(), StandardCharsets.UTF_8) );
-
-        //channel1.basicConsume("testQueue", autoAck, consumer1);
-        //channel2.basicConsume("testQueue", autoAck, consumer2);
-    }
-
-    private static void doWork(String name, byte[] body) {
-        String message = new String(body);
-        System.out.println(name);
-        //log.info(name + " - Message received: " + message);
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        //log.info(name + " - Work done! " + message);
-    }
 }

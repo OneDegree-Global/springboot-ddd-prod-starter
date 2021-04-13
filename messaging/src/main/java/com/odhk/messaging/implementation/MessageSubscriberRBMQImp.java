@@ -1,7 +1,13 @@
 package com.odhk.messaging.implementation;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+
+import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.odhk.messaging.*;
 import com.rabbitmq.client.AMQP;
@@ -12,21 +18,21 @@ import com.rabbitmq.client.Envelope;
 
 public class MessageSubscriberRBMQImp extends MessageConsumerRBMQImp implements IMessageSubscriber {
 
+    private static Logger logger = LoggerFactory.getLogger(MessageSubscriberRBMQImp.class);
 
-    public MessageSubscriberRBMQImp() throws IOException, TimeoutException {
+    public MessageSubscriberRBMQImp() throws ProtocolIOException, QueueLifecycleException {
         super();
     }
 
     @Override
-    public String subscribe(String topic, String queueName, IMessageCallback callback) {
+    public Optional<String> subscribe(String topic, String queueName, IMessageCallback callback) {
         try {
             this.channel.queueBind(queueName, topic, "");
             return super.consume(queueName, callback);
         } catch( IOException e){
-            e.printStackTrace();
-            // TODO: log the error
+            logger.error("subscriber subscirbe message error:"+e);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -34,8 +40,7 @@ public class MessageSubscriberRBMQImp extends MessageConsumerRBMQImp implements 
         try {
             this.channel.queueUnbind(queueName, topic, "");
         } catch( IOException e){
-            e.printStackTrace();
-            // TODO: log the error
+            logger.error("subscriber unsubscribe error:"+e);
         }
     }
 

@@ -1,36 +1,41 @@
 package com.odhk.messaging.implementation;
 
+import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.Exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessageCallee;
 import com.rabbitmq.client.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 
 public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessageCallee {
-    public MessageCalleeRBMQImp() throws IOException, TimeoutException {
+
+    private static Logger logger = LoggerFactory.getLogger(MessageCalleeRBMQImp.class);
+
+    public MessageCalleeRBMQImp() throws QueueLifecycleException{
         super();
     }
 
     @Override
-    public synchronized String consumeAndReply(String queueName, IMessageCallback callback) {
+    public synchronized Optional<String> consumeAndReply(String queueName, IMessageCallback callback) {
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties
                     .Builder()
                     .correlationId(delivery.getProperties().getCorrelationId())
                     .build();
             Object response = new Object();
-            System.out.println("callee corid: "+delivery.getProperties().getCorrelationId());
 
             try {
                 Object message = DecodeObject(delivery.getBody());
                 response = callback.onCalled(message);
             } catch (RuntimeException | ClassNotFoundException e ) {
-                // TODO: Log the error
-                e.printStackTrace();
+                logger.error("Decode byte message body Error:"+e);
             } finally {
-                System.out.println("reply to :"+delivery.getProperties().getReplyTo());
                 channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, EncodeObject(response));
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 // RabbitMq consumer worker thread notifies the RPC server owner thread
@@ -38,22 +43,21 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
         };
 
         try {
-            return channel.basicConsume(queueName, false, deliverCallback, (consumerTag -> {
-            }));
+            return Optional.ofNullable(channel.basicConsume(queueName, false, deliverCallback, (consumerTag -> {
+            })));
         } catch(IOException e){
-            e.printStackTrace();
-            // TODO: Log the error
+            logger.error("channel consume error:"+e);
         }
-        return "";
+        return Optional.empty();
     }
 
 
     @Override
-    public void removeCallback(String tag) {
+    public void removeCallback(String tag)  {
         try {
             this.channel.basicCancel(tag);
         } catch( IOException e){
-            // TODO: Log the error
+            logger.error("channel remove consumer error:"+e);
         }
     }
 }

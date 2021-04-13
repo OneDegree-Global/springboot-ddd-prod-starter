@@ -3,72 +3,51 @@ package com.odhk.messaging.implementation;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.*;
 
 import com.odhk.messaging.*;
 
 public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMessageProducer {
 
-    public MessageProducerRBMQImp() throws IOException, TimeoutException {
+    private static Logger logger = LoggerFactory.getLogger(MessageProducerRBMQImp.class);
+
+    public MessageProducerRBMQImp() throws ProtocolIOException, QueueLifecycleException {
         super();
     }
 
     @Override
-    public synchronized void send(String queueName, byte[] message) {
+    public synchronized void send(String queueName, byte[] message) throws ProtocolIOException {
         try {
             // Use default exchange if using direct send
             this.channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, message);
         } catch(IOException e){
-            // TODO: Log the error
+            throw new ProtocolIOException(e.getMessage());
         }
     }
 
     @Override
-    public synchronized void send(String queueName, String message) {
+    public synchronized void send(String queueName, String message) throws ProtocolIOException {
         try {
             send(queueName, EncodeObject(message));
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(ProtocolIOException | IOException e) {
+            throw new ProtocolIOException(e.getMessage());
         }
-        //send(queueName, message.getBytes());
     }
 
     @Override
-    public synchronized void send(String queueName, Object message) {
+    public synchronized void send(String queueName, Object message) throws ProtocolIOException {
+        byte[] bytes;
         try {
-            byte[] bytes = EncodeObject(message);
+            bytes = EncodeObject(message);
             send(queueName, bytes);
-        } catch(IOException e) {
-            // TODO: Log the error
+        } catch(ProtocolIOException | IOException e) {
+            throw new ProtocolIOException(e.getMessage());
         }
     }
 
 
-
-    // ONLY For test purpose
-    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
-        System.out.println("start producing");
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setUsername("admin");
-        factory.setPassword("admin");
-        factory.setHost("127.0.0.1");
-        factory.setPort(5672);
-
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-
-        boolean durable = true;
-        channel.queueDeclare("testQueue", durable, false, false, null);
-
-        for (int i = 0; i < 10; i++) {
-            String message = "Hello World! " + i;
-            channel.basicPublish("", "testQueue", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-            // log.info("Message sent: " + message);
-            System.out.println("Message sent: " + message);
-            // Thread.sleep(500);
-        }
-
-        channel.close();
-        connection.close();
-    }
 }

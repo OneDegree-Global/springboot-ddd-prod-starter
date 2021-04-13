@@ -1,8 +1,12 @@
 package com.odhk.messaging.implementation;
 
+import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.Exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCaller;
 import com.rabbitmq.client.*;
-
+import hk.onedegree.domain.auth.services.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,12 +15,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessageCaller {
 
-    public MessageCallerRBMQImp() throws IOException, TimeoutException {
+    private static Logger logger = LoggerFactory.getLogger(MessageCallerRBMQImp.class);
+
+    public MessageCallerRBMQImp() throws QueueLifecycleException {
         super();
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, byte[] message, int timeout) {
+    public synchronized Optional<Object> sendAndGetReply(String queueName, byte[] message, int timeout) throws ProtocolIOException{
         if(timeout<0)
             throw new IllegalArgumentException("timeout should not less than 0");
         String cTag = null;
@@ -33,8 +39,6 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                     .replyTo(replyQueueName)
                     .build();
             this.channel.basicPublish("", queueName, props, message);
-            System.out.println("corrId :"+corrId);
-            System.out.println("replyqueue :"+props.getReplyTo());
 
             Consumer consumer = new DefaultConsumer(this.channel) {
                 @Override
@@ -43,8 +47,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                     try {
                         replyMessage.set(DecodeObject(body));
                     } catch(IOException | ClassNotFoundException e) {
-                        // TODO: Log the error
-                        e.printStackTrace();
+                        logger.error("Decode byte message error: "+ e);
                     }
                     finally {
                         getChannel().basicAck(envelope.getDeliveryTag(), false);
@@ -72,32 +75,30 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
             this.channel.basicCancel(cTag);
             return Optional.ofNullable(replyMessage.get());
         } catch(IOException | InterruptedException e){
-            // TODO: Log the error
-            e.printStackTrace();
             Thread.interrupted();
-            return Optional.empty();
+            throw new ProtocolIOException(e.getMessage());
         }
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, String text, int timeout) {
+    public synchronized Optional<Object> sendAndGetReply(String queueName, String text, int timeout) throws ProtocolIOException {
         try {
             return sendAndGetReply(queueName, EncodeObject(text) , timeout);
-        } catch (IOException e) {
-            // TODO: Log the error
+        } catch (IOException | ProtocolIOException e) {
+            throw new ProtocolIOException(e.getMessage());
         }
-        return Optional.empty();
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, Object message, int timeout) {
+    public synchronized Optional<Object> sendAndGetReply(String queueName, Object message, int timeout) throws ProtocolIOException {
+        byte[] bytes;
         try {
-            byte[] bytes = EncodeObject(message);
+            bytes = EncodeObject(message);
             return sendAndGetReply(queueName, bytes, timeout);
-        } catch(IOException e) {
-            // TODO: Log the error
-            return Optional.empty();
+        } catch(IOException | ProtocolIOException e) {
+            throw new ProtocolIOException(e.getMessage());
         }
+
     }
 
 }
