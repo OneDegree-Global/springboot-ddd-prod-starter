@@ -24,7 +24,7 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
 
     public MessageProxyRBMQImp() throws QueueLifecycleException {
         try {
-            ConnectionFactoryRBMQImp connectionPool = ConnectionFactoryRBMQImp.getInstance();
+            ConnectionFactory connectionPool = ConnectionFactory.getInstance();
             this.connection = connectionPool.getConnection();
             this.channel = this.connection.createChannel();
         } catch (IOException | TimeoutException e){
