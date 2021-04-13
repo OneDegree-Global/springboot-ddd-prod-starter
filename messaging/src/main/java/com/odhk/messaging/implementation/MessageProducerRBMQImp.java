@@ -1,10 +1,9 @@
 package com.odhk.messaging.implementation;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.*;

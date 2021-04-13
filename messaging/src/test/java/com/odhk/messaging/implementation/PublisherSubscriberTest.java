@@ -1,17 +1,14 @@
 package com.odhk.messaging.implementation;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessagePublisher;
-import com.odhk.messaging.IMessageQueueProxy;
 import com.odhk.messaging.IMessageSubscriber;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 
 public class PublisherSubscriberTest {
 

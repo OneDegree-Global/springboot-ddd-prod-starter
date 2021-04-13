@@ -1,7 +1,5 @@
 package com.odhk.messaging;
 
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
-
 import java.util.Optional;
 
 public interface IMessageConsumer extends IMessageQueueProxy {

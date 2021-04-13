@@ -1,7 +1,6 @@
 package com.odhk.messaging.implementation;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessageCallee;
 import com.rabbitmq.client.*;
@@ -10,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 
 
 public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessageCallee {

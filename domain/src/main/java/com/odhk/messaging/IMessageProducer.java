@@ -1,6 +1,6 @@
 package com.odhk.messaging;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.ProtocolIOException;
 
 public interface IMessageProducer extends IMessageQueueProxy {
     // send message to a specific queue

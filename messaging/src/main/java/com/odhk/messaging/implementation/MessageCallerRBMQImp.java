@@ -1,16 +1,14 @@
 package com.odhk.messaging.implementation;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCaller;
 import com.rabbitmq.client.*;
-import hk.onedegree.domain.auth.services.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessageCaller {

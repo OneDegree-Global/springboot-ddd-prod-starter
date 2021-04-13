@@ -1,7 +1,6 @@
 package com.odhk.messaging;
 
-import java.util.Optional;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 
 public interface IMessageQueueProxy {
     // raise request to RBMQ server to create/clean/delete queue

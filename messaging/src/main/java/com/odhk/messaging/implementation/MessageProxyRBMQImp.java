@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 
 
 public class MessageProxyRBMQImp implements IMessageQueueProxy {

@@ -1,4 +1,4 @@
-package com.odhk.messaging.MessageTypes;
+package com.odhk.messaging.messageTypes;
 
 import java.io.Serializable;
 

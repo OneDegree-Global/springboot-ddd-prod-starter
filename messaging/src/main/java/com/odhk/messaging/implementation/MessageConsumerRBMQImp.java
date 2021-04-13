@@ -1,13 +1,11 @@
 package com.odhk.messaging.implementation;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.odhk.messaging.Exceptions.ProtocolIOException;
-import com.odhk.messaging.Exceptions.QueueLifecycleException;
+import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.odhk.messaging.*;
