@@ -52,9 +52,6 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                         receiveFlag[0] = true;
                     }
                 }
-                @Override
-                public void handleCancel(String consumerTag) throws IOException {
-                }
             };
 
 

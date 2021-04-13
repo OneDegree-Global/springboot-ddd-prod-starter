@@ -12,8 +12,6 @@ import com.odhk.messaging.*;
 
 public class MessageProducerRBMQImp extends MessageProxyRBMQImp implements IMessageProducer {
 
-    private static Logger logger = LoggerFactory.getLogger(MessageProducerRBMQImp.class);
-
     public MessageProducerRBMQImp() throws ProtocolIOException, QueueLifecycleException {
         super();
     }
