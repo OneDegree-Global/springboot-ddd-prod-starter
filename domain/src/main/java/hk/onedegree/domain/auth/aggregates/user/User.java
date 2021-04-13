@@ -48,6 +48,7 @@ public class User {
             throw new InValidPasswordException(errMsg);
         }
 
+        System.out.println("hiooooo: " + this.passwordEncoder.encode(password));
         this.hashedPassword = this.passwordEncoder.encode(password);
     }
 
