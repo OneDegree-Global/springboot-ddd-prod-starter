@@ -4,6 +4,7 @@ import hk.onedegree.application.exception.CreateUserFailsException;
 import hk.onedegree.application.services.UserService;
 import hk.onedegree.web.springboot.controller.utils.ResponseUtils;
 import hk.onedegree.web.springboot.dto.User;
+import hk.onedegree.web.springboot.requestbody.RegisterRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +19,9 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity newUser(@RequestBody User user) throws CreateUserFailsException {
-        var result = this.userService.createUser(user.getEmail(), user.getPassword());
-        return ResponseUtils.wrapSuccessResponse(result);
+    public ResponseEntity newUser(@RequestBody RegisterRequest registerRequest) throws CreateUserFailsException {
+        var result = this.userService.createUser(registerRequest.getEmail(), registerRequest.getPassword());
+        User user = new User(result.getId(), result.getEmail());
+        return ResponseUtils.wrapSuccessResponse(user);
     }
 }
