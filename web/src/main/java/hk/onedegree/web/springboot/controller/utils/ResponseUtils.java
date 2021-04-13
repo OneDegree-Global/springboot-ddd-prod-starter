@@ -22,11 +22,21 @@ public class ResponseUtils {
         return new ResponseEntity<>(body, httpStatus);
     }
 
-    public static ResponseEntity<Object> wrapUser(User user){
+    public static ResponseEntity<Object> wrapSuccessResponse(Object data){
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", ZonedDateTime.now(zoneId));
         body.put("status", 0);
-        body.put("data", user);
+        body.put("data", data);
+
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+    public static ResponseEntity<Object> wrapFailResponse(String message, String errorCode){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", ZonedDateTime.now(zoneId));
+        body.put("status", 1);
+        body.put("message", message);
+        body.put("error", errorCode);
 
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
