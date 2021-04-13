@@ -1,4 +1,4 @@
-package hk.onedegree.web.springboot.controller.advice;
+package hk.onedegree.web.springboot.controller.error;
 
 import hk.onedegree.application.exception.CreateUserFailsException;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class CreateUserFailsExceptionController {
+public class ErrorResolver {
     @ExceptionHandler(value = CreateUserFailsException.class)
     public ResponseEntity<Object> exception(CreateUserFailsException e) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -20,6 +20,6 @@ public class CreateUserFailsExceptionController {
         body.put("message", e.getMessage());
         body.put("error", ErrorCode.CREATE_USER_FAILS);
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ErrorResponseUtils.wrapException(e, ErrorCode.CREATE_USER_FAILS, HttpStatus.BAD_REQUEST);
     }
 }
