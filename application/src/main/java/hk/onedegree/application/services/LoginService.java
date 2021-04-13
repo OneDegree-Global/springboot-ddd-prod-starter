@@ -14,10 +14,8 @@ public class LoginService {
     @Inject
     TokenService tokenService;
 
-    public String getLoginToken(String email, String password) {
+    public Optional<String> getLoginToken(String email, String password) {
         Optional<User> result = this.authenticationService.authenticate(email, password);
-        String token = this.tokenService.issueToken(result);
-
-        return token;
+        return this.tokenService.issueToken(result);
     }
 }

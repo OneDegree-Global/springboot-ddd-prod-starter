@@ -21,11 +21,11 @@ public class LoginController {
     public ResponseEntity newUser(@RequestBody LoginRequest loginRequest) {
         var result = this.loginService.getLoginToken(loginRequest.getEmail(), loginRequest.getPassword());
 
-        if (result.length() == 0) {
+        if (result.isEmpty() || result.get().length() == 0) {
             return ResponseUtils.wrapFailResponse("Login fails", ErrorCode.LOGIN_FAILS);
         }
 
-        Token token = new Token(result);
+        Token token = new Token(result.get());
         return ResponseUtils.wrapSuccessResponse(token);
     }
 }

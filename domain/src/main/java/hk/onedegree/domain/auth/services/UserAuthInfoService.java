@@ -34,4 +34,8 @@ public class UserAuthInfoService {
         this.userRepository.save(user);
         return Optional.of(user);
     }
+
+    public Optional<User> getUserById(String id) {
+        return this.userRepository.findById(id);
+    }
 }

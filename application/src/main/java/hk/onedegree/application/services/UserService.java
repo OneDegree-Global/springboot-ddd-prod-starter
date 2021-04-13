@@ -1,5 +1,6 @@
 package hk.onedegree.application.services;
 
+import hk.onedegree.application.aspect.annotations.Authorize;
 import hk.onedegree.application.exception.CreateUserFailsException;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.DuplicatedEmailException;
@@ -17,17 +18,18 @@ public class UserService {
     UserAuthInfoService userAuthInfoService;
 
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
-    public User createUser(String email, String password) throws CreateUserFailsException {
+    public Optional<User> createUser(String email, String password) throws CreateUserFailsException {
 
         try {
-            Optional<User> result = this.userAuthInfoService.createUser(email, password);
-            return result.get();
+            return this.userAuthInfoService.createUser(email, password);
         } catch (DuplicatedEmailException | InValidEmailException | InValidPasswordException e) {
             logger.error("Create user fails: {}", e.getMessage());
             throw new CreateUserFailsException(e.getMessage());
         }
     }
 
-
-
+    @Authorize
+    public Optional<User> getUser(String token, String id){
+        return this.userAuthInfoService.getUserById(id);
+    }
 }

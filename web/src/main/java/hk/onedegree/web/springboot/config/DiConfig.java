@@ -3,8 +3,9 @@ package hk.onedegree.web.springboot.config;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
+import hk.onedegree.application.aspect.AuthorizeAspect;
+import hk.onedegree.application.helper.AuthHelper;
 import hk.onedegree.application.services.LoginService;
-import hk.onedegree.application.services.OtherService;
 import hk.onedegree.application.services.UserService;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
@@ -22,12 +23,6 @@ import java.text.ParseException;
 
 @Configuration
 public class DiConfig {
-
-    @Bean
-    public OtherService otherServiceBean() {
-        OtherService otherService = new OtherService();
-        return otherService;
-    }
 
     @Bean
     public UserService userServiceBean() {
@@ -80,5 +75,17 @@ public class DiConfig {
     public UserAuthInfoService userAuthInfoServiceBean() {
         UserAuthInfoService userAuthInfoService = new UserAuthInfoService();
         return userAuthInfoService;
+    }
+
+    @Bean
+    public AuthorizeAspect authorizeAspectBean(){
+        AuthorizeAspect authorizeAspect = new AuthorizeAspect();
+        return authorizeAspect;
+    }
+
+    @Bean
+    public AuthHelper authHelper(){
+        AuthHelper authHelper = new AuthHelper();
+        return authHelper;
     }
 }

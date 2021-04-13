@@ -29,9 +29,9 @@ public class TokenService {
 
     private static Logger logger = LoggerFactory.getLogger(TokenService.class);
 
-    public String issueToken(Optional<User> optional) {
+    public Optional<String> issueToken(Optional<User> optional) {
         if (optional.isEmpty()) {
-            return "";
+            return Optional.of("");
         }
 
         User user = optional.get();
@@ -62,13 +62,13 @@ public class TokenService {
             jwt.sign(getSignerByJwk(latestJwk));
         } catch (JOSEException e) {
             logger.error("Sign jwt error, exception: ", e);
-            return "";
+            return Optional.of("");
         } catch (UnsupportedAlgException e) {
             logger.error("Unsupported alg in jwk: {}", latestJwk.getAlgorithm().toString());
-            return "";
+            return Optional.of("");
         }
 
-        return jwt.serialize();
+        return Optional.of(jwt.serialize());
     }
 
     // 參考 RFC-7518，僅支援最建議的演算法 ES256 和 RS256
