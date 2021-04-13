@@ -87,6 +87,7 @@ public class ConsumerProducerTest {
                 // Not able to reply message anymore
             } catch (ProtocolIOException | QueueLifecycleException | InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         });
 
@@ -98,6 +99,7 @@ public class ConsumerProducerTest {
             Assertions.assertEquals(true,received[1]);
         } catch (InterruptedException e){
             Assertions.fail("Interrupted Exception");
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -156,6 +158,7 @@ public class ConsumerProducerTest {
                 // Not able to reply message anymore
             } catch (ProtocolIOException | QueueLifecycleException| InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         });
 

@@ -64,7 +64,6 @@ public class PublisherSubscriberTest {
                                 synchronized (receiveCount){
                                     receiveCount[0]++;
                                 }
-                                System.out.println("A:"+queueName);
                                 Assertions.assertEquals("TEST AAAA",(String)message);
                             }
                         });
@@ -80,7 +79,6 @@ public class PublisherSubscriberTest {
                                 synchronized (receiveCount){
                                     receiveCount[1]++;
                                 }
-                                System.out.println("B:"+queueName);
                                 Assertions.assertEquals("TEST BBBB",(String)message);
                             }
                         });
@@ -91,12 +89,15 @@ public class PublisherSubscriberTest {
                     subscriber.unsubscribe("userAuthed", "userAuthedListener1");
                     subscriber.unsubscribe("userAuthed", "userAuthedListener3");
 
-                    subscriber.removeCallback(tags[0].get());
-                    subscriber.removeCallback(tags[2].get());
+
+                    subscriber.removeCallback(tags[0].orElse(""));
+                    subscriber.removeCallback(tags[2].orElse(""));
+
 
                     // Not able to reply message anymore
                 } catch (ProtocolIOException | QueueLifecycleException | InterruptedException e) {
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }});
 
@@ -118,6 +119,7 @@ public class PublisherSubscriberTest {
                         // Not able to reply message anymore
                     } catch (QueueLifecycleException | ProtocolIOException | InterruptedException e) {
                         e.printStackTrace();
+                        Thread.currentThread().interrupt();
                     }
                 }
             });
@@ -131,6 +133,7 @@ public class PublisherSubscriberTest {
 
         } catch(QueueLifecycleException | InterruptedException e){
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }

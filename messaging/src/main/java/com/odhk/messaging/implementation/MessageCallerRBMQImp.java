@@ -29,7 +29,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
 
         try {
             AtomicReference<Object> replyMessage = new AtomicReference<>();
-            boolean receiveFlag = false;
+            final boolean[] receiveFlag = {false};
 
             String replyQueueName = channel.queueDeclare().getQueue();
             final String corrId = UUID.randomUUID().toString();
@@ -51,6 +51,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                     }
                     finally {
                         getChannel().basicAck(envelope.getDeliveryTag(), false);
+                        receiveFlag[0] = true;
                     }
                 }
                 @Override
@@ -65,17 +66,17 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
             long limit = System.currentTimeMillis() + timeout;
             while( timeout == 0 || System.currentTimeMillis() < limit){
 
-                if(receiveFlag){
+                if(receiveFlag[0]){
                     this.channel.basicCancel(cTag);
                     return Optional.ofNullable(replyMessage.get());
                 }
-                Thread.sleep(300);
+                this.wait(300);
 
             }
             this.channel.basicCancel(cTag);
             return Optional.ofNullable(replyMessage.get());
         } catch(IOException | InterruptedException e){
-            Thread.interrupted();
+            Thread.currentThread().interrupt();
             throw new ProtocolIOException(e.getMessage());
         }
     }

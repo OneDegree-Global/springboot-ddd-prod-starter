@@ -65,6 +65,7 @@ public class CallerCalleeTest {
                     callee.removeCallback(tagA.get());
                     // functionA Not able to reply message anymore
                 } catch (QueueLifecycleException | InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
             });
@@ -98,6 +99,7 @@ public class CallerCalleeTest {
 
                 } catch (QueueLifecycleException | ProtocolIOException| InterruptedException e) {
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             });
 
@@ -106,6 +108,7 @@ public class CallerCalleeTest {
             Thread.sleep(6000);
         }catch ( QueueLifecycleException | InterruptedException e){
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
     }
