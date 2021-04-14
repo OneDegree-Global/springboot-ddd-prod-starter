@@ -1,0 +1,6 @@
+projectKey=springboot-ddd-prod-starter:feature_domain_auth
+serverUrl=http://sonar.onedegree.hk
+serverVersion=7.9.5.38598
+dashboardUrl=http://sonar.onedegree.hk/dashboard?id=springboot-ddd-prod-starter%3Afeature_domain_auth
+ceTaskId=AXjO_0uk6YQaf7aQiJnu
+ceTaskUrl=http://sonar.onedegree.hk/api/ce/task?id=AXjO_0uk6YQaf7aQiJnu

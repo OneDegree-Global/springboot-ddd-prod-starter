@@ -16,25 +16,13 @@ import java.util.Map;
 @ControllerAdvice
 public class ErrorResolver {
     @ExceptionHandler(value = CreateUserFailsException.class)
-    public ResponseEntity<Object> exception(CreateUserFailsException e) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", 1);
-        body.put("timestamp", ZonedDateTime.now(ZoneId.of("UTC")));
-        body.put("message", e.getMessage());
-        body.put("error", ErrorCode.CREATE_USER_FAILS);
-
+    public ResponseEntity<Object> createUserFailsException(CreateUserFailsException e) {
         return ResponseUtils.wrapException(e, ErrorCode.CREATE_USER_FAILS, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = UnAuthorizeException.class)
-    public ResponseEntity<Object> tttexception(UnAuthorizeException e) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", 1);
-        body.put("timestamp", ZonedDateTime.now(ZoneId.of("UTC")));
-        body.put("message", e.getMessage());
-        body.put("error", ErrorCode.CREATE_USER_FAILS);
-
-        return ResponseUtils.wrapException(e, ErrorCode.CREATE_USER_FAILS, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> unAuthorizeException(UnAuthorizeException e) {
+        return ResponseUtils.wrapException(e, ErrorCode.AUTH_FAILS, HttpStatus.FORBIDDEN);
     }
 
 }
