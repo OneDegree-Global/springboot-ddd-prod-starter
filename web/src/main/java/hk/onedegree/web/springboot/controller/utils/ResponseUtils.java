@@ -1,6 +1,5 @@
 package hk.onedegree.web.springboot.controller.utils;
 
-import hk.onedegree.domain.auth.aggregates.user.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

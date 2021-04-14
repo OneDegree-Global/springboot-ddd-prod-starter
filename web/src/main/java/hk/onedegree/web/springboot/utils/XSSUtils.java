@@ -3,7 +3,6 @@ package hk.onedegree.web.springboot.utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import org.owasp.esapi.ESAPI;
 
 public class XSSUtils {
     public static String stripXSS(String value) {

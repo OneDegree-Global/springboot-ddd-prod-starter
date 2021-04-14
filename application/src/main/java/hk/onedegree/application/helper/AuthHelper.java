@@ -1,7 +1,6 @@
 package hk.onedegree.application.helper;
 
 import hk.onedegree.domain.auth.services.AuthenticationService;
-import hk.onedegree.domain.auth.services.UserAuthInfoService;
 
 import javax.inject.Inject;
 
