@@ -2,7 +2,7 @@ package com.odhk.messaging;
 
 import java.util.Optional;
 
-public interface IMessageReceiver extends IMessageQueueProxy {
+public interface IMessageReceiver  {
 
     // If queue is empty, should return null
     Optional<Object> tryReceive(String queueName);

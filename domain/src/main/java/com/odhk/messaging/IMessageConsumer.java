@@ -2,7 +2,7 @@ package com.odhk.messaging;
 
 import java.util.Optional;
 
-public interface IMessageConsumer extends IMessageQueueProxy {
+public interface IMessageConsumer  {
 
     // Non-blocking callback, should provide identifier for callback
     Optional<String> consume(String queueName, IMessageCallback callback);

@@ -4,7 +4,7 @@ import com.odhk.messaging.exceptions.ProtocolIOException;
 
 import java.util.Optional;
 
-public interface IMessageCaller extends IMessageQueueProxy {
+public interface IMessageCaller {
 
     // Used as RPC
     Optional<Object> sendAndGetReply(String queueName, byte[] message, int timeout) throws ProtocolIOException;
