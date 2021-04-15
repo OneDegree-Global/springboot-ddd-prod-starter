@@ -1,12 +1,13 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class ConnectionFactory {
+public class ChannelFactory {
 
     // TODO: Use DI to inject MQ Config
     protected static String userName = "admin";
@@ -14,17 +15,18 @@ public class ConnectionFactory {
     protected static String host = "127.0.0.1";
     protected static int port = 5672;
 
-    private static ConnectionFactory instance;
+    private static ChannelFactory instance;
     private Connection connection;
+    private ThreadLocal<Channel> threadLocalChannel;
 
-    public synchronized static ConnectionFactory createInstance() throws IOException, TimeoutException{
+    public synchronized static ChannelFactory createInstance() throws IOException, TimeoutException{
         if( instance == null){
-            instance = new ConnectionFactory();
+            instance = new ChannelFactory();
         }
         return instance;
     }
 
-    public static ConnectionFactory getInstance() throws IOException, TimeoutException{
+    public static ChannelFactory getInstance() throws IOException, TimeoutException{
         if( instance == null){
             instance = createInstance();
         }
@@ -35,8 +37,17 @@ public class ConnectionFactory {
         return this.connection;
     }
 
+    public Channel getChannel() throws IOException {
+        Channel c = threadLocalChannel.get();
+        if (c == null) {
+            c = connection.createChannel();
+            threadLocalChannel.set(c);
+            c = threadLocalChannel.get();
+        }
+        return c;
+    }
 
-    private ConnectionFactory() throws IOException, TimeoutException {
+    private ChannelFactory() throws IOException, TimeoutException {
         init();
     }
 
@@ -47,6 +58,7 @@ public class ConnectionFactory {
         factory.setHost(host);
         factory.setPort(port);
         this.connection = factory.newConnection();
+        this.threadLocalChannel = new ThreadLocal<>();
 
     }
 }

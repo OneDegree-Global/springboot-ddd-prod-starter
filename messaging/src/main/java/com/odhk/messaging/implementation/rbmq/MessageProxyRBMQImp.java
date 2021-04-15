@@ -1,8 +1,7 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.IMessageQueueProxy;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,19 +15,16 @@ import com.odhk.messaging.exceptions.QueueLifecycleException;
 
 public class MessageProxyRBMQImp implements IMessageQueueProxy {
 
-    private  Connection connection;
-    protected Channel channel;
-    protected CopyOnWriteArrayList<String> queueNames = new CopyOnWriteArrayList<>();
-    protected CopyOnWriteArrayList<String> exchangeNames = new CopyOnWriteArrayList<>();
+    private Channel channel;
+    private CopyOnWriteArrayList<String> queueNames = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<String> exchangeNames = new CopyOnWriteArrayList<>();
     private static Logger logger = LoggerFactory.getLogger(MessageProxyRBMQImp.class);
 
     public MessageProxyRBMQImp() throws QueueLifecycleException {
         try {
-            ConnectionFactory connectionPool = ConnectionFactory.getInstance();
-            this.connection = connectionPool.getConnection();
-            this.channel = this.connection.createChannel();
-        } catch (IOException | TimeoutException e){
-            throw new QueueLifecycleException(e.getMessage());
+            this.channel = ChannelFactory.getInstance().getChannel();
+        } catch( IOException | TimeoutException e){
+            throw new QueueLifecycleException(e.toString());
         }
     }
 
@@ -38,25 +34,10 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
             this.channel.queueDeclare(name, false, false, false, null);
         } catch(IOException  e){
             logger.error("create queue error: "+e);
-            throw new QueueLifecycleException(e.getMessage());
+            throw new QueueLifecycleException(e.toString());
         }
         this.queueNames.add(name);
     }
-
-    //    @Override
-    //    // if parameter is not supported in this MQ, should set in queueConfig
-    //    public Optional<QueueConfig> createQueue(String name, boolean durable, boolean autoACK, int prefetchCount) {
-    //        try {
-    //            this.channel.basicQos(prefetchCount);
-    //            this.channel.queueDeclare(name, durable, false, false, null);
-    //        } catch(IOException e) {
-    //            // TODO: Log the error
-    //            return;
-    //        }
-    //        QueueConfig config = new QueueConfig(name, durable,autoACK, prefetchCount);
-    //        this.configs.add(config);
-    //        return Optional.of(config);
-    //    }
 
 
     @Override
@@ -65,7 +46,7 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
             this.channel.queueDelete(name);
         } catch(IOException  e){
             logger.error("delete queue error:"+e);
-            throw new QueueLifecycleException(e.getMessage());
+            throw new QueueLifecycleException(e.toString());
         }
     }
 
@@ -75,7 +56,7 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
             this.channel.queuePurge(name);
         } catch(IOException  e){
             logger.error("clean queue error:"+e);
-            throw new QueueLifecycleException(e.getMessage());
+            throw new QueueLifecycleException(e.toString());
         }
     }
 
@@ -85,7 +66,7 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
            this.channel.exchangeDeclare(name, "fanout");
         } catch(IOException  e){
             logger.error("create exchange error:"+name);
-            throw new QueueLifecycleException(e.getMessage());
+            throw new QueueLifecycleException(e.toString());
         }
         this.exchangeNames.add(name);
     }
@@ -96,7 +77,7 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
             this.channel.exchangeDelete(name);
         } catch(IOException e){
             logger.error("delete exchange error:"+e);
-            throw new QueueLifecycleException(e.getMessage());
+            throw new QueueLifecycleException(e.toString());
         }
     }
 
@@ -112,18 +93,4 @@ public class MessageProxyRBMQImp implements IMessageQueueProxy {
         return exchangeList;
     }
 
-    protected byte[] EncodeObject(Object obj) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
-        out.writeObject(obj);
-        return bos.toByteArray();
-    }
-
-
-    protected Object DecodeObject(byte[] bytes) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        // TODO: until message objects have been defined, we cannot create white list
-        ObjectInputStream in = new ObjectInputStream(bis);
-        return in.readObject();
-    }
 }

@@ -1,26 +1,36 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCaller;
+import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessageCaller {
+
+public class MessageCallerRBMQImp implements IMessageCaller {
 
     private static Logger logger = LoggerFactory.getLogger(MessageCallerRBMQImp.class);
+    private Channel channel;
+    Clock clock = Clock.systemUTC();
 
     public MessageCallerRBMQImp() throws QueueLifecycleException {
-        super();
+        try {
+            this.channel = ChannelFactory.getInstance().getChannel();
+        } catch( IOException | TimeoutException e){
+            throw new QueueLifecycleException(e.toString());
+        }
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, byte[] message, int timeout) throws ProtocolIOException{
+    public Optional<Object> sendAndGetReply(String queueName, byte[] message, int timeout) throws ProtocolIOException{
         if(timeout<0)
             throw new IllegalArgumentException("timeout should not less than 0");
         String cTag = null;
@@ -36,6 +46,8 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                     .correlationId(corrId)
                     .replyTo(replyQueueName)
                     .build();
+
+            this.channel.queueDeclare(queueName,false,false,false,null);
             this.channel.basicPublish("", queueName, props, message);
 
             Consumer consumer = new DefaultConsumer(this.channel) {
@@ -43,7 +55,7 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                 public void handleDelivery(String consumerTag, Envelope envelope,
                                            AMQP.BasicProperties properties, byte[] body) throws IOException {
                     try {
-                        replyMessage.set(DecodeObject(body));
+                        replyMessage.set(ObjectByteConverter.decodeObject(body));
                     } catch(IOException | ClassNotFoundException e) {
                         logger.error("Decode byte message error: "+ e);
                     }
@@ -54,45 +66,44 @@ public class MessageCallerRBMQImp extends MessageProxyRBMQImp implements IMessag
                 }
             };
 
-
             cTag = this.channel.basicConsume(replyQueueName,  consumer);
 
-
-            long limit = System.currentTimeMillis() + timeout;
-            while( timeout == 0 || System.currentTimeMillis() < limit){
-
-                if(receiveFlag[0]){
+            long limit = clock.instant().toEpochMilli() + timeout;
+            while( timeout == 0 || clock.instant().toEpochMilli() < limit){
+                if(receiveFlag[0]) {
                     this.channel.basicCancel(cTag);
                     return Optional.ofNullable(replyMessage.get());
                 }
-                this.wait(300);
+
+                Thread.sleep(300);
 
             }
+
             this.channel.basicCancel(cTag);
             return Optional.ofNullable(replyMessage.get());
         } catch(IOException | InterruptedException e){
             Thread.currentThread().interrupt();
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, String text, int timeout) throws ProtocolIOException {
+    public Optional<Object> sendAndGetReply(String queueName, String text, int timeout) throws ProtocolIOException {
         try {
-            return sendAndGetReply(queueName, EncodeObject(text) , timeout);
+            return sendAndGetReply(queueName, ObjectByteConverter.encodeObject(text) , timeout);
         } catch (IOException | ProtocolIOException e) {
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
     }
 
     @Override
-    public synchronized Optional<Object> sendAndGetReply(String queueName, Object message, int timeout) throws ProtocolIOException {
+    public Optional<Object> sendAndGetReply(String queueName, Object message, int timeout) throws ProtocolIOException {
         byte[] bytes;
         try {
-            bytes = EncodeObject(message);
+            bytes = ObjectByteConverter.encodeObject(message);
             return sendAndGetReply(queueName, bytes, timeout);
         } catch(IOException | ProtocolIOException e) {
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
 
     }

@@ -1,7 +1,9 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 import java.io.*;
+import java.time.Clock;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
@@ -11,13 +13,20 @@ import org.slf4j.LoggerFactory;
 import com.odhk.messaging.*;
 import com.rabbitmq.client.*;
 
+import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 
-public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMessageConsumer, IMessageReceiver {
+public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiver {
 
     private static Logger logger = LoggerFactory.getLogger(MessageConsumerRBMQImp.class);
+    private Channel channel;
+    Clock clock = Clock.systemUTC();
 
     public MessageConsumerRBMQImp() throws ProtocolIOException, QueueLifecycleException {
-        super();
+        try {
+            this.channel = ChannelFactory.getInstance().getChannel();
+        } catch( IOException | TimeoutException e){
+            throw new QueueLifecycleException(e.toString());
+        }
     }
 
     @Override
@@ -29,13 +38,12 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body) throws IOException {
                 try {
-                    callback.onDelivered(DecodeObject(body));
+                    callback.onDelivered(ObjectByteConverter.decodeObject(body));
                 } catch(IOException | ClassNotFoundException e) {
                     logger.error("Decode byte message body error:"+e);
                 }
                 finally {
                     getChannel().basicAck(envelope.getDeliveryTag(), false);
-                    // log.info("Consumer1 - Ack ok");
                 }
             }
             @Override
@@ -45,6 +53,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         };
 
         try {
+            this.channel.queueDeclare(queueName,false,false,false,null);
             tag = this.channel.basicConsume( queueName, false, consumer);
         } catch( IOException e){
             logger.error("channel consume error:"+e);
@@ -70,7 +79,7 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
                         getChannel().basicReject(envelope.getDeliveryTag(), true);
                         return;
                     }
-                    callback.onDelivered(DecodeObject(body));
+                    callback.onDelivered(ObjectByteConverter.decodeObject(body));
                     getChannel().basicCancel(consumerTag);
                 } catch(IOException | ClassNotFoundException e) {
                     logger.error("Decode byte message body error:"+e);
@@ -89,8 +98,8 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         };
 
         try {
+            this.channel.queueDeclare(queueName,false,false,false,null);
             tag = this.channel.basicConsume( queueName, false, consumer);
-
         } catch( IOException e){
             logger.error("channel consume error:"+e);
             return Optional.empty();
@@ -103,11 +112,12 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         GetResponse response;
         Object message;
         try {
+            this.channel.queueDeclare(queueName,false,false,false,null);
             response = this.channel.basicGet( queueName, true);
             if(response == null){
                 return Optional.empty();
             }
-            message = DecodeObject((response.getBody()));
+            message = ObjectByteConverter.decodeObject((response.getBody()));
         } catch(IOException | ClassNotFoundException e) {
             logger.error("Decode byte message body error:"+e);
             return Optional.empty();
@@ -122,14 +132,15 @@ public class MessageConsumerRBMQImp extends MessageProxyRBMQImp implements IMess
         AtomicReference<Object> message = new AtomicReference<>(null);
 
         try {
-            long limit = System.currentTimeMillis() + timeout;
-            while( timeout == 0  || System.currentTimeMillis() < limit){
-                GetResponse response = this.channel.basicGet(queueName, true);
+            long limit = clock.instant().toEpochMilli() + timeout;
+            while( timeout == 0  || clock.instant().toEpochMilli() < limit){
+                this.channel.queueDeclare(queueName,false,false,false,null);
+                GetResponse response = this.channel.basicGet(queueName, false);
                 if(response == null || response.getMessageCount() <= 0){
-                    Thread.sleep(1000);
+                    Thread.sleep(300);
                     continue;
                 }
-                message.set(DecodeObject(response.getBody()));
+                message.set(ObjectByteConverter.decodeObject(response.getBody()));
                 break;
             }
         }catch(IOException | ClassNotFoundException | InterruptedException e) {

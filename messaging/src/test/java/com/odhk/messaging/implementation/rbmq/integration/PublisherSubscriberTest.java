@@ -1,48 +1,53 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq.integration;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessagePublisher;
 import com.odhk.messaging.IMessageSubscriber;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessagePublisherRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessageSubscriberRBMQImp;
+import org.junit.jupiter.api.*;
 
 import java.util.Optional;
 
 public class PublisherSubscriberTest {
 
-    @Test
-    public void exchangeLifecycle() {
-        try {
-            MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-            proxy.createTopic("userAuthed");
-            proxy.createTopic("mailSent");
+    static MessageProxyRBMQImp proxy;
 
-            proxy.createQueue("userAuthedListener");
-            proxy.createQueue("mailSentListener");
-
-            Assertions.assertEquals(2, proxy.getExchangeList().size());
-        } catch (QueueLifecycleException e) {
-            Assertions.fail("Create exchange Fail");
+    @BeforeEach
+    public void cleanQueue() throws QueueLifecycleException {
+        for (int i = 1; i <= 3; i++) {
+            proxy.cleanQueue("userAuthedListener"+i);
+            proxy.cleanQueue("mailSentListener"+i);
         }
     }
+
+    @BeforeAll
+    static public void createQueue() throws Exception{
+        proxy = new MessageProxyRBMQImp();
+        proxy.createTopic("userAuthed");
+        proxy.createTopic("mailSent");
+        for(int i=1; i<=3;i++) {
+            proxy.createQueue("userAuthedListener"+i);
+            proxy.createQueue("mailSentListener"+i);
+        }
+    }
+
+    @AfterAll
+    static public void deleteQueue() throws Exception{
+        for(int i=1; i<=3;i++) {
+            proxy.deleteQueue("userAuthedListener"+i);
+            proxy.deleteQueue("mailSentListener"+i);
+        }
+    }
+
 
     @Test
     public void basicPublishSubscribe() {
         try {
             final int[] receiveCount = {0,0};
-            MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-            proxy.createTopic("userAuthed");
-
-            for (int i = 1; i <= 3; i++) {
-                proxy.createQueue("userAuthedListener" + i);
-                proxy.cleanQueue("userAuthedListener"+i);
-
-                proxy.createQueue("mailSentListener" + i);
-                proxy.cleanQueue("mailSentListener"+i);
-
-            }
 
 
             Thread subscriberThread = new Thread( new Runnable(){
@@ -128,7 +133,7 @@ public class PublisherSubscriberTest {
             Assertions.assertEquals(4,receiveCount[0]);
             Assertions.assertEquals(3,receiveCount[1]);
 
-        } catch(QueueLifecycleException | InterruptedException e){
+        } catch(InterruptedException e){
             e.printStackTrace();
             Thread.currentThread().interrupt();
         }

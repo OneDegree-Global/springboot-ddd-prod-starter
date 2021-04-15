@@ -1,30 +1,37 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq.integration;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessageCallee;
 import com.odhk.messaging.IMessageCaller;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.odhk.messaging.implementation.rbmq.MessageCalleeRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessageCallerRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
+import org.junit.jupiter.api.*;
 
 import java.util.Optional;
 
 public class CallerCalleeTest {
 
-    @Test
-    public void queueLifecycle(){
-        try {
-            MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-            proxy.deleteQueue("functionA");
-            proxy.createQueue("functionA");
+    static MessageProxyRBMQImp proxy;
+    @BeforeEach
+    public void cleanQueue() throws QueueLifecycleException {
+        proxy.cleanQueue("functionA");
+        proxy.cleanQueue("functionB");
+    }
 
-            proxy.deleteQueue("functionB");
-            proxy.createQueue("functionB");
-            Assertions.assertEquals(2, proxy.getQueueList().size() );
-        } catch(QueueLifecycleException e){
-            Assertions.fail("Create Queue Fail");
-        }
+    @BeforeAll
+    static public void createQueue() throws Exception{
+        proxy = new MessageProxyRBMQImp();
+        proxy.createQueue("functionA");
+        proxy.createQueue("functionB");
+    }
+
+    @AfterAll
+    static public void deleteQueue() throws Exception{
+        proxy.deleteQueue("functionA");
+        proxy.deleteQueue("functionB");
     }
 
     @Test
@@ -32,10 +39,7 @@ public class CallerCalleeTest {
         try {
             MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
 
-            proxy.createQueue("functionA");
             proxy.cleanQueue("functionA");
-
-            proxy.createQueue("functionB");
             proxy.cleanQueue("functionB");
 
             Thread calleeThread = new Thread(() -> {

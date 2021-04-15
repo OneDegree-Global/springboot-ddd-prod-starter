@@ -1,31 +1,42 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessageSubscriber;
+import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 
-public class MessageSubscriberRBMQImp extends MessageConsumerRBMQImp implements IMessageSubscriber {
+public class MessageSubscriberRBMQImp implements IMessageSubscriber {
 
     private static Logger logger = LoggerFactory.getLogger(MessageSubscriberRBMQImp.class);
+    private Channel channel;
+    private MessageConsumerRBMQImp consumer;
 
     public MessageSubscriberRBMQImp() throws ProtocolIOException, QueueLifecycleException {
-        super();
+        try {
+            this.channel = ChannelFactory.getInstance().getChannel();
+            this.consumer = new MessageConsumerRBMQImp();
+        } catch( IOException | TimeoutException e){
+            throw new QueueLifecycleException(e.toString());
+        }
     }
 
     @Override
     public Optional<String> subscribe(String topic, String queueName, IMessageCallback callback) {
         try {
+            this.channel.exchangeDeclare(topic,"fanout");
+            this.channel.queueDeclare(queueName,false, false, false, null);
             this.channel.queueBind(queueName, topic, "");
-            return super.consume(queueName, callback);
+            return consumer.consume(queueName, callback);
         } catch( IOException e){
-            logger.error("subscriber subscirbe message error:"+e);
+            logger.error("subscriber subscribe message error:"+e);
         }
         return Optional.empty();
     }
@@ -36,6 +47,15 @@ public class MessageSubscriberRBMQImp extends MessageConsumerRBMQImp implements 
             this.channel.queueUnbind(queueName, topic, "");
         } catch( IOException e){
             logger.error("subscriber unsubscribe error:"+e);
+        }
+    }
+
+    @Override
+    public void removeCallback(String tag) {
+        try {
+            this.channel.basicCancel(tag);
+        } catch( IOException e){
+            logger.error("channel remove consumer error:"+e);
         }
     }
 

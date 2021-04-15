@@ -1,51 +1,59 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.odhk.messaging.*;
 import com.rabbitmq.client.MessageProperties;
 
+import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 
 public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMessagePublisher{
     private static Logger logger = LoggerFactory.getLogger(MessagePublisherRBMQImp.class);
-
+    private Channel channel;
 
     public MessagePublisherRBMQImp() throws QueueLifecycleException {
-        super();
+        try {
+            this.channel = ChannelFactory.getInstance().getChannel();
+        } catch( IOException | TimeoutException e){
+            throw new QueueLifecycleException(e.toString());
+        }
     }
 
     @Override
-    public synchronized void publish(String topic, byte[] message) throws ProtocolIOException {
+    public void publish(String topic, byte[] message) throws ProtocolIOException {
         try {
+            this.channel.exchangeDeclare(topic,"fanout");
             this.channel.basicPublish(topic,"", MessageProperties.PERSISTENT_TEXT_PLAIN, message);
         } catch(IOException e){
             logger.error("Producer publish error:"+e);
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
     }
 
     @Override
-    public synchronized void publish(String topic, String text) throws ProtocolIOException {
+    public void publish(String topic, String text) throws ProtocolIOException {
         try {
-            publish(topic, EncodeObject(text));
+            publish(topic, ObjectByteConverter.encodeObject(text));
         } catch( ProtocolIOException | IOException e ){
             logger.error("Encode text message error:"+e);
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
     }
 
     @Override
-    public synchronized void publish(String topic, Object message) throws ProtocolIOException {
+    public void publish(String topic, Object message) throws ProtocolIOException {
         try {
-            byte[] bytes = EncodeObject(message);
+            byte[] bytes = ObjectByteConverter.encodeObject(message);
             publish(topic, bytes);
         } catch(ProtocolIOException | IOException e) {
             logger.error("Encode object message error:"+e);
-            throw new ProtocolIOException(e.getMessage());
+            throw new ProtocolIOException(e.toString());
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.odhk.messaging.implementation;
+package com.odhk.messaging.implementation.rbmq.integration;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
@@ -8,24 +8,35 @@ import com.odhk.messaging.IMessageProducer;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.odhk.messaging.implementation.rbmq.MessageConsumerRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessageProducerRBMQImp;
+import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+
+@ExtendWith(MockitoExtension.class)
 public class ConsumerProducerTest {
 
-    @Test
-    public void queueLifecycle(){
-        try {
-            MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-            proxy.deleteQueue("auth");
-            proxy.createQueue("auth");
+    static MessageProxyRBMQImp proxy;
+    @BeforeEach
+    public void cleanQueue() throws QueueLifecycleException {
+        proxy.cleanQueue("auth");
+        proxy.cleanQueue("email");
+    }
 
-            proxy.deleteQueue("email");
-            proxy.createQueue("email");
-            Assertions.assertEquals(2, proxy.getQueueList().size() );
-        } catch(QueueLifecycleException e){
-            Assertions.fail("Create Queue Fail");
-        }
+    @BeforeAll
+    static public void createQueue() throws Exception{
+        proxy = new MessageProxyRBMQImp();
+        proxy.createQueue("auth");
+        proxy.createQueue("email");
+    }
+
+    @AfterAll
+    static public void deleteQueue() throws Exception{
+        proxy.deleteQueue("auth");
+        proxy.deleteQueue("email");
     }
 
     @Test
@@ -34,13 +45,10 @@ public class ConsumerProducerTest {
 
         try {
             MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-            proxy.createQueue("auth");
             proxy.cleanQueue("auth");
-
-            proxy.createQueue("email");
             proxy.cleanQueue("email");
         } catch(QueueLifecycleException e){
-            Assertions.fail("Create Queue Fail");
+            Assertions.fail("Clean queue Fail");
         }
 
         Thread consumerThread = new Thread(() -> {
@@ -101,17 +109,14 @@ public class ConsumerProducerTest {
     @Test
     public void basicProduceConsume()  {
         final boolean[] received = {false, false, false};
+        String failMessage = null;
 
         try {
             MessageProxyRBMQImp proxy = new MessageProxyRBMQImp();
-
-            proxy.createQueue("auth");
             proxy.cleanQueue("auth");
-
-            proxy.createQueue("email");
             proxy.cleanQueue("email");
         } catch(QueueLifecycleException e){
-            Assertions.fail("Create Queue Fail");
+            Assertions.fail("Clean Queue Fail");
         }
 
         Thread consumerThread = new Thread(() -> {
