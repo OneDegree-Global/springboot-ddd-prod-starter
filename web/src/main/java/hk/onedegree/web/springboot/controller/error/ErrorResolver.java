@@ -1,6 +1,7 @@
 package hk.onedegree.web.springboot.controller.error;
 
 import hk.onedegree.application.exception.CreateUserFailsException;
+import hk.onedegree.application.exception.RetrieveUserInfoFailsException;
 import hk.onedegree.application.exception.UnAuthorizeException;
 import hk.onedegree.web.springboot.controller.utils.ResponseUtils;
 import org.springframework.http.HttpStatus;
@@ -19,5 +20,11 @@ public class ErrorResolver {
     public ResponseEntity<Object> unAuthorizeException(UnAuthorizeException e) {
         return ResponseUtils.wrapException(e, ErrorCode.AUTH_FAILS, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(value = RetrieveUserInfoFailsException.class)
+    public ResponseEntity<Object> retrieveUserInfoFailsException(RetrieveUserInfoFailsException e) {
+        return ResponseUtils.wrapException(e, ErrorCode.GET_INFO_FAILS, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }

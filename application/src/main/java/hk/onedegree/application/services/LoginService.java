@@ -1,6 +1,7 @@
 package hk.onedegree.application.services;
 
 import hk.onedegree.domain.auth.aggregates.user.User;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 
@@ -14,7 +15,7 @@ public class LoginService {
     @Inject
     TokenService tokenService;
 
-    public Optional<String> getLoginToken(String email, String password) {
+    public Optional<String> getLoginToken(String email, String password) throws RepositoryOperatorException {
         Optional<User> result = this.authenticationService.authenticate(email, password);
         return this.tokenService.issueToken(result);
     }

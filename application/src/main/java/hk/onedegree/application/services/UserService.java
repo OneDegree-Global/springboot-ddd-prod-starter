@@ -2,10 +2,12 @@ package hk.onedegree.application.services;
 
 import hk.onedegree.application.aspect.annotations.Authorize;
 import hk.onedegree.application.exception.CreateUserFailsException;
+import hk.onedegree.application.exception.RetrieveUserInfoFailsException;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.DuplicatedEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +24,20 @@ public class UserService {
 
         try {
             return this.userAuthInfoService.createUser(email, password);
-        } catch (DuplicatedEmailException | InValidEmailException | InValidPasswordException e) {
+        } catch (DuplicatedEmailException | InValidEmailException | InValidPasswordException | RepositoryOperatorException e) {
             logger.error("Create user fails: {}", e.getMessage());
             throw new CreateUserFailsException(e.getMessage());
         }
     }
 
     @Authorize
-    public Optional<User> getUser(String token, String id){
-        return this.userAuthInfoService.getUserById(id);
+    public Optional<User> getUser(String token, String id) throws RetrieveUserInfoFailsException {
+
+        try {
+            return this.userAuthInfoService.getUserById(id);
+        } catch (RepositoryOperatorException e) {
+            logger.error("Get user fails: {}", e.getMessage());
+            throw new RetrieveUserInfoFailsException(e.getMessage());
+        }
     }
 }
