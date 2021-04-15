@@ -77,7 +77,7 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
     public String[] getParameterValues(String parameter) {
         String[] values = super.getParameterValues(parameter);
         if (values == null) {
-            return null;
+            return values;
         }
         int count = values.length;
         String[] encodedValues = new String[count];
