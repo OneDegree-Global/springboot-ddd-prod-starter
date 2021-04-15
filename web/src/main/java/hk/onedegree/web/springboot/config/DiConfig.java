@@ -10,7 +10,7 @@ import hk.onedegree.application.services.UserService;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
-import hk.onedegree.persistence.MemUserRepository;
+import hk.onedegree.persistence.mem.MemUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

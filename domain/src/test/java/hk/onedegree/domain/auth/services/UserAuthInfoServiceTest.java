@@ -4,6 +4,7 @@ import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.DuplicatedEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ public class UserAuthInfoServiceTest {
     }
 
     @Test
-    public void createUser() throws InValidPasswordException, InValidEmailException, DuplicatedEmailException {
+    public void createUser() throws InValidPasswordException, InValidEmailException, DuplicatedEmailException, RepositoryOperatorException {
         String email ="whatever@whatever.com";
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
@@ -46,7 +47,7 @@ public class UserAuthInfoServiceTest {
     }
 
     @Test
-    public void createUser_EamilExist_ThrowsDuplicatedEmailException(@Mock User mockUser){
+    public void createUser_EamilExist_ThrowsDuplicatedEmailException(@Mock User mockUser) throws RepositoryOperatorException {
         String email ="whatever@whatever.com";
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.of(mockUser));
@@ -59,7 +60,7 @@ public class UserAuthInfoServiceTest {
     }
 
     @Test
-    public void createUser_InvalidEmail_ThrowsInValidEmailException(@Mock User mockUser){
+    public void createUser_InvalidEmail_ThrowsInValidEmailException(@Mock User mockUser) throws RepositoryOperatorException {
         String email ="whatever";
         String password = "Abc1234567";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
@@ -71,7 +72,7 @@ public class UserAuthInfoServiceTest {
     }
 
     @Test
-    public void createUser_FailSetPassword_ThrowsInValidPasswordException(@Mock User mockUser) throws InValidPasswordException, InValidEmailException, DuplicatedEmailException {
+    public void createUser_FailSetPassword_ThrowsInValidPasswordException(@Mock User mockUser) throws InValidPasswordException, InValidEmailException, DuplicatedEmailException, RepositoryOperatorException {
         String email ="whatever@whatever.com";
         String password = "invalidPassword";
         when(this.mockUserRepository.findByEmail(eq(email))).thenReturn(Optional.empty());

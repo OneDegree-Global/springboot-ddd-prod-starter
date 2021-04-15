@@ -1,4 +1,4 @@
-package hk.onedegree.persistence;
+package hk.onedegree.persistence.mem;
 
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.repository.UserRepository;
