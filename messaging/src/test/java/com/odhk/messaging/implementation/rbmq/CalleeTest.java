@@ -5,19 +5,24 @@ import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
-import com.rabbitmq.client.MessageProperties;
 import org.junit.jupiter.api.*;
-import org.mockito.Spy;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.Clock;
 import java.util.UUID;
 
 import static org.mockito.Mockito.spy;
 
+@Testcontainers
 public class CalleeTest {
 
     MessageCalleeRBMQImp callee;
     static Channel channel;
+
+    static private GenericContainer rbmq;
 
     @BeforeEach
     public void initChannelQueue() throws Exception {
@@ -27,7 +32,13 @@ public class CalleeTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception {
+    static public void createChannel() throws Exception {
+        rbmq = RBMQTestcontainer.getContainer();
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
         channel = ChannelFactory.getInstance().getChannel();
     }
 

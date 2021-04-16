@@ -8,9 +8,8 @@ import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,9 +22,7 @@ public class ProducerTest {
     IMessageProducer producer;
     static  Channel channel;
 
-    @Container
-    static public GenericContainer rbmq = new GenericContainer(DockerImageName.parse("rabbitmq:5.11"))
-            .withExposedPorts(25672);
+    static private GenericContainer rbmq;
 
     @BeforeEach
     public void initChannelQueue() throws Exception {
@@ -34,10 +31,13 @@ public class ProducerTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception {
-        ChannelFactory.port = 25672;
-        ChannelFactory.userName = "admin";
-        ChannelFactory.password = "admin";
+    static public void createChannel() throws Exception {
+        rbmq = RBMQTestcontainer.getContainer();
+
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
         ChannelFactory.host = "127.0.0.1";
 
         channel = ChannelFactory.getInstance().getChannel();

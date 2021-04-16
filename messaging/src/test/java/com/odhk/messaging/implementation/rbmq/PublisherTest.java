@@ -1,13 +1,15 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.IMessagePublisher;
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.odhk.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
-import org.mockito.Spy;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.HashMap;
 
@@ -15,11 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+@Testcontainers
 public class PublisherTest {
 
 
     MessagePublisherRBMQImp publisher;
     static Channel channel;
+    static private GenericContainer rbmq;
 
     @BeforeEach
     public void initChannelQueue() throws Exception {
@@ -33,7 +37,14 @@ public class PublisherTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception {
+    static public void createChannel() throws Exception {
+        rbmq = RBMQTestcontainer.getContainer();
+
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
         channel = ChannelFactory.getInstance().getChannel();
         channel.exchangeDeclare("test_exchange", "fanout");
     }

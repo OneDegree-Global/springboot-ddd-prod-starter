@@ -1,20 +1,24 @@
-package com.odhk.messaging.implementation.rbmq.integration;
+package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessagePublisher;
 import com.odhk.messaging.IMessageSubscriber;
-import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessagePublisherRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessageSubscriberRBMQImp;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.Optional;
 
+@Testcontainers
 public class PublisherSubscriberTest {
 
     static MessageProxyRBMQImp proxy;
+    static private GenericContainer rbmq;
+
 
     @BeforeEach
     public void cleanQueue() throws QueueLifecycleException {
@@ -26,6 +30,13 @@ public class PublisherSubscriberTest {
 
     @BeforeAll
     static public void createQueue() throws Exception{
+        rbmq = RBMQTestcontainer.getContainer();
+
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
         proxy = new MessageProxyRBMQImp();
         proxy.createTopic("userAuthed");
         proxy.createTopic("mailSent");

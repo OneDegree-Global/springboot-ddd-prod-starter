@@ -1,19 +1,22 @@
-package com.odhk.messaging.implementation.rbmq.integration;
+package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.IMessageCallback;
 import com.odhk.messaging.IMessageCallee;
 import com.odhk.messaging.IMessageCaller;
-import com.odhk.messaging.implementation.rbmq.MessageCalleeRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessageCallerRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
+import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.odhk.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.Optional;
 
+@Testcontainers
 public class CallerCalleeTest {
 
+    static private GenericContainer rbmq;
     static MessageProxyRBMQImp proxy;
     @BeforeEach
     public void cleanQueue() throws QueueLifecycleException {
@@ -23,6 +26,12 @@ public class CallerCalleeTest {
 
     @BeforeAll
     static public void createQueue() throws Exception{
+        rbmq = RBMQTestcontainer.getContainer();
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
         proxy = new MessageProxyRBMQImp();
         proxy.createQueue("functionA");
         proxy.createQueue("functionB");

@@ -1,4 +1,4 @@
-package com.odhk.messaging.implementation.rbmq.integration;
+package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.exceptions.QueueLifecycleException;
@@ -8,18 +8,20 @@ import com.odhk.messaging.IMessageProducer;
 
 import java.util.Optional;
 
-import com.odhk.messaging.implementation.rbmq.MessageConsumerRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessageProducerRBMQImp;
-import com.odhk.messaging.implementation.rbmq.MessageProxyRBMQImp;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
-
+@Testcontainers
 @ExtendWith(MockitoExtension.class)
 public class ConsumerProducerTest {
 
     static MessageProxyRBMQImp proxy;
+    static private GenericContainer rbmq;
+
     @BeforeEach
     public void cleanQueue() throws QueueLifecycleException {
         proxy.cleanQueue("auth");
@@ -28,6 +30,13 @@ public class ConsumerProducerTest {
 
     @BeforeAll
     static public void createQueue() throws Exception{
+        rbmq = RBMQTestcontainer.getContainer();
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
+
         proxy = new MessageProxyRBMQImp();
         proxy.createQueue("auth");
         proxy.createQueue("email");

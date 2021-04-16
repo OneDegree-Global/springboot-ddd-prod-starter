@@ -56,6 +56,7 @@ public class ChannelFactory {
         factory.setUsername(userName);
         factory.setPassword(password);
         factory.setHost(host);
+
         factory.setPort(port);
         this.connection = factory.newConnection();
         this.threadLocalChannel = new ThreadLocal<>();

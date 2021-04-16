@@ -1,21 +1,24 @@
 package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.IMessageCallback;
-import com.odhk.messaging.IMessageConsumer;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.junit.jupiter.api.*;
-import org.mockito.Spy;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.Clock;
 
 import static org.mockito.Mockito.spy;
-
+@Testcontainers
 public class ConsumerTest {
 
     MessageConsumerRBMQImp consumer;
     static Channel channel;
+    static private GenericContainer rbmq;
 
     @BeforeEach
     public void initChannelQueue() throws Exception {
@@ -25,7 +28,14 @@ public class ConsumerTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception {
+    static public void createChannel() throws Exception {
+        rbmq = RBMQTestcontainer.getContainer();
+
+        Integer mappedPort = rbmq.getMappedPort(5672);
+        ChannelFactory.port = mappedPort;
+        ChannelFactory.userName = "guest";
+        ChannelFactory.password = "guest";
+        ChannelFactory.host = "127.0.0.1";
         channel = ChannelFactory.getInstance().getChannel();
     }
 
