@@ -4,14 +4,28 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
-@Entity
-@Table(name="user")
-public class UserDo {
+@Table(name="USER")
+@Entity(name = "user")
+public class UserDo implements Serializable {
+    public UserDo(){}
+
     @Id
+    @Column(name = "ID")
     private String id;
-    @Column(unique=true)
+
+    public UserDo(String id, String email, String password) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+    }
+
+
+    @Column(name = "EMAIL", unique=true)
     private String email;
+
+    @Column(name = "PASSWORD")
     private String password;
 
     public String getId() {

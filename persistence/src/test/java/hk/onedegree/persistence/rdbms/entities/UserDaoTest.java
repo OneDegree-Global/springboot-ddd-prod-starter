@@ -3,15 +3,23 @@ package hk.onedegree.persistence.rdbms.entities;
 import hk.onedegree.persistence.rdbms.dao.UserDao;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 public class UserDaoTest {
     @Test
     public void forDev(){
-        UserDao dao = new UserDao();
-        UserDo userDo = new UserDo();
-        userDo.setId("111");
-        userDo.setEmail("111@gmail.com");
-        userDo.setPassword("11111");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("dev");
+        EntityManager em = emf.createEntityManager();
 
-        dao.save(userDo);
+        UserDo userDo = new UserDo();
+        userDo.setId("33333");
+        userDo.setEmail("333@gmail.com");
+        userDo.setPassword("3333333333");
+        em.getTransaction().begin();
+        em.persist(userDo);
+        em.getTransaction().commit();
+
     }
 }
