@@ -1,8 +1,11 @@
 package com.odhk.messaging;
 
+import com.odhk.messaging.exceptions.QueueLifecycleException;
+
+import java.io.Closeable;
 import java.util.Optional;
 
-public interface IMessageReceiver  {
+public interface IMessageReceiver extends Closeable {
 
     // If queue is empty, should return null
     Optional<Object> tryReceive(String queueName);

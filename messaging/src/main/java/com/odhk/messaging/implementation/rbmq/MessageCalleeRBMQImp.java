@@ -14,7 +14,6 @@ import java.util.concurrent.TimeoutException;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 
 
-
 public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessageCallee {
 
     private static Logger logger = LoggerFactory.getLogger(MessageCalleeRBMQImp.class);
@@ -67,6 +66,15 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
             this.channel.basicCancel(tag);
         } catch( IOException e){
             logger.error("channel remove consumer error:"+e);
+        }
+    }
+
+    @Override
+    public void close() throws IOException{
+        try {
+            channel.close();
+        } catch(IOException | TimeoutException e){
+            throw new IOException(e.toString());
         }
     }
 }

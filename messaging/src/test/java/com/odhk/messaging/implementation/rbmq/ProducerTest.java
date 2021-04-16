@@ -2,25 +2,30 @@ package com.odhk.messaging.implementation.rbmq;
 
 import com.odhk.messaging.IMessageProducer;
 import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.implementation.rbmq.ChannelFactory;
-import com.odhk.messaging.implementation.rbmq.MessageProducerRBMQImp;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.odhk.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.mockito.Spy;
-
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import java.util.HashMap;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+@Testcontainers
 public class ProducerTest {
 
     IMessageProducer producer;
     static  Channel channel;
+
+    @Container
+    static public GenericContainer rbmq = new GenericContainer(DockerImageName.parse("rabbitmq:5.11"))
+            .withExposedPorts(25672);
 
     @BeforeEach
     public void initChannelQueue() throws Exception {
@@ -30,6 +35,11 @@ public class ProducerTest {
 
     @BeforeAll
     static public void createQueue() throws Exception {
+        ChannelFactory.port = 25672;
+        ChannelFactory.userName = "admin";
+        ChannelFactory.password = "admin";
+        ChannelFactory.host = "127.0.0.1";
+
         channel = ChannelFactory.getInstance().getChannel();
         channel.queueDeclare("test",false,false,false, null);
     }

@@ -108,4 +108,13 @@ public class MessageCallerRBMQImp implements IMessageCaller {
 
     }
 
+    @Override
+    public void close() throws IOException{
+        try {
+            channel.close();
+        } catch(IOException | TimeoutException e){
+            throw new IOException(e.toString());
+        }
+    }
+
 }
