@@ -56,4 +56,12 @@ public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMes
             throw new ProtocolIOException(e.toString());
         }
     }
+    @Override
+    public void close() throws IOException{
+        try {
+            channel.close();
+        } catch(IOException | TimeoutException e){
+            throw new IOException(e.toString());
+        }
+    }
 }

@@ -10,13 +10,13 @@ import java.util.concurrent.TimeoutException;
 public class ChannelFactory {
 
     // TODO: Use DI to inject MQ Config
-    protected static String userName = "admin";
-    protected static String password = "admin";
-    protected static String host = "127.0.0.1";
-    protected static int port = 5672;
+    static String userName = "admin";
+    static String password = "admin";
+    static String host = "127.0.0.1";
+    static int port = 5672;
 
-    private static ChannelFactory instance;
-    private Connection connection;
+    private static volatile ChannelFactory instance;
+    private volatile Connection connection;
     private ThreadLocal<Channel> threadLocalChannel;
 
     public synchronized static ChannelFactory createInstance() throws IOException, TimeoutException{

@@ -52,5 +52,13 @@ public class MessageProducerRBMQImp implements IMessageProducer {
             throw new ProtocolIOException(e.toString());
         }
     }
+    @Override
+    public void close() throws IOException{
+        try {
+            channel.close();
+        } catch(IOException | TimeoutException e){
+            throw new IOException(e.toString());
+        }
+    }
 
 }

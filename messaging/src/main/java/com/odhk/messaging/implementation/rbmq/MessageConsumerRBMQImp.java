@@ -160,5 +160,13 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
         }
     }
 
+    @Override
+    public void close() throws IOException{
+        try {
+            channel.close();
+        } catch(IOException | TimeoutException e){
+            throw new IOException(e.toString());
+        }
+    }
 
 }
