@@ -41,8 +41,15 @@ public class AuthenticationService {
 
     private static Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    public Optional<User> authenticate(String email, String password) throws RepositoryOperatorException {
-        Optional<User> option = userRepository.findByEmail(email);
+    public Optional<User> authenticate(String email, String password) {
+        Optional<User> option = null;
+        try {
+            option = userRepository.findByEmail(email);
+        } catch (RepositoryOperatorException e) {
+            logger.error("Get user fails, e: ", e);
+            option = Optional.empty();
+        }
+
         if(option.isEmpty() || option.get().isPasswordMatch(password)) {
             return option;
         }

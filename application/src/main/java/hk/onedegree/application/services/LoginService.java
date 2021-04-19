@@ -15,7 +15,7 @@ public class LoginService {
     @Inject
     TokenService tokenService;
 
-    public Optional<String> getLoginToken(String email, String password) throws RepositoryOperatorException {
+    public Optional<String> getLoginToken(String email, String password) {
         Optional<User> result = this.authenticationService.authenticate(email, password);
         return this.tokenService.issueToken(result);
     }
