@@ -1,4 +1,4 @@
-package com.odhk.messaging.exceptions;
+package com.cymetrics.messaging.exceptions;
 
 public class QueueLifecycleException extends Exception {
     public QueueLifecycleException(String errorMessage) {

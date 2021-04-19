@@ -1,4 +1,4 @@
-package com.odhk.messaging;
+package com.cymetrics.messaging;
 
 public interface IMessageCallback{
     default void onDelivered(Object message){};

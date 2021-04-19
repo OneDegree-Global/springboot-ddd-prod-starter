@@ -1,15 +1,13 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.IMessageCallback;
-import com.odhk.messaging.IMessageCallee;
-import com.odhk.messaging.IMessageCaller;
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.messaging.IMessageCallee;
+import com.cymetrics.messaging.IMessageCaller;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.Optional;
 

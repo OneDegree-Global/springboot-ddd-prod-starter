@@ -1,9 +1,9 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.IMessageProducer;
-import com.odhk.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.IMessageProducer;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
-import com.odhk.messaging.messageTypes.JSONMessage;
+import com.cymetrics.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;

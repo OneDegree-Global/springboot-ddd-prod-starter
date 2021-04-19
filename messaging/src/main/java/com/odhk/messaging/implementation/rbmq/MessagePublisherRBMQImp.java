@@ -3,17 +3,17 @@ package com.odhk.messaging.implementation.rbmq;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessagePublisher;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.odhk.messaging.*;
 import com.rabbitmq.client.MessageProperties;
 
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 
-public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMessagePublisher{
+public class MessagePublisherRBMQImp extends MessageProxyRBMQImp implements IMessagePublisher {
     private static Logger logger = LoggerFactory.getLogger(MessagePublisherRBMQImp.class);
     private Channel channel;
 

@@ -1,4 +1,4 @@
-package com.odhk.messaging.messageTypes;
+package com.cymetrics.messaging.messageTypes;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

@@ -1,6 +1,6 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.IMessageQueueProxy;
+import com.cymetrics.messaging.IMessageQueueProxy;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
 
 
 public class MessageProxyRBMQImp implements IMessageQueueProxy {

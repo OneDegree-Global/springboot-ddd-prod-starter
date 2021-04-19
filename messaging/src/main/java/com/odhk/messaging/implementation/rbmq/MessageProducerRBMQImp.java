@@ -3,12 +3,11 @@ package com.odhk.messaging.implementation.rbmq;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessageProducer;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.*;
-
-import com.odhk.messaging.*;
 
 public class MessageProducerRBMQImp implements IMessageProducer {
 

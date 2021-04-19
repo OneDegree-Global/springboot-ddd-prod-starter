@@ -6,11 +6,13 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.messaging.IMessageConsumer;
+import com.cymetrics.messaging.IMessageReceiver;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.odhk.messaging.*;
 import com.rabbitmq.client.*;
 
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
@@ -30,7 +32,7 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
     }
 
     @Override
-    public Optional<String> consume(String queueName,IMessageCallback callback)  {
+    public Optional<String> consume(String queueName, IMessageCallback callback)  {
         String tag;
 
         Consumer consumer = new DefaultConsumer(this.channel) {

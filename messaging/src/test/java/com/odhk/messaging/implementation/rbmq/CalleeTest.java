@@ -1,15 +1,13 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.IMessageCallback;
+import com.cymetrics.messaging.IMessageCallback;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.time.Clock;
 import java.util.UUID;

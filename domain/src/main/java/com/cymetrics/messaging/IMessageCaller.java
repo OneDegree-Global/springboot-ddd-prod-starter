@@ -1,7 +1,6 @@
-package com.odhk.messaging;
+package com.cymetrics.messaging;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
 
 import java.io.Closeable;
 import java.util.Optional;

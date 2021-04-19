@@ -1,10 +1,10 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
-import com.odhk.messaging.IMessageCallback;
-import com.odhk.messaging.IMessageConsumer;
-import com.odhk.messaging.IMessageProducer;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.messaging.IMessageConsumer;
+import com.cymetrics.messaging.IMessageProducer;
 
 import java.util.Optional;
 
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +48,7 @@ public class ConsumerProducerTest {
     }
 
     @Test
-    public void basicProduceConsumeOnce()  {
+    public void basicProduceConsumeOnce(){
         final boolean[] received = {false, false, false};
 
         try {

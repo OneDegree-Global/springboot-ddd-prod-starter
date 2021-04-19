@@ -1,8 +1,8 @@
 package com.odhk.messaging.implementation.rbmq;
 
-import com.odhk.messaging.exceptions.ProtocolIOException;
-import com.odhk.messaging.exceptions.QueueLifecycleException;
-import com.odhk.messaging.IMessageCaller;
+import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.messaging.IMessageCaller;
 import com.odhk.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
