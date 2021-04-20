@@ -4,9 +4,9 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import hk.onedegree.application.aspect.AuthorizeAspect;
-import hk.onedegree.application.helper.AuthHelper;
 import hk.onedegree.application.services.LoginService;
 import hk.onedegree.application.services.UserService;
+import hk.onedegree.domain.auth.repository.UserRepository;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
@@ -49,8 +49,7 @@ public class DiConfig {
     }
 
     @Bean
-    @Named("Memory")
-    public MemUserRepository memUserRepositoryBean(){
+    public UserRepository userRepositoryBean(){
         MemUserRepository memUserRepository  = new MemUserRepository();
         return memUserRepository;
     }
@@ -81,11 +80,5 @@ public class DiConfig {
     public AuthorizeAspect authorizeAspectBean(){
         AuthorizeAspect authorizeAspect = new AuthorizeAspect();
         return authorizeAspect;
-    }
-
-    @Bean
-    public AuthHelper authHelper(){
-        AuthHelper authHelper = new AuthHelper();
-        return authHelper;
     }
 }
