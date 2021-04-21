@@ -71,8 +71,8 @@ public class TokenServiceTest {
         String id = "whatever";
         User fakeUser = new User(id, email);
 
-        String result = this.tokenService.issueToken(Optional.of(fakeUser));
-        SignedJWT actualJwt = SignedJWT.parse(result);
+        Optional<String> result = this.tokenService.issueToken(Optional.of(fakeUser));
+        SignedJWT actualJwt = SignedJWT.parse(result.get());
 
         JWSHeader expectHeader = prepareJWSHeader(jwkSet);
         JWTClaimsSet expectClaimsSet = prepareJWTClaimsSet(jwkSet, fakeUser);
@@ -87,7 +87,6 @@ public class TokenServiceTest {
                 expectClaimsSet.toString(),
                 JSONCompareMode.STRICT);
 
-        System.out.println(result);
     }
 
     private JWTClaimsSet prepareJWTClaimsSet(JWKSet jwkSet, User user){
@@ -126,9 +125,9 @@ public class TokenServiceTest {
         String id = "whatever";
         User fakeUser = new User(id, email);
 
-        String result = this.tokenService.issueToken(Optional.of(fakeUser));
+        Optional<String> result = this.tokenService.issueToken(Optional.of(fakeUser));
 
-        Assertions.assertEquals("", result);
+        Assertions.assertEquals("", result.get());
         assertThat(appender.list)
                 .extracting(ILoggingEvent::getFormattedMessage)
                 .containsExactly("Unsupported alg in jwk: hs256");
@@ -137,8 +136,8 @@ public class TokenServiceTest {
     @Test
     public void issueToken_EmptyUser_ReturnEmptyStr() {
 
-        String result = this.tokenService.issueToken(Optional.empty());
+        Optional<String> result = this.tokenService.issueToken(Optional.empty());
 
-        Assertions.assertEquals("", result);
+        Assertions.assertEquals("", result.get());
     }
 }

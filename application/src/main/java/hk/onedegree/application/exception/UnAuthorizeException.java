@@ -1,4 +1,4 @@
-package hk.onedegree.application.aspect.exception;
+package hk.onedegree.application.exception;
 
 public class UnAuthorizeException extends Exception {
     public UnAuthorizeException(String errorMessage) {

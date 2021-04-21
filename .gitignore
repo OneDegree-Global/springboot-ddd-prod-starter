@@ -4,3 +4,4 @@ springboot-boilerplate.iml
 .DS_Store
 target/
 */target/
+.scannerwork/
