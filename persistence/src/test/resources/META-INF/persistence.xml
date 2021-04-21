@@ -12,6 +12,7 @@
             <property name="javax.persistence.jdbc.user" value="g7" />
             <property name="javax.persistence.jdbc.password" value="g7" />
             <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.connection.autocommit" value="true"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
         </properties>
     </persistence-unit>

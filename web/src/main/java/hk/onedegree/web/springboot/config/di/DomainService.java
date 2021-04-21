@@ -5,6 +5,7 @@ import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
 import hk.onedegree.persistence.mem.MemUserRepository;
+import hk.onedegree.persistence.rdbms.RdbmsUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class DomainService {
     }
 
     public enum PERSISTENCE_TYPE {
-        MEMORY,
+        MEMORY, RDBMS,
     }
 
     @Value("${server.persistence.type}")
@@ -42,6 +43,9 @@ public class DomainService {
             case MEMORY:
                 MemUserRepository memUserRepository  = new MemUserRepository();
                 return memUserRepository;
+            case RDBMS:
+                RdbmsUserRepository rdbmsUserRepository = new RdbmsUserRepository();
+                return rdbmsUserRepository;
             default:
                 logger.error("Invelid persistence type");
                 return null;
