@@ -5,11 +5,17 @@ import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
 import hk.onedegree.persistence.mem.MemUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class DomainService {
+
+    private static Logger logger = LoggerFactory.getLogger(DomainService.class);
 
     @Bean
     public AuthenticationService authenticationServiceBean(){
@@ -23,10 +29,23 @@ public class DomainService {
         return tokenService;
     }
 
+    public enum PERSISTENCE_TYPE {
+        MEMORY,
+    }
+
+    @Value("${server.persistence.type}")
+    private String persistenceType;
+
     @Bean
     public UserRepository userRepositoryBean(){
-        MemUserRepository memUserRepository  = new MemUserRepository();
-        return memUserRepository;
+        switch (PERSISTENCE_TYPE.valueOf(persistenceType.toUpperCase())) {
+            case MEMORY:
+                MemUserRepository memUserRepository  = new MemUserRepository();
+                return memUserRepository;
+            default:
+                logger.error("Invelid persistence type");
+                return null;
+        }
     }
 
     @Bean
