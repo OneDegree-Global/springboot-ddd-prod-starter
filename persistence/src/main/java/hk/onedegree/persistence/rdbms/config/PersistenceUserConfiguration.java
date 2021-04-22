@@ -1,6 +1,7 @@
 package hk.onedegree.persistence.rdbms.config;
 
 
+import com.zaxxer.hikari.HikariConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -23,13 +24,13 @@ import java.util.HashMap;
         value="server.persistence.type",
         havingValue = "rdbms",
         matchIfMissing = false)
-@PropertySource({ "classpath:persistence.properties" })
+@PropertySource({ "classpath:user-persistence.properties" })
 @EnableJpaRepositories(
         basePackages = "hk.onedegree.persistence.rdbms.dao",
         entityManagerFactoryRef = "userEntityManager",
         transactionManagerRef = "userTransactionManager"
 )
-public class PersistenceUserConfiguration {
+public class PersistenceUserConfiguration extends HikariConfig {
     @Autowired
     private Environment env;
 
@@ -46,18 +47,18 @@ public class PersistenceUserConfiguration {
         emf.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-                env.getProperty("spring.datasource.user.hibernate.hbm2ddl.auto"));
+                env.getProperty("spring.datasource.hibernate.hbm2ddl.auto"));
         properties.put("hibernate.dialect",
-                env.getProperty("spring.datasource.user.hibernate.dialect"));
+                env.getProperty("spring.datasource.hibernate.dialect"));
         properties.put("hibernate.show_sql",
-                env.getProperty("spring.datasource.user.hibernate.show_sql"));
+                env.getProperty("spring.datasource.hibernate.show_sql"));
         emf.setJpaPropertyMap(properties);
 
         return emf;
     }
 
     @Bean
-    @ConfigurationProperties(prefix="spring.datasource.user")
+    @ConfigurationProperties(prefix = "spring.datasource.hikari")
     public DataSource userDataSource() {
         return DataSourceBuilder.create().build();
     }
