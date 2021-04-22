@@ -3,8 +3,6 @@ package hk.onedegree.web.springboot.controller;
 import hk.onedegree.application.exception.CreateUserFailsException;
 import hk.onedegree.application.exception.RetrieveUserInfoFailsException;
 import hk.onedegree.application.services.UserService;
-import hk.onedegree.persistence.rdbms.dao.UserDao;
-import hk.onedegree.persistence.rdbms.entities.UserDo;
 import hk.onedegree.web.springboot.controller.error.ErrorCode;
 import hk.onedegree.web.springboot.controller.utils.ResponseUtils;
 import hk.onedegree.web.springboot.dto.User;
@@ -21,11 +19,8 @@ public class UserController {
     @Inject
     UserService userService;
 
-    @Inject
-    UserDao userDao;
 
     @PostMapping("/users")
-    @Transactional("userTransactionManager")
     public ResponseEntity newUser(@RequestBody RegisterRequest registerRequest) throws CreateUserFailsException {
         var result = this.userService.createUser(registerRequest.getEmail(), registerRequest.getPassword());
         if(result.isEmpty()) {

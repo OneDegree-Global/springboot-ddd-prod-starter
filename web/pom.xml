@@ -78,11 +78,6 @@
             <artifactId>persistence</artifactId>
             <version>${persistence.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring-boot-starter-data-jpa.version}</version>
-        </dependency>
         <!-- Gen code-->
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
