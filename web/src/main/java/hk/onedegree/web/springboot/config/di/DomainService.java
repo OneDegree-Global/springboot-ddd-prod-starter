@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainService {
 
-    private static Logger logger = LoggerFactory.getLogger(DomainService.class);
 
     @Bean
     public AuthenticationService authenticationServiceBean(){

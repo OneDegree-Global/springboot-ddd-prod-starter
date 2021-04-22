@@ -74,14 +74,4 @@ public class User {
         return email;
     }
 
-    public static void main(String []args) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        var tmp1 = "abc";
-        System.out.println(passwordEncoder.matches(tmp1,tmp1));
-        var tmp2 = passwordEncoder.encode(tmp1);
-        System.out.println(passwordEncoder.matches(tmp2,tmp2));
-        var tmp3 = passwordEncoder.encode(tmp2);
-        System.out.println(tmp3);
-    }
-
 }

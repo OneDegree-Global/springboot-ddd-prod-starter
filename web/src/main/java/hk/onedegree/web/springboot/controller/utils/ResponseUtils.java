@@ -11,6 +11,10 @@ import java.util.Map;
 public class ResponseUtils {
     private static final ZoneId zoneId = ZoneId.of("UTC");
 
+    private ResponseUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static ResponseEntity<Object> wrapException(Exception e, String errorCode, HttpStatus httpStatus){
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", ZonedDateTime.now(zoneId));
