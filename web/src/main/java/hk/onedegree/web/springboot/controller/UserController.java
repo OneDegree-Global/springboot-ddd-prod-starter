@@ -8,7 +8,6 @@ import hk.onedegree.web.springboot.controller.utils.ResponseUtils;
 import hk.onedegree.web.springboot.dto.User;
 import hk.onedegree.web.springboot.requestbody.RegisterRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;

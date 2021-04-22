@@ -1,7 +1,6 @@
 package hk.onedegree.application.services;
 
 import hk.onedegree.domain.auth.aggregates.user.User;
-import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.services.AuthenticationService;
 import hk.onedegree.domain.auth.services.TokenService;
 
