@@ -22,8 +22,8 @@ public class RdbmsUserRepository implements UserRepository  {
 
     @Override
     public Optional<User> findByEmail(String email) throws RepositoryOperatorException {
-        var optional = userDao.findByEmail(email);
-        return convertUser(optional);
+        var userdo = userDao.findFirstByEmail(email);
+        return convertUser(Optional.ofNullable(userdo));
     }
 
     @Override
@@ -55,7 +55,6 @@ public class RdbmsUserRepository implements UserRepository  {
         userDo.setEmail(user.getEmail());
         userDo.setPassword(user.getHashedPassword());
         userDo.setId(user.getId());
-
         userDao.save(userDo);
     }
 
