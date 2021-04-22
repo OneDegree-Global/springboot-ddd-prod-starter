@@ -9,8 +9,11 @@ import hk.onedegree.persistence.rdbms.RdbmsUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 @Configuration
@@ -30,26 +33,24 @@ public class DomainService {
         return tokenService;
     }
 
-    public enum PERSISTENCE_TYPE {
-        MEMORY, RDBMS,
+    @Bean
+    @ConditionalOnProperty(
+            value="server.persistence.type",
+            havingValue = "memory",
+            matchIfMissing = false)
+    public UserRepository memUserRepositoryBean (){
+        MemUserRepository memUserRepository  = new MemUserRepository();
+        return memUserRepository;
     }
 
-    @Value("${server.persistence.type}")
-    private String persistenceType;
-
     @Bean
-    public UserRepository userRepositoryBean(){
-        switch (PERSISTENCE_TYPE.valueOf(persistenceType.toUpperCase())) {
-            case MEMORY:
-                MemUserRepository memUserRepository  = new MemUserRepository();
-                return memUserRepository;
-            case RDBMS:
-                RdbmsUserRepository rdbmsUserRepository = new RdbmsUserRepository();
-                return rdbmsUserRepository;
-            default:
-                logger.error("Invelid persistence type");
-                return null;
-        }
+    @ConditionalOnProperty(
+            value="server.persistence.type",
+            havingValue = "rdbms",
+            matchIfMissing = false)
+    public UserRepository rdbmsUserRepositoryBean (){
+        RdbmsUserRepository rdbmsUserRepository = new RdbmsUserRepository();
+        return rdbmsUserRepository;
     }
 
     @Bean

@@ -2,6 +2,7 @@ package hk.onedegree.persistence.rdbms.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,10 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
+@ConditionalOnProperty(
+        value="server.persistence.type",
+        havingValue = "rdbms",
+        matchIfMissing = false)
 @PropertySource({ "classpath:persistence.properties" })
 @EnableJpaRepositories(
         basePackages = "hk.onedegree.persistence.rdbms.dao",
