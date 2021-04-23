@@ -15,6 +15,7 @@
         <module>Messaging</module>
         <module>external</module>
         <module>search</module>
+        <module>migration</module>
     </modules>
 
     <packaging>pom</packaging>
