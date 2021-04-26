@@ -1,0 +1,35 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  mysqld:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - MYSQL_ROOT_PASSWORD=ddd
+      - MYSQL_DATABASE=ddd
+      - MYSQL_USER=ddd
+      - MYSQL_PASSWORD=ddd
+    ports:
+      - "3306:3306"
+  migration:
+    image: flyway/flyway:7
+    command: -url=jdbc:mysql://mysqld:3306 -schemas=ddd -user=ddd -password=ddd -connectRetries=60 migrate
+    volumes:
+      - ./migration/sql:/flyway/sql
+    depends_on:
+      - mysqld
+  spring-boot:
+    environment:
+      - PERSISTENCE_TYPE=rdbms
+      - DATASOURCE_USER_JDBCURL=jdbc:mysql://mysqld:3306/ddd?useSSL=false&characterEncoding=utf-8
+      - DATASOURCE_USER_USERNAME=ddd
+      - DATASOURCE_USER_PASSWORD=ddd
+    depends_on:
+      - mysqld
+      - migration
+
+
+
+

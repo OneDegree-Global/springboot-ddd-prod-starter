@@ -24,7 +24,6 @@ import java.util.HashMap;
         value="server.persistence.type",
         havingValue = "rdbms",
         matchIfMissing = false)
-@PropertySource({ "classpath:user-persistence.properties" })
 @EnableJpaRepositories(
         basePackages = "com.cymetrics.persistence.rdbms.dao",
         entityManagerFactoryRef = "userEntityManager",
