@@ -33,3 +33,23 @@ infra 層，實作 domain 定義的 mq 介面，僅依賴 domain 和 mq lib。
 ## external model
 外部服務從，僅依賴 domain 和外部服務 lib。
 >>>>>>> afe817d (Init project)
+
+## quick start
+### quick start with persistence implemented with memory
+```
+docker-compose -f quickstart.yml up 
+```
+then execute the curl cmd:
+```
+curl -X POST localhost:8080/users -H 'Content-type:application/json' -d '{"email": "genchilu777@gmail.com", "password": "Abc12345"}' 
+```
+
+### quick start with persistence implemented with mysql
+```
+docker-compose -f quickstart.yml -f quickstart-rdbms.yml up
+```
+theb execute the command
+```aidl
+curl -X POST localhost:8080/users -H 'Content-type:application/json' -d '{"email": "genchilu777@gmail.com", "password": "Abc12345"}' 
+```
+And you can use mysql tool connect to `mysql://mysqld:3306/ddd` (user/pwd: ddd/ddd)。
