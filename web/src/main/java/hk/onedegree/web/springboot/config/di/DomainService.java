@@ -6,8 +6,6 @@ import hk.onedegree.domain.auth.services.TokenService;
 import hk.onedegree.domain.auth.services.UserAuthInfoService;
 import hk.onedegree.persistence.mem.MemUserRepository;
 import hk.onedegree.persistence.rdbms.RdbmsUserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
