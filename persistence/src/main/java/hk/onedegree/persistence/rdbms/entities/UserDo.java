@@ -6,13 +6,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
-@Table(name="USER")
+@Table(name="user", schema="public")
 @Entity(name = "user")
 public class UserDo implements Serializable {
     public UserDo(){}
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "id")
     private String id;
 
     public UserDo(String id, String email, String password) {
@@ -22,10 +22,10 @@ public class UserDo implements Serializable {
     }
 
 
-    @Column(name = "EMAIL", unique=true)
+    @Column(name = "email", unique=true)
     private String email;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     private String password;
 
     public String getId() {

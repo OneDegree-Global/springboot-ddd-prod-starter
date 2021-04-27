@@ -26,13 +26,6 @@ public class UserService {
     public Optional<User> createUser(String email, String password) throws CreateUserFailsException {
 
         try {
-            this.userAuthInfoService.createUser("6666666@gmail.com", password);
-        } catch (DuplicatedEmailException | InValidEmailException | InValidPasswordException | RepositoryOperatorException e) {
-            logger.error("Create user fails: {}", e.getMessage());
-            throw new CreateUserFailsException(e.getMessage());
-        }
-
-        try {
             return this.userAuthInfoService.createUser(email, password);
         } catch (DuplicatedEmailException | InValidEmailException | InValidPasswordException | RepositoryOperatorException e) {
             logger.error("Create user fails: {}", e.getMessage());

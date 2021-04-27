@@ -47,18 +47,18 @@ public class PersistenceUserConfiguration extends HikariConfig {
         emf.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-                env.getProperty("spring.datasource.hibernate.hbm2ddl.auto"));
+                env.getProperty("spring.datasource.user.hibernate.hbm2ddl.auto"));
         properties.put("hibernate.dialect",
-                env.getProperty("spring.datasource.hibernate.dialect"));
+                env.getProperty("spring.datasource.user.hibernate.dialect"));
         properties.put("hibernate.show_sql",
-                env.getProperty("spring.datasource.hibernate.show_sql"));
+                env.getProperty("spring.datasource.user.hibernate.show_sql"));
         emf.setJpaPropertyMap(properties);
 
         return emf;
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.hikari")
+    @ConfigurationProperties(prefix = "spring.datasource.user")
     public DataSource userDataSource() {
         return DataSourceBuilder.create().build();
     }

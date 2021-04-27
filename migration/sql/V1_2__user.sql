@@ -1,10 +1,9 @@
 
 
-DROP TABLE  IF EXISTS `USER`;
-
-CREATE TABLE `USER` (
-  `ID` varchar(100) NOT NULL,
-  `EMAIL` varchar(100) NOT NULL UNIQUE,
-  `PASSWORD` varchar(100) NOT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE "user"
+  (
+    id varchar(100) NOT NULL,
+    email varchar(100) NOT NULL UNIQUE,
+    password varchar(100) NOT NULL,
+    PRIMARY KEY (id)
+  );
