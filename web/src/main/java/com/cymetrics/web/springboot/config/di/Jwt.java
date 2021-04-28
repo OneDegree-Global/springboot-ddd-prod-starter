@@ -17,17 +17,16 @@ public class Jwt {
 
     @Bean
     public JWKSource jwkSourceBean() throws URISyntaxException, IOException, ParseException {
-        URL resource = getClass().getClassLoader().getResource("jwkset.json");
-        File file = new File(resource.toURI());
-        JWKSet jwkSet = JWKSet.load(file);
+
+        var resource = getClass().getClassLoader().getResourceAsStream("jwkset.json");
+        JWKSet jwkSet = JWKSet.load(resource);
         return new ImmutableJWKSet<>(jwkSet);
     }
 
     @Bean
     public JWKSet jwkSetBean() throws URISyntaxException, IOException, ParseException {
-        URL resource = getClass().getClassLoader().getResource("jwkset.json");
-        File file = new File(resource.toURI());
-        JWKSet jwkSet = JWKSet.load(file);
+        var resource = getClass().getClassLoader().getResourceAsStream("jwkset.json");
+        JWKSet jwkSet = JWKSet.load(resource);
         return jwkSet;
     }
 }
