@@ -8,6 +8,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -139,7 +140,7 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public void authenticate_Password() throws URISyntaxException, IOException, ParseException, InValidEmailException, InValidPasswordException {
+    public void authenticate_Password() throws URISyntaxException, IOException, ParseException, InValidEmailException, InValidPasswordException, RepositoryOperatorException {
         String email = "whatever@whatever.com";
         String id = "whatever";
         String pwd = "Abc1234567";
@@ -155,7 +156,7 @@ public class AuthorizationServiceTest {
     }
 
     @Test
-    public void authenticate_InCorrectPassword_ReturnEmpty() throws URISyntaxException, IOException, ParseException, InValidEmailException, InValidPasswordException {
+    public void authenticate_InCorrectPassword_ReturnEmpty() throws URISyntaxException, IOException, ParseException, InValidEmailException, InValidPasswordException, RepositoryOperatorException {
         String email = "whatever@whatever.com";
         String id = "whatever";
         String pwd = "Abc1234567";

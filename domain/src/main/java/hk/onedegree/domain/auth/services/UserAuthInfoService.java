@@ -4,6 +4,7 @@ import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.exceptions.DuplicatedEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidEmailException;
 import hk.onedegree.domain.auth.exceptions.InValidPasswordException;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class UserAuthInfoService {
 
     private static Logger logger = LoggerFactory.getLogger(UserAuthInfoService.class);
 
-    public Optional<User> createUser(String email, String password) throws DuplicatedEmailException, InValidEmailException, InValidPasswordException {
+    public Optional<User> createUser(String email, String password) throws DuplicatedEmailException, InValidEmailException, InValidPasswordException, RepositoryOperatorException {
         String id = UUID.randomUUID().toString();
         User user;
 
@@ -35,7 +36,7 @@ public class UserAuthInfoService {
         return Optional.of(user);
     }
 
-    public Optional<User> getUserById(String id) {
+    public Optional<User> getUserById(String id) throws RepositoryOperatorException {
         return this.userRepository.findById(id);
     }
 }

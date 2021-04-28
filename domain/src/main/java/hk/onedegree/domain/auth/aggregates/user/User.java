@@ -8,6 +8,7 @@ import org.passay.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class User {
 
@@ -16,6 +17,11 @@ public class User {
 
     @Getter
     private final String email;
+
+    @Getter
+    private String hashedPassword;
+
+    private Pattern BCRYPT_PATTERN = Pattern.compile("\\A\\$2(a|y|b)?\\$(\\d\\d)\\$[./0-9A-Za-z]{53}");
 
     public User(String id, String email) throws InValidEmailException {
         this.id = id;
@@ -27,8 +33,6 @@ public class User {
 
         this.email = email.toLowerCase();
     }
-
-    private String hashedPassword;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -49,6 +53,13 @@ public class User {
         }
 
         this.hashedPassword = this.passwordEncoder.encode(password);
+    }
+
+    public void setHashedPassword(String hashedPassword) throws InValidPasswordException {
+        if (!this.BCRYPT_PATTERN.matcher(hashedPassword).matches()) {
+            throw new InValidPasswordException("HashedPassword does not look like BCrypt");
+        }
+        this.hashedPassword = hashedPassword;
     }
 
     public boolean isPasswordMatch(String password) {

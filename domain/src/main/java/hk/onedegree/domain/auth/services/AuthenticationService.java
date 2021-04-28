@@ -14,6 +14,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.jwt.proc.JWTClaimsSetVerifier;
 import hk.onedegree.domain.auth.aggregates.user.User;
 import hk.onedegree.domain.auth.constant.Constant;
+import hk.onedegree.domain.auth.exceptions.RepositoryOperatorException;
 import hk.onedegree.domain.auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,14 @@ public class AuthenticationService {
     private static Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public Optional<User> authenticate(String email, String password) {
-        Optional<User> option = userRepository.findByEmail(email);
+        Optional<User> option = null;
+        try {
+            option = userRepository.findByEmail(email);
+        } catch (RepositoryOperatorException e) {
+            logger.error("Get user fails, e: ", e);
+            option = Optional.empty();
+        }
+
         if(option.isEmpty() || option.get().isPasswordMatch(password)) {
             return option;
         }
@@ -69,7 +77,7 @@ public class AuthenticationService {
         try {
             JWTClaimsSet claimsSet = jwtProcessor.process(signedJWT, null);
             return this.userRepository.findById(claimsSet.getSubject());
-        } catch (BadJOSEException | JOSEException e) {
+        } catch (BadJOSEException | JOSEException | RepositoryOperatorException e) {
             logger.error("Get user from claim set in jwt fails, e: ", e);
             return Optional.empty();
         }

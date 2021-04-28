@@ -1,6 +1,7 @@
 package hk.onedegree.web.springboot.controller;
 
 import hk.onedegree.application.exception.CreateUserFailsException;
+import hk.onedegree.application.exception.RetrieveUserInfoFailsException;
 import hk.onedegree.application.services.UserService;
 import hk.onedegree.web.springboot.controller.error.ErrorCode;
 import hk.onedegree.web.springboot.controller.utils.ResponseUtils;
@@ -17,6 +18,7 @@ public class UserController {
     @Inject
     UserService userService;
 
+
     @PostMapping("/users")
     public ResponseEntity newUser(@RequestBody RegisterRequest registerRequest) throws CreateUserFailsException {
         var result = this.userService.createUser(registerRequest.getEmail(), registerRequest.getPassword());
@@ -29,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity getUser(@RequestHeader("Authorization") String bearer, @PathVariable("id") String id) throws CreateUserFailsException {
+    public ResponseEntity getUser(@RequestHeader("Authorization") String bearer, @PathVariable("id") String id) throws CreateUserFailsException, RetrieveUserInfoFailsException {
         var token = bearer.split("Bearer ")[1];
         var result = this.userService.getUser(token, id);
         if(result.isEmpty()) {
