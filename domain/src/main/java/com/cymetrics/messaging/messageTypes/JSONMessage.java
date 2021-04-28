@@ -1,11 +1,8 @@
 package com.cymetrics.messaging.messageTypes;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Map;
-
 import org.json.JSONObject;
+
+import java.io.Serializable;
 
 public class JSONMessage implements Serializable{
     public String value;
