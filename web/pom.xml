@@ -113,7 +113,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>
-                                hk.onedegree.web.springboot.Application
+                                com.cymetrics.web.springboot.Application
                             </mainClass>
                         </manifest>
                     </archive>

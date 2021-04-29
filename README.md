@@ -35,21 +35,31 @@ infra 層，實作 domain 定義的 mq 介面，僅依賴 domain 和 mq lib。
 >>>>>>> afe817d (Init project)
 
 ## quick start
-### quick start with persistence implemented with memory
+Make sure your machine had installed Docker & Docker Compose before quick start.  
+
+Run the command would start a web application with user data stored in memory.
 ```
 docker-compose -f quickstart.yml up 
 ```
-then execute the curl cmd:
+
+Or if you prefer to use posgresql as database to storing user data, run the command:
 ```
-curl -X POST localhost:8080/users -H 'Content-type:application/json' -d '{"email": "genchilu777@gmail.com", "password": "Abc12345"}' 
+docker-compose -f quickstart.yml -f quickstart-postgresql.yml up
+```
+Then you can connect to postgresql with the connection string `postgresql://ddd:ddd@localhost:5432/ddd`  
+
+Run the command to create user:
+```
+curl -X POST localhost:8080/users -H 'Content-type:application/json' -d '{"email": "whatever@gmail.com", "password": "Abc12345"}' 
 ```
 
-### quick start with persistence implemented with mysql
+Run the command to login:
 ```
-docker-compose -f quickstart.yml -f quickstart-rdbms.yml up
+curl -X POST localhost:8080/login -H 'Content-type:application/json' -d '{"email": "whatever@gmail.com", "password": "Abc12345"}'
 ```
-theb execute the command
-```aidl
-curl -X POST localhost:8080/users -H 'Content-type:application/json' -d '{"email": "genchilu777@gmail.com", "password": "Abc12345"}' 
+Then you would see a response with token like: `eyJraWQiOiIxIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJzdWIiOiI2MTA2ZTAyZC0wMTRhLTQ5M2UtYjY0Yi00YzM3MDdlM2Y3YzUiLCJpc3MiOiJjeW1ldHJpY3MiLCJleHAiOjE2MTgzODQ3OTMsImlhdCI6MTYxODI5ODM5M30.d8xSB40hC1-ShtQbM1l8PtzRXBZwBCmNj3PgqVdFWh9ouNd-XSFUuPFMO1sGA9hh1Hh-7O-6oYrtdKmxBtD08A`  
+
+Run the command with token to get user info:
 ```
-And you can use mysql tool connect to `mysql://mysqld:3306/ddd` (user/pwd: ddd/ddd)。
+curl -H "Authorization: Bearer ${token}"  localhost:8080/users/${id}
+```
