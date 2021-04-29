@@ -16,15 +16,6 @@ services:
       - ./migration/sql:/flyway/sql
     depends_on:
       - postgre
-  spring-boot:
-    environment:
-      - PERSISTENCE_TYPE=rdbms
-      - DATASOURCE_USER_JDBCURL=jdbc:postgresql://postgre:5432/ddd
-      - DATASOURCE_USER_USERNAME=ddd
-      - DATASOURCE_USER_PASSWORD=ddd
-    depends_on:
-      - postgre
-      - migration
 
 
 
