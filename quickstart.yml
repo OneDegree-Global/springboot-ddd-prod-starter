@@ -1,0 +1,13 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  spring-boot:
+    build:
+      context: .
+      dockerfile: quickstart/dockerfiles/springboot/Dockerfile
+    ports:
+      - "8080:8080"
+    command: bash -c "java -jar /opt/ddd/web-*.jar --spring.config.location=/opt/ddd/properties/quickstart.properties"
+    environment:
+      - PERSISTENCE_TYPE=memory
+
+

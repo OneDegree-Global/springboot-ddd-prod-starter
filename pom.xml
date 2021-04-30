@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>hk.onedegree</groupId>
+    <groupId>com.cymetrics</groupId>
     <artifactId>springboot-ddd-prod-starter</artifactId>
     <version>0.0.1</version>
     <modules>
@@ -12,9 +12,10 @@
         <module>domain</module>
         <module>application</module>
         <module>web</module>
-        <module>Messaging</module>
+        <module>messaging</module>
         <module>external</module>
         <module>search</module>
+        <module>migration</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -32,14 +33,17 @@
         <springboot.version>2.4.4</springboot.version>
         <log4j.version>2.14.0</log4j.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
+        <spring-boot-maven-plugin.version>2.4.4</spring-boot-maven-plugin.version>
         <!--gen code -->
         <lombok.version>1.18.18</lombok.version>
         <!-- test -->
-        <junit.version>5.7.1</junit.version>
+        <jupiter.version>5.7.1</jupiter.version>
         <assertj-core.version>3.19.0</assertj-core.version>
         <logback.version>1.2.3</logback.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <mockito-core.version>3.8.0</mockito-core.version>
+        <testconatiner.version>1.15.2</testconatiner.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
     </properties>
 
     <dependencies>
@@ -69,13 +73,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -114,6 +124,24 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito-core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testconatiner.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testconatiner.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
         </dependency>
     </dependencies>
 </project>
