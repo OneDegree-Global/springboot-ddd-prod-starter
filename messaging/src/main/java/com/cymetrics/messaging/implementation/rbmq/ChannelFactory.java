@@ -4,16 +4,14 @@ package com.cymetrics.messaging.implementation.rbmq;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class ChannelFactory {
 
-    // TODO: Use DI to inject MQ Config
-    static String userName = "admin";
-    static String password = "admin";
-    static String host = "127.0.0.1";
-    static int port = 5672;
+    @Inject
+    private static RBMQConfig config;
 
     private static volatile ChannelFactory instance;
     private volatile Connection connection;
@@ -53,11 +51,11 @@ public class ChannelFactory {
 
     private void init() throws IOException, TimeoutException{
         com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-        factory.setUsername(userName);
-        factory.setPassword(password);
-        factory.setHost(host);
+        factory.setUsername(config.getUserName());
+        factory.setPassword(config.getPassword());
+        factory.setHost(config.getHost());
 
-        factory.setPort(port);
+        factory.setPort(config.getPort());
         this.connection = factory.newConnection();
         this.threadLocalChannel = new ThreadLocal<>();
 
