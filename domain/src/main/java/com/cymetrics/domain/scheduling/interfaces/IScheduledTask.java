@@ -1,5 +1,6 @@
 package com.cymetrics.domain.scheduling.interfaces;
+import org.json.JSONObject;
 
 public interface IScheduledTask {
-    public void run(String[] args);
+    public void run(JSONObject args);
 }
