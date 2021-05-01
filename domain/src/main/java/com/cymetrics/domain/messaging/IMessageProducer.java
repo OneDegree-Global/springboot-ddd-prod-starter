@@ -1,6 +1,6 @@
-package com.cymetrics.messaging;
+package com.cymetrics.domain.messaging;
 
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 
 import java.io.Closeable;
 

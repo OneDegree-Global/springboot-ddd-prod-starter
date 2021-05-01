@@ -1,10 +1,10 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessageConsumer;
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageConsumer;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

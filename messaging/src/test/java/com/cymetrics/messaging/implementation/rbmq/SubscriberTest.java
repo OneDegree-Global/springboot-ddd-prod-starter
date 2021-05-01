@@ -1,6 +1,6 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageCallback;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;

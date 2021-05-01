@@ -1,8 +1,8 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;

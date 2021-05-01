@@ -1,4 +1,4 @@
-package com.cymetrics.messaging;
+package com.cymetrics.domain.messaging;
 
 import java.io.Closeable;
 import java.util.Optional;

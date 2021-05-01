@@ -1,9 +1,9 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;

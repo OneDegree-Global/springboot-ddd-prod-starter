@@ -5,10 +5,10 @@ import com.cymetrics.application.aspect.AuthorizeAspect;
 import com.cymetrics.application.services.LoginService;
 import com.cymetrics.application.services.UserService;
 import com.cymetrics.domain.scheduling.service.ScheduleService;
-import com.cymetrics.messaging.IMessageConsumer;
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageConsumer;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import com.cymetrics.messaging.implementation.rbmq.MessageConsumerRBMQImp;
 import com.cymetrics.messaging.implementation.rbmq.MessageProducerRBMQImp;
 import org.slf4j.Logger;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.repository.query.QueryCreationException;
 
 
 @Configuration

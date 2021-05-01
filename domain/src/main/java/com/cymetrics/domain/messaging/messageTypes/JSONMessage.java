@@ -1,4 +1,4 @@
-package com.cymetrics.messaging.messageTypes;
+package com.cymetrics.domain.messaging.messageTypes;
 
 import org.json.JSONObject;
 

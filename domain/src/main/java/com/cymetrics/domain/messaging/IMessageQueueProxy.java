@@ -1,6 +1,6 @@
-package com.cymetrics.messaging;
+package com.cymetrics.domain.messaging;
 
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 
 public interface IMessageQueueProxy {
     // raise request to RBMQ server to create/clean/delete queue

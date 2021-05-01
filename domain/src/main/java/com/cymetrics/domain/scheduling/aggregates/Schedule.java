@@ -4,16 +4,14 @@ import com.cymetrics.domain.scheduling.aggregates.VO.CronExpression;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import com.cymetrics.domain.scheduling.exception.ProduceScheduleException;
 
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -64,7 +62,7 @@ public class Schedule {
             json.put(key, value);
         }
         try {
-            producer.send(command, new JSONMessage(json));
+            producer.send("schedule-"+command, new JSONMessage(json));
         } catch(ProtocolIOException e){
             throw new ProduceScheduleException("Produce schedule task error:"+e.toString());
         }

@@ -4,9 +4,9 @@ import com.cymetrics.domain.scheduling.aggregates.Schedule;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import com.cymetrics.domain.scheduling.interfaces.IScheduledTask;
 import com.cymetrics.domain.scheduling.repository.ScheduleRepository;
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessageConsumer;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageConsumer;
+import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
