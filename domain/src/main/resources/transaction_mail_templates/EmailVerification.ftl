@@ -1,0 +1,1 @@
+<div>email verification: ${name} - ${verifyCode}</div>
