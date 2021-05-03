@@ -31,10 +31,8 @@ public class PublisherSubscriberTest {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         proxy = new MessageProxyRBMQImp();
         proxy.createTopic("userAuthed");
         proxy.createTopic("mailSent");

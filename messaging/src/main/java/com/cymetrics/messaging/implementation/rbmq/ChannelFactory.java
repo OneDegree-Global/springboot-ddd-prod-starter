@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 public class ChannelFactory {
 
     @Inject
-    private static RBMQConfig config;
+    static RBMQConfig config;
 
     private static volatile ChannelFactory instance;
     private volatile Connection connection;
