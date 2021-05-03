@@ -2,6 +2,7 @@ package com.cymetrics.persistence.rdbms.config;
 
 
 import com.zaxxer.hikari.HikariConfig;
+import jdk.jfr.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,6 +16,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import java.util.HashMap;
 
@@ -59,13 +61,11 @@ public class DevPersistenceUserConfiguration extends HikariConfig {
     }
 
     @Bean
-    public PlatformTransactionManager devTransactionManager() {
-
+    public PlatformTransactionManager devTransactionManager(){
         JpaTransactionManager transactionManager
                 = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
-                devEntityManager().getObject());
+                devEntityManager().getObject() );
         return transactionManager;
     }
-
 }

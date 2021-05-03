@@ -9,6 +9,10 @@ import java.io.Serializable;
 @Table(name="dev", schema="dev")
 @Entity(name = "dev")
 public class CountDo implements Serializable {
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Id
     @Column(name = "id")
     private int id;

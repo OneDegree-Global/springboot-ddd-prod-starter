@@ -9,13 +9,9 @@
     <version>0.0.1</version>
     <modules>
         <module>persistence</module>
-        <module>domain</module>
-        <module>application</module>
+
         <module>web</module>
-        <module>messaging</module>
-        <module>external</module>
-        <module>search</module>
-        <module>migration</module>
+
     </modules>
 
     <packaging>pom</packaging>

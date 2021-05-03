@@ -1,5 +1,6 @@
 package com.cymetrics.web.springboot.controller.dev;
 
+import com.cymetrics.persistence.rdbms.dao.dev.JpaWithSpringData;
 import com.cymetrics.persistence.rdbms.dao.dev.JpaWithTransaction;
 import com.cymetrics.persistence.rdbms.dao.dev.JpaWithTransactionThreadSafe;
 import com.cymetrics.persistence.rdbms.dao.dev.JpaWithoutTransaction;
@@ -27,5 +28,11 @@ public class DiConfig {
     public JpaWithTransactionThreadSafe jpaWithTransactionThreadSafeBean(){
         JpaWithTransactionThreadSafe jpaWithTransactionThreadSafe = new JpaWithTransactionThreadSafe();
         return jpaWithTransactionThreadSafe;
+    }
+
+    @Bean
+    public JpaWithSpringData jpaWithSpringDataBean(){
+        JpaWithSpringData jpaWithSpringData = new JpaWithSpringData();
+        return jpaWithSpringData;
     }
 }
