@@ -25,7 +25,7 @@ spring boot 層，僅依賴 application，啟動/router/controlle放在這，目
 infra 層，實作 domain 提供的 search interface，依賴 domain 和其他 search lib。
 
 ## persistence model
-infra 層，用 jpa 實作 domain 定義的介面，僅依賴 domain 和 orm。
+infra 層，用 jpaWithoutTransaction 實作 domain 定義的介面，僅依賴 domain 和 orm。
 
 ## messaging model
 infra 層，實作 domain 定義的 mq 介面，僅依賴 domain 和 mq lib。

@@ -19,24 +19,20 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
-@ConditionalOnProperty(
-        value="server.persistence.type",
-        havingValue = "rdbms",
-        matchIfMissing = false)
 @EnableJpaRepositories(
-        basePackages = "com.cymetrics.persistence.rdbms.dao",
-        entityManagerFactoryRef = "userEntityManager",
-        transactionManagerRef = "userTransactionManager"
+        basePackages = "com.cymetrics.persistence.rdbms.dao.dev",
+        entityManagerFactoryRef = "devEntityManager",
+        transactionManagerRef = "devTransactionManager"
 )
-public class PersistenceUserConfiguration extends HikariConfig {
+public class DevPersistenceUserConfiguration extends HikariConfig {
     @Autowired
     private Environment env;
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean userEntityManager() {
+    public LocalContainerEntityManagerFactoryBean devEntityManager() {
         LocalContainerEntityManagerFactoryBean emf
                 = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(userDataSource());
+        emf.setDataSource(devDataSource());
         emf.setPackagesToScan(
                 new String[] { "com.cymetrics.persistence.rdbms.entities" });
 
@@ -45,29 +41,30 @@ public class PersistenceUserConfiguration extends HikariConfig {
         emf.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-                env.getProperty("spring.datasource.user.hibernate.hbm2ddl.auto"));
+                env.getProperty("spring.datasource.dev.hibernate.hbm2ddl.auto"));
         properties.put("hibernate.dialect",
-                env.getProperty("spring.datasource.user.hibernate.dialect"));
+                env.getProperty("spring.datasource.dev.hibernate.dialect"));
         properties.put("hibernate.show_sql",
-                env.getProperty("spring.datasource.user.hibernate.show_sql"));
+                env.getProperty("spring.datasource.dev.hibernate.show_sql"));
         emf.setJpaPropertyMap(properties);
+
 
         return emf;
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.user")
-    public DataSource userDataSource() {
+    @ConfigurationProperties(prefix = "spring.datasource.dev")
+    public DataSource devDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean
-    public PlatformTransactionManager userTransactionManager() {
+    public PlatformTransactionManager devTransactionManager() {
 
         JpaTransactionManager transactionManager
                 = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
-                userEntityManager().getObject());
+                devEntityManager().getObject());
         return transactionManager;
     }
 

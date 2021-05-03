@@ -1,5 +1,6 @@
 package com.cymetrics.web.springboot;
 
+import com.cymetrics.persistence.rdbms.config.DevPersistenceUserConfiguration;
 import com.cymetrics.persistence.rdbms.config.PersistenceUserConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Import;
         DataSourceTransactionManagerAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class
 })
-@Import(PersistenceUserConfiguration.class)
+@Import({PersistenceUserConfiguration.class, DevPersistenceUserConfiguration.class})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

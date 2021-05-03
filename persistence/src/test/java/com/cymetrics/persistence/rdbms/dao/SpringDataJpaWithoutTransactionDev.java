@@ -15,7 +15,7 @@ import java.util.Optional;
 @SpringBootTest
 @EnableTransactionManagement
 @Import(PersistenceUserConfiguration.class)
-public class SpringDataJpaDev {
+public class SpringDataJpaWithoutTransactionDev {
 
     @Autowired
     private UserDao userDao;
