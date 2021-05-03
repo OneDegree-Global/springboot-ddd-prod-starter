@@ -18,19 +18,24 @@ public class RetryAspect {
 
     private static Logger logger = LoggerFactory.getLogger(RetryAspect.class);
 
+
     @Pointcut("execution(@com.cymetrics.application.aspect.annotations.Retry  * *..*.*(..))")
     public void pointCut() {
 
     }
 
-    @Around(value="@annotation(retry)")
-    public Object around(ProceedingJoinPoint proceedingJoinPoint, Retry retry) throws Throwable{
+    @Around(value="pointCut()")
+    public void around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
         int retryCounter = 0;
-        int retries = retry.retries();
-        long baseInterval = retry.baseInterval();
+        int retries = 5; // retry.retries();
+        long baseInterval = 4; // retry.baseInterval();
+
         while(true){
+            System.out.println("trying "+retryCounter);
+
             try {
-                return proceedingJoinPoint.proceed();
+                proceedingJoinPoint.proceed();
+                return;
             } catch (Exception retryException){
                 if(retryCounter >= retries)
                     throw new Exception("Retries exceed limit times:"+retryException.toString());
@@ -39,7 +44,7 @@ public class RetryAspect {
                 try {
                     Thread.sleep((long) Math.pow(baseInterval, retryCounter));
                 } catch(InterruptedException interruptedException){
-                    Thread.currentThread().interrupt();
+                    //Thread.currentThread().interrupt();
                     logger.info("Retry fail thread sleep got interrupted:"+ interruptedException.toString());
                 }
             }

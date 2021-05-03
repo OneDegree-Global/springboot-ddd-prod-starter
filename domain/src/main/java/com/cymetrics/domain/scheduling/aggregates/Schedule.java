@@ -9,6 +9,7 @@ import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ public class Schedule {
     }
 
     public boolean shouldExecute(){
-        if(!this.isActive || clock.instant().isAfter(this.effectiveTime.toInstant()))
+        if(!this.isActive || (this.effectiveTime!=null && clock.instant().isAfter(this.effectiveTime.toInstant())))
             return false;
         if(this.cronExpression.isMatch(clock.instant().atZone(ZoneId.systemDefault())))
             return true;
@@ -56,14 +57,14 @@ public class Schedule {
 
     public void produceTask () throws ProduceScheduleException {
         JSONObject json = new JSONObject();
-        for (String arg : args) {
-            String key = arg.split("=")[0];
-            String value = arg.split("=")[1];
-            json.put(key, value);
-        }
         try {
-            producer.send("schedule-"+command, new JSONMessage(json));
-        } catch(ProtocolIOException e){
+            for (String arg : args) {
+                String key = arg.split("=")[0];
+                String value = arg.split("=")[1];
+                json.put(key, value);
+            }
+            producer.send(command, new JSONMessage(json));
+        } catch(ProtocolIOException | JSONException e){
             throw new ProduceScheduleException("Produce schedule task error:"+e.toString());
         }
     }

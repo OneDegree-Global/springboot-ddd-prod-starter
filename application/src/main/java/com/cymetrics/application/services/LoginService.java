@@ -1,5 +1,7 @@
 package com.cymetrics.application.services;
 
+import com.cymetrics.application.aspect.annotations.Authorize;
+import com.cymetrics.application.aspect.annotations.Retry;
 import com.cymetrics.domain.auth.aggregates.user.User;
 import com.cymetrics.domain.auth.services.AuthenticationService;
 import com.cymetrics.domain.auth.services.TokenService;
@@ -14,7 +16,6 @@ public class LoginService {
 
     @Inject
     TokenService tokenService;
-
     @Transactional("userTransactionManager")
     public Optional<String> getLoginToken(String email, String password) {
         Optional<User> result = this.authenticationService.authenticate(email, password);

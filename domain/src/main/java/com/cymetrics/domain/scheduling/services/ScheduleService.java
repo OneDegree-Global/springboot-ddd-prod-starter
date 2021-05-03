@@ -1,4 +1,4 @@
-package com.cymetrics.domain.scheduling.service;
+package com.cymetrics.domain.scheduling.services;
 
 import com.cymetrics.domain.scheduling.aggregates.Schedule;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;

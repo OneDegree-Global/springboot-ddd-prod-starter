@@ -4,7 +4,9 @@ import com.cymetrics.domain.auth.repository.UserRepository;
 import com.cymetrics.domain.auth.services.AuthenticationService;
 import com.cymetrics.domain.auth.services.TokenService;
 import com.cymetrics.domain.auth.services.UserAuthInfoService;
+import com.cymetrics.domain.scheduling.repository.ScheduleRepository;
 import com.cymetrics.persistence.mem.MemUserRepository;
+import com.cymetrics.persistence.rdbms.RdbmsScheduleRepository;
 import com.cymetrics.persistence.rdbms.RdbmsUserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -51,5 +53,15 @@ public class DomainService {
     public UserAuthInfoService userAuthInfoServiceBean() {
         UserAuthInfoService userAuthInfoService = new UserAuthInfoService();
         return userAuthInfoService;
+    }
+
+    @Bean
+    @ConditionalOnProperty(
+            value="server.persistence.type",
+            havingValue = "rdbms",
+            matchIfMissing = false)
+    public ScheduleRepository rdbmsScheduleRepositoryBean (){
+        RdbmsScheduleRepository rdbmsScheduleRepository = new RdbmsScheduleRepository();
+        return rdbmsScheduleRepository;
     }
 }

@@ -22,8 +22,9 @@ public class CronExpression {
 
     public CronExpression(String expression) throws InvalidCronException {
         CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
-        cron = parser.parse(expression);
-        if(cron == null){
+        try{
+            cron = parser.parse(expression);
+        } catch(IllegalArgumentException e){
             throw new InvalidCronException("Cron expression invalid! " + expression );
         }
     }

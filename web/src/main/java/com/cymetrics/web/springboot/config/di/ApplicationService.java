@@ -4,7 +4,7 @@ package com.cymetrics.web.springboot.config.di;
 import com.cymetrics.application.aspect.AuthorizeAspect;
 import com.cymetrics.application.services.LoginService;
 import com.cymetrics.application.services.UserService;
-import com.cymetrics.domain.scheduling.service.ScheduleService;
+import com.cymetrics.domain.scheduling.services.ScheduleService;
 import com.cymetrics.domain.messaging.IMessageConsumer;
 import com.cymetrics.domain.messaging.IMessageProducer;
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
@@ -34,6 +34,12 @@ public class ApplicationService {
     public UserService userServiceBean() {
         UserService userService = new UserService();
         return userService;
+    }
+
+    @Bean
+    public ScheduleService scheduleServiceBean() {
+        ScheduleService scheduleService = new ScheduleService();
+        return scheduleService;
     }
 
     @Bean
