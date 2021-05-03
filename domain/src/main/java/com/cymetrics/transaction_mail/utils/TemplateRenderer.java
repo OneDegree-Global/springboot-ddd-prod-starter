@@ -52,6 +52,7 @@ public class TemplateRenderer {
             Map<String, String> data = new HashMap();
             data.put("name", name);
             data.put("verifyLink", verifyLink);
+            data.put("title", "Reset password for your Cymetrics account");
 
             StringWriter result = new StringWriter();
             this.resetPasswordTemplate.process(data, result);
@@ -70,6 +71,7 @@ public class TemplateRenderer {
         Map<String, String> data = new HashMap();
         data.put("name", name);
         data.put("verifyCode", verifyCode);
+        data.put("title", "Verify your Cymetrics account");
 
         StringWriter result = new StringWriter();
 

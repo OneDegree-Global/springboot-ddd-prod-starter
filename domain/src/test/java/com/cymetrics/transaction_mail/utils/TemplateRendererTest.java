@@ -9,17 +9,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class TemplateRendererTest {
 
-//    @Test
-//    public void testResetPassword() throws GenerateHtmlContentFailed {
-//        TemplateRenderer t = TemplateRenderer.getInstance();
-//        String result = t.renderResetPasswordMailContent("WOW");
-//        System.out.print(result);
-//    }
-//
-//    @Test
-//    public void testEmailVerification() throws GenerateHtmlContentFailed {
-//        TemplateRenderer t = TemplateRenderer.getInstance();
-//        String result = t.renderEmailVerificationMailContent("WOW", "Eyw83Def");
-//        System.out.print(result);
-//    }
+    @Test
+    public void testResetPassword() throws GenerateHtmlContentFailed {
+        TemplateRenderer t = TemplateRenderer.getInstance();
+        String result = t.renderResetPasswordMailContent("WOW", "code");
+        System.out.print(result);
+    }
+
+    @Test
+    public void testEmailVerification() throws GenerateHtmlContentFailed {
+        TemplateRenderer t = TemplateRenderer.getInstance();
+        String result = t.renderEmailVerificationMailContent("WOW", "Eyw83Def");
+        System.out.print(result);
+    }
 }
