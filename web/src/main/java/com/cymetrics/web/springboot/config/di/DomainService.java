@@ -30,8 +30,7 @@ public class DomainService {
     @Bean
     @ConditionalOnProperty(
             value="server.persistence.type",
-            havingValue = "memory",
-            matchIfMissing = false)
+            havingValue = "memory")
     public UserRepository memUserRepositoryBean (){
         MemUserRepository memUserRepository  = new MemUserRepository();
         return memUserRepository;
