@@ -1,12 +1,10 @@
 package com.cymetrics.application.aspect;
 
 import com.cymetrics.application.aspect.annotations.Retry;
+import com.cymetrics.application.exception.RetryExceedLimitException;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,14 +18,8 @@ public class RetryAspect {
 
     private static Logger logger = LoggerFactory.getLogger(RetryAspect.class);
 
-
-    @Pointcut("execution(@com.cymetrics.application.aspect.annotations.Retry  * *..*.*(..)) ")
-    public void pointCut() {
-
-    }
-
-    @Around(value="pointCut() && @annotation(retry)")
-    public void around(ProceedingJoinPoint proceedingJoinPoint, Retry retry) throws Throwable{
+    @Around(value="execution(@com.cymetrics.application.aspect.annotations.Retry  * *..*.*(..))  && @annotation(retry)")
+    public void around(ProceedingJoinPoint proceedingJoinPoint, Retry retry) throws RetryExceedLimitException {
         int retryCounter = 0;
         int retries =  retry.retries();
         long baseInterval = retry.baseInterval();
@@ -36,9 +28,9 @@ public class RetryAspect {
             try {
                 proceedingJoinPoint.proceed();
                 return;
-            } catch (Exception retryException){
+            } catch (Throwable retryException){
                 if(retryCounter >= retries)
-                    throw new Exception("Retries exceed limit times:"+retryException.toString());
+                    throw new RetryExceedLimitException("Retries exceed limit times:"+retryException.toString());
 
                 logger.error("Retry aspect catch exception, retry counter:"+retryCounter+" "+retryException.toString());
                 try {

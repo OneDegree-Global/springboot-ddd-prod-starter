@@ -1,7 +1,7 @@
 package com.cymetrics.domain.scheduling.aggregates;
 
 import com.cymetrics.domain.messaging.IMessageProducer;
-import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +24,7 @@ public class ScheduleTest {
     @Test
     public void construct() throws InvalidCronException {
         Schedule s = new Schedule("name0", "command0", "5 10 * * *");
+
         Assertions.assertEquals("name0", s.getName());
         Assertions.assertEquals("command0", s.getCommand());
         Assertions.assertEquals("5 10 * * *", s.getCronExpression().getStringExpression());
@@ -44,26 +45,28 @@ public class ScheduleTest {
 
     @Test
     public void shouldExecute() throws InvalidCronException{
-        Schedule s = new Schedule("name2", "command2", "5 10 * * *");
-        Instant testInstant =
+        Schedule s1 = new Schedule("name2", "command2", "5 10 * * *");
+        Schedule s2 = new Schedule("name3", "command3", "5 10 * * *");
+        Schedule s3 = new Schedule("name4", "command4", "5 10 * * *");
+        Instant testInstant1 =
                 LocalDateTime.of(2019, Month.MARCH, 28, 1, 5, 25).atZone(ZoneId.systemDefault()).toInstant();
-        s.clock = Clock.fixed(testInstant, ZoneId.systemDefault());
-        Assertions.assertEquals(false, s.shouldExecute());
-        testInstant =
+        Instant testInstant2 =
                 LocalDateTime.of(2019, Month.MARCH, 28, 10, 5, 45).atZone(ZoneId.systemDefault()).toInstant();
-        s.clock = Clock.fixed(testInstant, ZoneId.systemDefault());
-        Assertions.assertEquals(true, s.shouldExecute());
 
-        s = new Schedule("name3", "command3", "5 10 * * *");
-        s.setActive(false);
-        Assertions.assertEquals(false, s.shouldExecute());
+        s1.clock = Clock.fixed(testInstant1, ZoneId.systemDefault());
+        s1.clock = Clock.fixed(testInstant2, ZoneId.systemDefault());
+        s2 = new Schedule("name3", "command3", "5 10 * * *");
+        s2.setActive(false);
+        s3 = new Schedule("name4", "command4", "5 10 * * *");
+        s3.clock = Clock.fixed(testInstant2, ZoneId.systemDefault());
+        s3.setEffectiveTime(LocalDateTime.of(2019, Month.MARCH, 29, 10, 5, 45).atZone(ZoneId.systemDefault()));
+        s3.setEffectiveTime(LocalDateTime.of(2019, Month.MARCH, 26, 10, 5, 45).atZone(ZoneId.systemDefault()));
 
-        s = new Schedule("name4", "command4", "5 10 * * *");
-        s.clock = Clock.fixed(testInstant, ZoneId.systemDefault());
-        s.setEffectiveTime(LocalDateTime.of(2019, Month.MARCH, 29, 10, 5, 45).atZone(ZoneId.systemDefault()));
-        Assertions.assertEquals(true, s.shouldExecute());
-        s.setEffectiveTime(LocalDateTime.of(2019, Month.MARCH, 26, 10, 5, 45).atZone(ZoneId.systemDefault()));
-        Assertions.assertEquals(false, s.shouldExecute());
+        Assertions.assertEquals(false, s1.shouldExecute());
+        Assertions.assertEquals(true, s1.shouldExecute());
+        Assertions.assertEquals(false, s2.shouldExecute());
+        Assertions.assertEquals(true, s3.shouldExecute());
+        Assertions.assertEquals(false, s3.shouldExecute());
     }
 
     @Test
@@ -71,13 +74,13 @@ public class ScheduleTest {
         Schedule s = new Schedule("name5", "command5", "5 10 * * *");
         s.producer = mockedProducer;
         s.setArgs("a=1 b=2 c=3".split(" "));
-        s.produceTask();
 
+        s.produceTask();
         JSONObject json = new JSONObject();
         json.put("a","1");
         json.put("b","2");
         json.put("c","3");
-        JSONMessage args = new JSONMessage(json);
+        JsonMessage args = new JsonMessage(json);
 
         Mockito.verify(s.producer , Mockito.times(1)).send("command5", args);
     }

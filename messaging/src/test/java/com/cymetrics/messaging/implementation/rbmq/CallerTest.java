@@ -1,7 +1,7 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -36,7 +36,7 @@ public class CallerTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
@@ -47,7 +47,7 @@ public class CallerTest {
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 
@@ -122,7 +122,7 @@ public class CallerTest {
         hm.put("key1","value1");
         hm.put("key2","value2");
         JSONObject json = new JSONObject(hm);
-        JSONMessage message = new JSONMessage(json);
+        JsonMessage message = new JsonMessage(json);
 
         caller.sendAndGetReply("test",message,100);
         verify(caller).sendAndGetReply("test", ObjectByteConverter.encodeObject(message),100);

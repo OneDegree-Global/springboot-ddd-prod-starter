@@ -30,7 +30,7 @@ public class CalleeTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
         Integer mappedPort = rbmq.getMappedPort(5672);
         RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
@@ -39,7 +39,7 @@ public class CalleeTest {
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 

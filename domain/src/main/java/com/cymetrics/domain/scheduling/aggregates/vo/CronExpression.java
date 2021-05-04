@@ -1,4 +1,4 @@
-package com.cymetrics.domain.scheduling.aggregates.VO;
+package com.cymetrics.domain.scheduling.aggregates.vo;
 
 import com.cronutils.descriptor.CronDescriptor;
 import com.cronutils.model.Cron;

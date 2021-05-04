@@ -41,7 +41,6 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
                 Object message = ObjectByteConverter.decodeObject(delivery.getBody());
                 response = callback.onCalled(message);
             } catch (RuntimeException | ClassNotFoundException e ) {
-                e.printStackTrace();
                 logger.error("Decode byte message body Error:"+e);
             } finally {
                 this.channel.queueDeclare(queueName,false,false,false,null);

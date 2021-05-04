@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiver {
 
+    private final String DECODE_ERROR = "Decode byte message body error:";
     private static Logger logger = LoggerFactory.getLogger(MessageConsumerRBMQImp.class);
     private Channel channel;
     Clock clock = Clock.systemUTC();
@@ -41,7 +42,7 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
                 try {
                     callback.onDelivered(ObjectByteConverter.decodeObject(body));
                 } catch(IOException | ClassNotFoundException e) {
-                    logger.error("Decode byte message body error:"+e);
+                    logger.error(DECODE_ERROR+e);
                 }
                 finally {
                     getChannel().basicAck(envelope.getDeliveryTag(), false);
@@ -83,7 +84,7 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
                     callback.onDelivered(ObjectByteConverter.decodeObject(body));
                     getChannel().basicCancel(consumerTag);
                 } catch(IOException | ClassNotFoundException e) {
-                    logger.error("Decode byte message body error:"+e);
+                    logger.error(DECODE_ERROR+e);
                 }
                 finally {
                     if(!isUsed) {
@@ -120,7 +121,7 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
             }
             message = ObjectByteConverter.decodeObject((response.getBody()));
         } catch(IOException | ClassNotFoundException e) {
-            logger.error("Decode byte message body error:"+e);
+            logger.error(DECODE_ERROR+e);
             return Optional.empty();
         }
         return Optional.ofNullable(message);
@@ -139,10 +140,10 @@ public class MessageConsumerRBMQImp  implements IMessageConsumer, IMessageReceiv
                 GetResponse response = this.channel.basicGet(queueName, false);
                 if(response == null || response.getMessageCount() <= 0){
                     Thread.sleep(300);
-                    continue;
+                }else{
+                    message.set(ObjectByteConverter.decodeObject(response.getBody()));
+                    break;
                 }
-                message.set(ObjectByteConverter.decodeObject(response.getBody()));
-                break;
             }
         }catch(IOException | ClassNotFoundException | InterruptedException e) {
             logger.error("Consumer receive message error:"+e);

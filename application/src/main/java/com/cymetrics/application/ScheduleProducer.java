@@ -20,13 +20,10 @@ public class ScheduleProducer {
     static Logger logger = LoggerFactory.getLogger(ScheduleProducer.class);
     static ScheduleProducer scheduleProducer;
 
-    public ScheduleProducer(){
-    }
-
     public void startProduceScheduling() throws ProduceScheduleException {
 
         while(true){
-            ArrayList<Schedule> schedules = scheduleService.getAllSchedules();
+            ArrayList<Schedule> schedules = (ArrayList<Schedule>) scheduleService.getAllSchedules();
             for(Schedule schedule : schedules){
                 try {
                     this.produceTask(schedule);

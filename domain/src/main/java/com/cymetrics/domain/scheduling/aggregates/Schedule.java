@@ -2,8 +2,8 @@ package com.cymetrics.domain.scheduling.aggregates;
 
 import com.cymetrics.domain.messaging.IMessageProducer;
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
-import com.cymetrics.domain.scheduling.aggregates.VO.CronExpression;
+import com.cymetrics.domain.messaging.types.JsonMessage;
+import com.cymetrics.domain.scheduling.aggregates.vo.CronExpression;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import com.cymetrics.domain.scheduling.exception.ProduceScheduleException;
 import lombok.Getter;
@@ -49,9 +49,7 @@ public class Schedule {
     public boolean shouldExecute(){
         if(!this.isActive || (this.effectiveTime!=null && clock.instant().isAfter(this.effectiveTime.toInstant())))
             return false;
-        if(this.cronExpression.isMatch(clock.instant().atZone(ZoneId.systemDefault())))
-            return true;
-        return false;
+        return (this.cronExpression.isMatch(clock.instant().atZone(ZoneId.systemDefault())));
     }
 
     public void produceTask () throws ProduceScheduleException {
@@ -62,7 +60,7 @@ public class Schedule {
                 String value = arg.split("=")[1];
                 json.put(key, value);
             }
-            producer.send(command, new JSONMessage(json));
+            producer.send(command, new JsonMessage(json));
         } catch(ProtocolIOException | JSONException e){
             throw new ProduceScheduleException("Produce schedule task error:"+e.toString());
         }

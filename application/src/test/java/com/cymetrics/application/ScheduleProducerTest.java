@@ -23,8 +23,8 @@ public class ScheduleProducerTest {
 
     ScheduleProducer scheduleProducer;
 
-    static ScheduleService scheduleService;
-    static Logger logger;
+    ScheduleService scheduleService;
+    Logger logger;
     ArrayList<Schedule> mockSchedules = new ArrayList<>();
 
 
@@ -43,9 +43,8 @@ public class ScheduleProducerTest {
     }
 
     @Test
-    public void executeSchedule() throws Exception {
+    public void executeSchedule() throws ProduceScheduleException {
         long limit = System.currentTimeMillis() + 1000;
-
         when(scheduleService.getAllSchedules()).thenReturn(mockSchedules);
         Thread t = new Thread( ()->{
             try {
@@ -54,7 +53,9 @@ public class ScheduleProducerTest {
                 e.printStackTrace();
             }
         });
+
         t.start();
+
         while(t.getState() != Thread.State.TIMED_WAITING && System.currentTimeMillis() < limit );
         if(System.currentTimeMillis() >= limit)
             Assertions.fail("producer thread timeout");
@@ -72,13 +73,12 @@ public class ScheduleProducerTest {
     }
 
     @Test
-    public void executeFailed() throws Exception {
+    public void executeFailed() throws ProduceScheduleException {
         doThrow(new ProduceScheduleException("")).when(mockSchedules.get(0)).produceTask();
 
-        Assertions.assertThrows(Exception.class,()->{
-            scheduleProducer.produceTask(mockSchedules.get(0));
-        });
-
+        Assertions.assertThrows(Exception.class,()->
+            scheduleProducer.produceTask(mockSchedules.get(0))
+        );
         Mockito.verify(mockSchedules.get(0), Mockito.times(6)).produceTask();
     }
 

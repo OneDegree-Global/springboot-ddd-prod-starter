@@ -2,7 +2,7 @@ package com.cymetrics.domain.scheduling.services;
 
 import com.cymetrics.domain.messaging.IMessageCallback;
 import com.cymetrics.domain.messaging.IMessageConsumer;
-import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.domain.scheduling.aggregates.Schedule;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import com.cymetrics.domain.scheduling.interfaces.IScheduledTask;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ScheduleService {
@@ -27,7 +27,7 @@ public class ScheduleService {
         return consumer.consume(command, new IMessageCallback() {
             @Override
             public void onDelivered(Object message) {
-                JSONMessage jsonMessage = (JSONMessage) message;
+                JsonMessage jsonMessage = (JsonMessage) message;
                 task.run(jsonMessage.getJSON());
             }
         });
@@ -39,21 +39,22 @@ public class ScheduleService {
 
     public Optional<Schedule> createSchedule(String name, String command, String cronExpression){
         Schedule schedule;
+        Optional<Schedule> repoSchedule;
         try {
             schedule = new Schedule(name, command, cronExpression);
-            Optional<Schedule> repoSchedule = repo.save(schedule);
+            repoSchedule = repo.save(schedule);
         } catch (InvalidCronException e){
             logger.error("Schedule cron expression invalid"+e.toString());
             return Optional.empty();
         }
-        return Optional.of(schedule);
+        return repoSchedule;
     }
 
     public void removeSchedule(String name) {
         repo.deleteByName(name);
     }
 
-    public ArrayList<Schedule> getAllSchedules(){
+    public List<Schedule> getAllSchedules(){
         return repo.getAll();
     }
 

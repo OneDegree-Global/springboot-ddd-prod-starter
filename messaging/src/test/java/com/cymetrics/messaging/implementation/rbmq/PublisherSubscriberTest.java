@@ -27,7 +27,7 @@ public class PublisherSubscriberTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception{
+    public static void createQueue() throws Exception{
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
@@ -43,7 +43,7 @@ public class PublisherSubscriberTest {
     }
 
     @AfterAll
-    static public void deleteQueue() throws Exception{
+    public static void deleteQueue() throws Exception{
         for(int i=1; i<=3;i++) {
             proxy.deleteQueue("userAuthedListener"+i);
             proxy.deleteQueue("mailSentListener"+i);

@@ -1,7 +1,7 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class PublisherTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
@@ -46,7 +46,7 @@ public class PublisherTest {
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
         channel.queueDelete("test2");
         channel.exchangeDelete("test_exchange");
@@ -97,12 +97,12 @@ public class PublisherTest {
         hm.put("key1","value1");
         hm.put("key2","value2");
         JSONObject json = new JSONObject(hm);
-        JSONMessage message = new JSONMessage(json);
+        JsonMessage message = new JsonMessage(json);
 
         publisher.publish("test_exchange", message);
         verify(publisher).publish("test_exchange", ObjectByteConverter.encodeObject(message));
 
-        JSONMessage response = (JSONMessage) ObjectByteConverter.decodeObject(channel.basicGet("test",false).getBody());
+        JsonMessage response = (JsonMessage) ObjectByteConverter.decodeObject(channel.basicGet("test",false).getBody());
 
         Assertions.assertEquals("value1", response.getJSON().get("key1"));
         Assertions.assertEquals("value2", response.getJSON().get("key2"));

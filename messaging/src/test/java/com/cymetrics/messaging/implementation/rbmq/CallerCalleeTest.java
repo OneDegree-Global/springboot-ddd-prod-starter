@@ -23,7 +23,7 @@ public class CallerCalleeTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception{
+    public static void createQueue() throws Exception{
         rbmq = RBMQTestcontainer.getContainer();
         Integer mappedPort = rbmq.getMappedPort(5672);
         RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
@@ -34,7 +34,7 @@ public class CallerCalleeTest {
     }
 
     @AfterAll
-    static public void deleteQueue() throws Exception{
+    public static void deleteQueue() throws Exception{
         proxy.deleteQueue("functionA");
         proxy.deleteQueue("functionB");
     }

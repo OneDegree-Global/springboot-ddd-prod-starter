@@ -1,4 +1,4 @@
-package com.cymetrics.domain.messaging.messageTypes;
+package com.cymetrics.domain.messaging.types;
 
 import com.cymetrics.domain.auth.services.UserAuthInfoService;
 import org.json.JSONException;
@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class JSONMessage implements Serializable{
+public class JsonMessage implements Serializable{
 
-    public String value;
+    private String value;
     private static Logger logger = LoggerFactory.getLogger(UserAuthInfoService.class);
 
-    public JSONMessage(JSONObject json){
+    public JsonMessage(JSONObject json){
         value = json.toString();
     }
 
@@ -31,7 +31,7 @@ public class JSONMessage implements Serializable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JSONMessage that = (JSONMessage) o;
+        JsonMessage that = (JsonMessage) o;
         return Objects.equals(value, that.value);
     }
 
