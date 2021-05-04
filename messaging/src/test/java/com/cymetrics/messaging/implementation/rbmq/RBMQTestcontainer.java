@@ -5,7 +5,7 @@ import org.testcontainers.utility.DockerImageName;
 
 public class RBMQTestcontainer {
 
-    static public GenericContainer rbmq;
+    static GenericContainer rbmq;
 
     static public GenericContainer getContainer(){
         if(rbmq==null){

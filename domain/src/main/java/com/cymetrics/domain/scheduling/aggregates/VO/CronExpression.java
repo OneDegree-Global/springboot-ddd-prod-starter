@@ -1,6 +1,7 @@
 package com.cymetrics.domain.scheduling.aggregates.VO;
 
 import com.cronutils.descriptor.CronDescriptor;
+import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
@@ -8,9 +9,6 @@ import com.cronutils.parser.CronParser;
 import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import lombok.Getter;
 
-import com.cronutils.model.Cron;
-
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Optional;

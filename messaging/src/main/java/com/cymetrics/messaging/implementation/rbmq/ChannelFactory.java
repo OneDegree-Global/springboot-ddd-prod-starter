@@ -13,8 +13,8 @@ public class ChannelFactory {
     @Inject
     static RBMQConfig config;
 
-    private static volatile ChannelFactory instance;
-    private volatile Connection connection;
+    private static  ChannelFactory instance;
+    private Connection connection;
     private ThreadLocal<Channel> threadLocalChannel;
 
     public synchronized static ChannelFactory createInstance() throws IOException, TimeoutException{
@@ -38,7 +38,9 @@ public class ChannelFactory {
     public Channel getChannel() throws IOException {
         Channel c = threadLocalChannel.get();
         if (c == null) {
-            c = connection.createChannel();
+            synchronized (connection) {
+                c = connection.createChannel();
+            }
             threadLocalChannel.set(c);
             c = threadLocalChannel.get();
         }

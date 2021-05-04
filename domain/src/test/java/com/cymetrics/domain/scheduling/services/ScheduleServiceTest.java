@@ -31,7 +31,10 @@ public class ScheduleServiceTest {
     public void createSchedule() throws InvalidCronException {
         when(repo.save(any())).thenReturn(java.util.Optional.of(new Schedule("name0", "command0", "5 * * * *")));
         Optional<Schedule> schedule = service.createSchedule("name0","command0","5 * * * *");
-        Assertions.assertEquals(schedule.get().getName(), "name0");
+        if(schedule.isPresent())
+            Assertions.assertEquals(schedule.get().getName(), "name0");
+        else
+            Assertions.fail("schedule should not be null");
         schedule = service.createSchedule("name0","command0","100 * * * *");
         Assertions.assertTrue(schedule.isEmpty());
     }

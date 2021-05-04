@@ -1,30 +1,21 @@
 package com.cymetrics.application;
-import com.cymetrics.domain.messaging.IMessageConsumer;
+
 import com.cymetrics.domain.scheduling.aggregates.Schedule;
-import com.cymetrics.domain.scheduling.exception.InvalidCronException;
 import com.cymetrics.domain.scheduling.exception.ProduceScheduleException;
-import com.cymetrics.domain.scheduling.repository.ScheduleRepository;
 import com.cymetrics.domain.scheduling.services.ScheduleService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Timer;
 
-import org.slf4j.Logger;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

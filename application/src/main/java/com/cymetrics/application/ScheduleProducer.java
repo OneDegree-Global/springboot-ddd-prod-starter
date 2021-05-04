@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.sql.SQLOutput;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -30,18 +29,17 @@ public class ScheduleProducer {
             ArrayList<Schedule> schedules = scheduleService.getAllSchedules();
             for(Schedule schedule : schedules){
                 try {
-                    System.out.println("wwww");
                     this.produceTask(schedule);
-                    System.out.println("vvvv");
                 } catch(ProduceScheduleException e){
-                    System.out.println("thrownnn");
                     logger.error("produce scheduled task failed:"+e.toString());
                 }
             }
             int secondsToNextMinute = 60 - clock.instant().atZone(ZoneId.systemDefault()).getSecond();
             try {
+                Thread.interrupted();
                 Thread.sleep(secondsToNextMinute);
             } catch( InterruptedException e){
+                Thread.currentThread().interrupt();
                 logger.info("Schedule task producer sleep got interrupted:"+e.toString());
             }
         }
@@ -52,11 +50,8 @@ public class ScheduleProducer {
         scheduleProducer.startProduceScheduling();
     }
 
-    @Retry
+    @Retry(baseInterval = 4, retries = 5)
     public void produceTask(Schedule s) throws ProduceScheduleException {
-        System.out.println("qq");
         s.produceTask();
-        System.out.println("qq2");
-
     }
 }

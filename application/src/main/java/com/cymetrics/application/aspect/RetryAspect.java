@@ -2,9 +2,11 @@ package com.cymetrics.application.aspect;
 
 import com.cymetrics.application.aspect.annotations.Retry;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,20 +21,18 @@ public class RetryAspect {
     private static Logger logger = LoggerFactory.getLogger(RetryAspect.class);
 
 
-    @Pointcut("execution(@com.cymetrics.application.aspect.annotations.Retry  * *..*.*(..))")
+    @Pointcut("execution(@com.cymetrics.application.aspect.annotations.Retry  * *..*.*(..)) ")
     public void pointCut() {
 
     }
 
-    @Around(value="pointCut()")
-    public void around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
+    @Around(value="pointCut() && @annotation(retry)")
+    public void around(ProceedingJoinPoint proceedingJoinPoint, Retry retry) throws Throwable{
         int retryCounter = 0;
-        int retries = 5; // retry.retries();
-        long baseInterval = 4; // retry.baseInterval();
+        int retries =  retry.retries();
+        long baseInterval = retry.baseInterval();
 
         while(true){
-            System.out.println("trying "+retryCounter);
-
             try {
                 proceedingJoinPoint.proceed();
                 return;
@@ -42,9 +42,10 @@ public class RetryAspect {
 
                 logger.error("Retry aspect catch exception, retry counter:"+retryCounter+" "+retryException.toString());
                 try {
+                    Thread.interrupted();
                     Thread.sleep((long) Math.pow(baseInterval, retryCounter));
                 } catch(InterruptedException interruptedException){
-                    //Thread.currentThread().interrupt();
+                    Thread.currentThread().interrupt();
                     logger.info("Retry fail thread sleep got interrupted:"+ interruptedException.toString());
                 }
             }

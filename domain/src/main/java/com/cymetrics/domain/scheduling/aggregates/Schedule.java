@@ -1,12 +1,11 @@
 package com.cymetrics.domain.scheduling.aggregates;
 
-import com.cymetrics.domain.scheduling.aggregates.VO.CronExpression;
-import com.cymetrics.domain.scheduling.exception.InvalidCronException;
-import com.cymetrics.domain.scheduling.exception.ProduceScheduleException;
-
 import com.cymetrics.domain.messaging.IMessageProducer;
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.domain.scheduling.aggregates.VO.CronExpression;
+import com.cymetrics.domain.scheduling.exception.InvalidCronException;
+import com.cymetrics.domain.scheduling.exception.ProduceScheduleException;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONException;

@@ -71,7 +71,9 @@ public class CalleeTest {
         Assertions.assertEquals(1,counter[0]);
         if(response==null)
             Assertions.fail("Callee did not reply message correctly");
-        Assertions.assertEquals("reply",(String)ObjectByteConverter.decodeObject(response.getBody()));
+        else {
+            Assertions.assertEquals("reply", (String) ObjectByteConverter.decodeObject(response.getBody()));
+        }
     }
 
     @Test

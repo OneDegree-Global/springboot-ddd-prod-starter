@@ -1,8 +1,8 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.cymetrics.domain.messaging.messageTypes.JSONMessage;
+import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
@@ -80,9 +80,11 @@ public class CallerTest {
 
         if(failMessage[0]!=null)
             Assertions.fail(failMessage[0]);
+
         if(o.isEmpty())
             Assertions.fail("Get reply failed");
-        Assertions.assertEquals("reply", (String)o.get());
+        else
+            Assertions.assertEquals("reply", (String)o.get());
     }
 
     @Test

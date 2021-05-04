@@ -1,7 +1,5 @@
 package com.cymetrics.application.services;
 
-import com.cymetrics.application.aspect.annotations.Authorize;
-import com.cymetrics.application.aspect.annotations.Retry;
 import com.cymetrics.domain.auth.aggregates.user.User;
 import com.cymetrics.domain.auth.services.AuthenticationService;
 import com.cymetrics.domain.auth.services.TokenService;

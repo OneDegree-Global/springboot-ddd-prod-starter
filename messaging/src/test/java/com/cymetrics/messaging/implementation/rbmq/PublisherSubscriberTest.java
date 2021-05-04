@@ -52,8 +52,8 @@ public class PublisherSubscriberTest {
 
 
     @Test
-    public void basicPublishSubscribe() {
-        try {
+    public void basicPublishSubscribe() throws InterruptedException {
+
             final int[] receiveCount = {0,0};
 
 
@@ -140,9 +140,6 @@ public class PublisherSubscriberTest {
             Assertions.assertEquals(4,receiveCount[0]);
             Assertions.assertEquals(3,receiveCount[1]);
 
-        } catch(InterruptedException e){
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        }
+
     }
 }
