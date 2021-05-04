@@ -52,7 +52,7 @@ public class TransactionMailServiceTest {
     }
 
     @Test
-    @DisplayName("Mail should not be sent if template engine fails")
+    @DisplayName("Mail should not be sent if template renderer fails")
     public void template_engine_failed() throws InvalidEmailFormat, GenerateHtmlContentFailed {
         String email = "shohei.ohtani@mlb.com";
         String name = "Shohei Ohtani";

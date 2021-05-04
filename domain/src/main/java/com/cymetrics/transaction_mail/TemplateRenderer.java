@@ -1,10 +1,9 @@
 package com.cymetrics.transaction_mail;
 
 import com.cymetrics.transaction_mail.exceptions.GenerateHtmlContentFailed;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import com.cymetrics.transaction_mail.exceptions.InitTemplateRendererFailed;
+import freemarker.core.ParseException;
+import freemarker.template.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -16,54 +15,84 @@ import org.slf4j.LoggerFactory;
 public class TemplateRenderer {
 
     private static TemplateRenderer instance;
+    private static Logger logger = LoggerFactory.getLogger(TemplateRenderer.class);
 
     static {
         try {
             instance = new TemplateRenderer();
-        } catch (IOException e) {
+        } catch (InitTemplateRendererFailed e) {
+            logger.error("Exception occurred during initialization", e);
             throw new RuntimeException("Exception occurred during initialization");
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger(TemplateRenderer.class);
+
 
     private Template resetPasswordTemplate;
     private Template emailVerificationTemplate;
 
-    private TemplateRenderer() throws IOException {
+    private TemplateRenderer() throws InitTemplateRendererFailed {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
         cfg.setClassForTemplateLoading(TemplateRenderer.class, "/transaction_mail_templates");
+
+        // TODO: Check too see if we need to alter these default settings or not
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setLogTemplateExceptions(false);
         cfg.setWrapUncheckedExceptions(true);
         cfg.setFallbackOnNullLoopVariable(false);
-        this.resetPasswordTemplate = cfg.getTemplate("ResetPassword.ftl");
-        this.emailVerificationTemplate = cfg.getTemplate("EmailVerification.ftl");
 
+        try {
+            this.resetPasswordTemplate = cfg.getTemplate("ResetPassword.ftl");
+            this.emailVerificationTemplate = cfg.getTemplate("EmailVerification.ftl");
+        } catch (TemplateNotFoundException e) {
+            String errMessage = String.format("Unable to find template: %s", e.getTemplateName());
+            logger.error(errMessage);
+            throw new InitTemplateRendererFailed(errMessage);
+        } catch (MalformedTemplateNameException e) {
+            String errMessage = String.format(String.format("Malformed template name: %s, %s", e.getTemplateName(), e.getMalformednessDescription()));
+            logger.error(errMessage);
+            throw new InitTemplateRendererFailed(errMessage);
+        } catch (ParseException e) {
+            String errMessage = String.format("Unable to parse template %s: %s", e.getTemplateName(), e.getMessage());
+            logger.error(errMessage);
+            throw new InitTemplateRendererFailed(errMessage);
+        } catch (IOException e) {
+            String errMessage = String.format("IO Exception raised", e.getMessage());
+            logger.error(errMessage);
+            throw new InitTemplateRendererFailed(errMessage);
+        }
     }
 
     public static TemplateRenderer getInstance() {
         return instance;
     }
 
-    public String renderResetPasswordMailContent(String name, String verifyLink) throws GenerateHtmlContentFailed {
-        try {
-            Map<String, String> data = new HashMap();
-            data.put("name", name);
-            data.put("verifyLink", verifyLink);
-            data.put("title", "Reset password for your Cymetrics account");
+    private void templateExceptionHandler(TemplateException e) throws GenerateHtmlContentFailed {
+        String errMessage = String.format("Failed render %s: %s", e.getTemplateSourceName(), e.getMessage());
+        logger.error(errMessage);
+        throw new GenerateHtmlContentFailed(errMessage);
+    }
 
-            StringWriter result = new StringWriter();
+    public String renderResetPasswordMailContent(String name, String verifyLink) throws GenerateHtmlContentFailed {
+
+        Map<String, String> data = new HashMap();
+        data.put("name", name);
+        data.put("verifyLink", verifyLink);
+        data.put("title", "Reset password for your Cymetrics account");
+
+        StringWriter result = new StringWriter();
+
+        try {
             this.resetPasswordTemplate.process(data, result);
-            return result.toString();
         } catch (TemplateException e) {
-            logger.error("Template exception", e);
-            throw new GenerateHtmlContentFailed("Failed generating Html content: [reset password]");
+            templateExceptionHandler(e);
         } catch (IOException e) {
-            logger.error("IO exception", e);
-            throw new GenerateHtmlContentFailed("Failed generating Html content: [reset password]");
+            String errMessage = String.format("IO Exception for ResetPassword: %s", e.getMessage());
+            logger.error(errMessage);
+            throw new GenerateHtmlContentFailed(errMessage);
         }
+        return result.toString();
     }
 
     public String renderEmailVerificationMailContent(String name, String verifyCode) throws GenerateHtmlContentFailed {
@@ -78,11 +107,11 @@ public class TemplateRenderer {
         try {
             this.emailVerificationTemplate.process(data, result);
         } catch (TemplateException e) {
-            logger.error("Template exception", e);
-            throw new GenerateHtmlContentFailed("Failed generating Html content: [email verification]");
+            templateExceptionHandler(e);
         } catch (IOException e) {
-            logger.error("IO Exception", e);
-            throw new GenerateHtmlContentFailed("Failed generating Html content: [email verification]");
+            String errMessage = String.format("IO Exception for EmailVerification: %s", e.getMessage());
+            logger.error(errMessage);
+            throw new GenerateHtmlContentFailed(errMessage);
         }
         return result.toString();
     }
