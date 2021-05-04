@@ -1,4 +1,4 @@
-package com.cymetrics.transaction_mail.utils;
+package com.cymetrics.transaction_mail;
 
 import com.cymetrics.transaction_mail.exceptions.GenerateHtmlContentFailed;
 import freemarker.template.Configuration;

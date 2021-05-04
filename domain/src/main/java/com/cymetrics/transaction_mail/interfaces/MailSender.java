@@ -1,6 +1,6 @@
 package com.cymetrics.transaction_mail.interfaces;
 
-import com.cymetrics.transaction_mail.exceptions.SendFailed;
+import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
 
 public interface MailSender {
 
@@ -12,7 +12,7 @@ public interface MailSender {
         String htmlContent,
         String alternativeContent
         // DataSource[] attachment,
-    ) throws SendFailed;
+    ) throws SendTransactionMailFailed;
 
 }
 
