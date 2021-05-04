@@ -12,6 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.Optional;
 
 @Testcontainers
+@Tag("slow")
 public class CallerCalleeTest {
 
     static private GenericContainer rbmq;

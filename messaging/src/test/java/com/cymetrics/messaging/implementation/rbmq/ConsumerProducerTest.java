@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @Testcontainers
 @ExtendWith(MockitoExtension.class)
+@Tag("slow")
 public class ConsumerProducerTest {
 
     static MessageProxyRBMQImp proxy;

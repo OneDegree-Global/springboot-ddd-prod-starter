@@ -17,6 +17,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @Testcontainers
+@Tag("slow")
 public class ProducerTest {
 
     IMessageProducer producer;

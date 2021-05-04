@@ -66,6 +66,6 @@ curl -H "Authorization: Bearer ${token}"  localhost:8080/users/${id}
 
 Run the command to monitor app with grafana+prometheus:
 ```
-docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-metrics.yml down
+docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-metrics.yml up
 ```
 Then you can browser this url to see metrics `http://localhost:3000/d/OS7-NUiGz/spring-boot-statistics-2-3-jetty?orgId=1&refresh=5s`
