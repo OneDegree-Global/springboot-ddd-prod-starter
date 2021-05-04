@@ -1,7 +1,6 @@
-package com.cymetrics.transaction_mail.model;
+package com.cymetrics.transaction_mail.aggregates;
 
 import com.cymetrics.transaction_mail.exceptions.InvalidEmailFormat;
-import com.cymetrics.transaction_mail.model.Receiver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

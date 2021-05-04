@@ -4,6 +4,7 @@ import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
 
 public interface MailSender {
 
+    // TODO: file attachment
     public void send(
         String[] recipients,
         String[] cc,
@@ -11,7 +12,6 @@ public interface MailSender {
         String subject,
         String htmlContent,
         String alternativeContent
-        // DataSource[] attachment,
     ) throws SendTransactionMailFailed;
 
 }

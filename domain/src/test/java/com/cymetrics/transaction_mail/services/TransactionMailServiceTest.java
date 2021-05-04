@@ -6,7 +6,7 @@ import com.cymetrics.transaction_mail.exceptions.InvalidEmailFormat;
 import com.cymetrics.transaction_mail.exceptions.ReceiverNotFound;
 import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
 import com.cymetrics.transaction_mail.interfaces.MailSender;
-import com.cymetrics.transaction_mail.model.Receiver;
+import com.cymetrics.transaction_mail.aggregates.Receiver;
 import com.cymetrics.transaction_mail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

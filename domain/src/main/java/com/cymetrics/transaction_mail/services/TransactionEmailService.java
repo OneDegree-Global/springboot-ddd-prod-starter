@@ -7,10 +7,13 @@ import com.cymetrics.transaction_mail.exceptions.ReceiverNotFound;
 import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
 import com.cymetrics.transaction_mail.interfaces.MailSender;
 import com.cymetrics.transaction_mail.TemplateRenderer;
-import com.cymetrics.transaction_mail.model.Receiver;
+import com.cymetrics.transaction_mail.aggregates.Receiver;
 import com.cymetrics.transaction_mail.repository.ReceiverRepository;
 
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Handle domain url and project name
 //  It's not decided yet whether those information should be coming along with event payload,
@@ -21,13 +24,15 @@ public class TransactionEmailService {
     @Inject ReceiverRepository receiverRepository;
     TemplateRenderer renderer = TemplateRenderer.getInstance();
 
+    private static Logger logger = LoggerFactory.getLogger(TransactionEmailService.class);
+
     public void sendResetPasswordMail(String email, String token) throws SendTransactionMailFailed, ReceiverNotFound, GenerateHtmlContentFailed {
         Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
 
         if (receiver.isEmpty()) {
+            logger.error(String.format("Unable to find receiver by email: %s", email));
             throw new ReceiverNotFound("Reset password: Receiver not found");
         }
-
         String receiverName = receiver.get().getUserName();
         String htmlContent = renderer.renderResetPasswordMailContent(receiverName, token);
         String alternativeContent = String.format("Hello %s, please follow this link to reset your password: %s", receiverName, token);
@@ -46,6 +51,7 @@ public class TransactionEmailService {
         Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
 
         if (receiver.isEmpty()) {
+            logger.error(String.format("Unable to find receiver by email: %s", email));
             throw new ReceiverNotFound("Email verification: Receiver not found");
         }
 
