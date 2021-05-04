@@ -75,7 +75,7 @@ public class TransactionMailServiceTest {
 
 
     @Test
-    @DisplayName("Make sure 'reset password' is sent")
+    @DisplayName("Make sure 'reset password' is sent correctly")
     public void send_reset_password_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
         String email = "din.djarin@mandalorian.com";
         String name = "Din Djarin";
@@ -94,7 +94,7 @@ public class TransactionMailServiceTest {
     }
 
     @Test
-    @DisplayName("Make sure 'email verification' is sent")
+    @DisplayName("Make sure 'email verification' is sent correctly")
     public void send_email_verification_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
         String email = "grogu@mandalorian.com";
         String name = "Grogu";
