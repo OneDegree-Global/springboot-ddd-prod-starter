@@ -1,8 +1,8 @@
-package com.cymetrics.transaction_mail.repository;
+package com.cymetrics.transactionmail.repository;
 
 import java.util.Optional;
 
-import com.cymetrics.transaction_mail.aggregates.Receiver;
+import com.cymetrics.transactionmail.aggregates.Receiver;
 
 public interface ReceiverRepository {
 

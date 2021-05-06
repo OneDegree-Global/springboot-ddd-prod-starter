@@ -1,14 +1,14 @@
-package com.cymetrics.transaction_mail.services;
+package com.cymetrics.transactionmail.services;
 
 import javax.inject.Inject;
 
-import com.cymetrics.transaction_mail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transaction_mail.exceptions.ReceiverNotFound;
-import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.transaction_mail.interfaces.MailSender;
-import com.cymetrics.transaction_mail.TemplateRenderer;
-import com.cymetrics.transaction_mail.aggregates.Receiver;
-import com.cymetrics.transaction_mail.repository.ReceiverRepository;
+import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.transactionmail.exceptions.ReceiverNotFound;
+import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
+import com.cymetrics.transactionmail.interfaces.MailSender;
+import com.cymetrics.transactionmail.TemplateRenderer;
+import com.cymetrics.transactionmail.aggregates.Receiver;
+import com.cymetrics.transactionmail.repository.ReceiverRepository;
 
 import java.util.Optional;
 
@@ -37,6 +37,7 @@ public class TransactionEmailService {
         String htmlContent = renderer.renderResetPasswordMailContent(receiverName, token);
         String alternativeContent = String.format("Hello %s, please follow this link to reset your password: %s", receiverName, token);
 
+        // TODO: failure cases handling
         this.sender.send(
             new String[] { receiver.get().getEmail() },
             new String[] {},

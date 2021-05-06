@@ -1,6 +1,6 @@
-package com.cymetrics.transaction_mail.interfaces;
+package com.cymetrics.transactionmail.interfaces;
 
-import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
+import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
 
 public interface MailSender {
 

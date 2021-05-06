@@ -1,6 +1,6 @@
-package com.cymetrics.transaction_mail.aggregates;
+package com.cymetrics.transactionmail.aggregates;
 import lombok.Getter;
-import com.cymetrics.transaction_mail.exceptions.InvalidEmailFormat;
+import com.cymetrics.transactionmail.exceptions.InvalidEmailFormat;
 import org.apache.commons.validator.routines.EmailValidator;
 
 @Getter

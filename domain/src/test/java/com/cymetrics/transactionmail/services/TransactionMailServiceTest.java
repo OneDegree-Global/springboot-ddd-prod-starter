@@ -1,13 +1,13 @@
-package com.cymetrics.transaction_mail.services;
+package com.cymetrics.transactionmail.services;
 
-import com.cymetrics.transaction_mail.TemplateRenderer;
-import com.cymetrics.transaction_mail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transaction_mail.exceptions.InvalidEmailFormat;
-import com.cymetrics.transaction_mail.exceptions.ReceiverNotFound;
-import com.cymetrics.transaction_mail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.transaction_mail.interfaces.MailSender;
-import com.cymetrics.transaction_mail.aggregates.Receiver;
-import com.cymetrics.transaction_mail.repository.ReceiverRepository;
+import com.cymetrics.transactionmail.TemplateRenderer;
+import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.transactionmail.exceptions.InvalidEmailFormat;
+import com.cymetrics.transactionmail.exceptions.ReceiverNotFound;
+import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
+import com.cymetrics.transactionmail.interfaces.MailSender;
+import com.cymetrics.transactionmail.aggregates.Receiver;
+import com.cymetrics.transactionmail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,7 +82,9 @@ public class TransactionMailServiceTest {
         String token = "H4sSqyJx";
         Receiver user = new Receiver("1", email, name);
         when(this.mockReceiverRepository.getReceiverByEmail(eq(email))).thenReturn(Optional.of(user));
+
         transactionMailService.sendResetPasswordMail(email, token);
+
         verify(this.mockSender, times(1)).send(
                 eq(new String[] { email }),
                 eq(new String[] {}),
@@ -101,7 +103,9 @@ public class TransactionMailServiceTest {
         String token = "H4sSqyJx";
         Receiver user = new Receiver("1", email, name);
         when(this.mockReceiverRepository.getReceiverByEmail(eq(email))).thenReturn(Optional.of(user));
+
         transactionMailService.sendEmailVerificationMail(email, token);
+
         verify(this.mockSender, times(1)).send(
                 eq(new String[] { email }),
                 eq(new String[] {}),

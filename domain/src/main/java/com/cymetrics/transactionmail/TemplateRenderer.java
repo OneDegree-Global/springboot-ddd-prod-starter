@@ -1,7 +1,7 @@
-package com.cymetrics.transaction_mail;
+package com.cymetrics.transactionmail;
 
-import com.cymetrics.transaction_mail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transaction_mail.exceptions.InitTemplateRendererFailed;
+import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.transactionmail.exceptions.InitTemplateRendererFailed;
 import freemarker.core.ParseException;
 import freemarker.template.*;
 
@@ -22,6 +22,7 @@ public class TemplateRenderer {
             instance = new TemplateRenderer();
         } catch (InitTemplateRendererFailed e) {
             logger.error("Exception occurred during initialization", e);
+            // customized runtime exception
             throw new RuntimeException("Exception occurred during initialization");
         }
     }
