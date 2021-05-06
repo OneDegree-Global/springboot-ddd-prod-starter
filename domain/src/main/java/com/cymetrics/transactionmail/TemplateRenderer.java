@@ -18,13 +18,7 @@ public class TemplateRenderer {
     private static Logger logger = LoggerFactory.getLogger(TemplateRenderer.class);
 
     static {
-        try {
-            instance = new TemplateRenderer();
-        } catch (InitTemplateRendererFailed e) {
-            logger.error("Exception occurred during initialization", e);
-            // customized runtime exception
-            throw new RuntimeException("Exception occurred during initialization");
-        }
+        instance = new TemplateRenderer();
     }
 
 
