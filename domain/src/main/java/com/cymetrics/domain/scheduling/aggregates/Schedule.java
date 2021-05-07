@@ -69,7 +69,7 @@ public class Schedule {
         if (lastExecutionTime == null || supposedPrevExecutionTime.isEmpty())
             return false;
         return isReProducible &&
-                !supposedPrevExecutionTime.get().truncatedTo(ChronoUnit.MINUTES).isEqual(lastExecutionTime.truncatedTo(ChronoUnit.MINUTES));
+                lastExecutionTime.truncatedTo(ChronoUnit.MINUTES).isBefore(supposedPrevExecutionTime.get().truncatedTo(ChronoUnit.MINUTES));
     }
 
     public void produceTask() throws ProduceScheduleException {
@@ -82,7 +82,8 @@ public class Schedule {
             }
             producer.send(command, new JsonMessage(json));
         } catch (ProtocolIOException | JSONException e) {
-            throw new ProduceScheduleException("Produce schedule task error:" + e.toString());
+            throw new ProduceScheduleException("Schedule entity Produce schedule task error:\n name:" + name + "\n " +
+                    "command" + command + "\n args" + String.join(" ", args) + "\n cron expression" + cronExpression.getDescription());
         }
     }
 

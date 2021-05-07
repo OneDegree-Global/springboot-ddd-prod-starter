@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.time.Clock;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class ScheduleProducer {
@@ -23,30 +21,20 @@ public class ScheduleProducer {
 
     static Logger logger = LoggerFactory.getLogger(ScheduleProducer.class);
     static ScheduleProducer scheduleProducer;
+    static final int SECONDS_IN_MIN = 60;
 
-    public void startProduceScheduling() throws ProduceScheduleException {
-
+    public void startProduceScheduling() {
         while (true) {
-            ZonedDateTime timestamp = clock.instant().atZone(ZoneId.systemDefault());
             ArrayList<Schedule> schedules = (ArrayList<Schedule>) scheduleService.getAllSchedules();
-
             for (Schedule schedule : schedules) {
-                // Prevent task to be produced twice in the same timeslot if exception occurs
-                if (schedule.getLastExecutionTime() != null &&
-                        schedule.getLastExecutionTime().truncatedTo(ChronoUnit.MINUTES).isEqual(timestamp.truncatedTo(ChronoUnit.MINUTES))) {
-                    continue;
-                }
-                // if some schedule task missed due to produce overhead, check if these schedules need re-produce
                 try {
-                    if (schedule.shouldExecute(timestamp) ||
-                            schedule.needReProduce())
-                        this.produceTask(schedule);
+                    executeSchedule(schedule);
                 } catch (ProduceScheduleException e) {
-                    logger.error("produce scheduled task failed:" + e.toString());
+                    logger.error("Produce scheduled task failed:" + e.toString());
                 }
             }
 
-            int secondsToNextMinute = 60 - clock.instant().atZone(ZoneId.systemDefault()).getSecond();
+            int secondsToNextMinute = SECONDS_IN_MIN - clock.instant().atZone(ZoneId.systemDefault()).getSecond();
             try {
                 Thread.interrupted();
                 Thread.sleep(secondsToNextMinute);
@@ -62,14 +50,10 @@ public class ScheduleProducer {
         scheduleProducer.startProduceScheduling();
     }
 
-
     @Retry(baseInterval = 4, retries = 5)
     @Transactional()
-    public void produceTask(Schedule s) throws ProduceScheduleException {
-        s.setLastExecutionTime(clock.instant().atZone(ZoneId.systemDefault()));
-        scheduleService.saveSchedule(s);
-        s.produceTask();
+    public void executeSchedule(Schedule schedule) throws ProduceScheduleException {
+        scheduleService.executeSchedule(schedule);
     }
-
 
 }
