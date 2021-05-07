@@ -23,7 +23,7 @@ public class ScheduleService {
 
     private static Logger logger = LoggerFactory.getLogger(ScheduleService.class);
 
-    public Optional<String> registerTask(IScheduledTask task, String command)  {
+    public Optional<String> registerTask(IScheduledTask task, String command) {
         return consumer.consume(command, new IMessageCallback() {
             @Override
             public void onDelivered(Object message) {
@@ -37,14 +37,14 @@ public class ScheduleService {
         consumer.removeCallback(tag);
     }
 
-    public Optional<Schedule> createSchedule(String name, String command, String cronExpression){
+    public Optional<Schedule> createSchedule(String name, String command, String cronExpression) {
         Schedule schedule;
         Optional<Schedule> repoSchedule;
         try {
             schedule = new Schedule(name, command, cronExpression);
             repoSchedule = repo.save(schedule);
-        } catch (InvalidCronException e){
-            logger.error("Schedule cron expression invalid"+e.toString());
+        } catch (InvalidCronException e) {
+            logger.error("Schedule cron expression invalid" + e.toString());
             return Optional.empty();
         }
         return repoSchedule;
@@ -54,7 +54,11 @@ public class ScheduleService {
         repo.deleteByName(name);
     }
 
-    public List<Schedule> getAllSchedules(){
+    public void saveSchedule(Schedule s) {
+        repo.save(s);
+    }
+
+    public List<Schedule> getAllSchedules() {
         return repo.getAll();
     }
 
