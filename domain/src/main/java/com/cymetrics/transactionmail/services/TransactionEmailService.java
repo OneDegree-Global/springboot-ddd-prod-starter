@@ -6,7 +6,7 @@ import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
 import com.cymetrics.transactionmail.exceptions.ReceiverNotFound;
 import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
 import com.cymetrics.transactionmail.interfaces.MailSender;
-import com.cymetrics.transactionmail.TemplateRenderer;
+import com.cymetrics.transactionmail.utils.TemplateRenderer;
 import com.cymetrics.transactionmail.aggregates.Receiver;
 import com.cymetrics.transactionmail.repository.ReceiverRepository;
 

@@ -1,4 +1,4 @@
-package com.cymetrics.transactionmail;
+package com.cymetrics.transactionmail.utils;
 
 import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
 import com.cymetrics.transactionmail.exceptions.InitTemplateRendererFailed;
