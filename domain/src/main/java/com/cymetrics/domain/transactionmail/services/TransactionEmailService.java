@@ -37,15 +37,14 @@ public class TransactionEmailService {
         String htmlContent = renderer.renderResetPasswordMailContent(receiverName, token);
         String alternativeContent = String.format("Hello %s, please follow this link to reset your password: %s", receiverName, token);
 
+        EmailSenderPayload payload = new EmailSenderPayload();
+        payload.setRecipients(new String[] { receiver.get().getEmail() });
+        payload.setSubject("Reset your password");
+        payload.setHtmlContent(htmlContent);
+        payload.setAlternativeContent(alternativeContent);
+
         // TODO: failure cases handling
-        this.sender.send(
-            new String[] { receiver.get().getEmail() },
-            new String[] {},
-            new String[] {},
-            String.format("Reset your password"),
-            htmlContent,
-            alternativeContent
-        );
+        this.sender.send(payload);
     }
 
     public void sendEmailVerificationMail(String email, String verifyCode) throws SendTransactionMailFailed, ReceiverNotFound, GenerateHtmlContentFailed {
@@ -60,14 +59,13 @@ public class TransactionEmailService {
         String htmlContent = renderer.renderEmailVerificationMailContent(receiverName, verifyCode);
         String alternativeContent = String.format("Hello %s, please follow this link to activate your account: %s", receiverName, verifyCode);
 
-        this.sender.send(
-            new String[] { receiver.get().getEmail() },
-            new String[] {},
-            new String[] {},
-            String.format("Account verification"),
-            htmlContent,
-            alternativeContent
-        );
+        EmailSenderPayload payload = new EmailSenderPayload();
+        payload.setRecipients(new String[] { receiver.get().getEmail() });
+        payload.setSubject("Account verification");
+        payload.setHtmlContent(htmlContent);
+        payload.setAlternativeContent(alternativeContent);
+
+        this.sender.send(payload);
     }
 
     public void sendWelcomeOnBoardMail(String email) throws ReceiverNotFound, GenerateHtmlContentFailed, SendTransactionMailFailed {
@@ -85,14 +83,13 @@ public class TransactionEmailService {
                 receiverName
         );
 
-        this.sender.send(
-                new String[] { receiver.get().getEmail() },
-                new String[] {},
-                new String[] {},
-                String.format("Welcome to Cymetrics"),
-                htmlContent,
-                alternativeContent
-        );
+        EmailSenderPayload payload = new EmailSenderPayload();
+        payload.setRecipients(new String[] { receiver.get().getEmail() });
+        payload.setSubject("Welcome to Cymetrics");
+        payload.setHtmlContent(htmlContent);
+        payload.setAlternativeContent(alternativeContent);
+
+        this.sender.send(payload);
 
     }
 

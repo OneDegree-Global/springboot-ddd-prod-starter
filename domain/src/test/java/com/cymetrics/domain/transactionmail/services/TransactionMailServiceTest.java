@@ -8,6 +8,7 @@ import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed
 import com.cymetrics.domain.transactionmail.interfaces.MailSender;
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -94,12 +95,22 @@ public class TransactionMailServiceTest {
         transactionMailService.sendResetPasswordMail(email, token);
 
         verify(this.mockSender, times(1)).send(
-                eq(new String[] { email }),
-                eq(new String[] {}),
-                eq(new String[] {}),
-                anyString(),
-                argThat(str -> str.contains(name) && str.contains(token)),
-                argThat(str -> str.contains(name) && str.contains(token))
+            argThat(payload -> {
+                Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
+                Assertions.assertEquals(payload.getCc(), null);
+                Assertions.assertEquals(payload.getBcc(), null);
+
+                String[] mailContents = (new String[] {
+                    payload.getHtmlContent(),
+                    payload.getAlternativeContent()
+                });
+
+                for (String content : mailContents) {
+                    Assertions.assertTrue(content.contains(name) && content.contains(token));
+                }
+
+                return true;
+            })
         );
     }
 
@@ -115,12 +126,22 @@ public class TransactionMailServiceTest {
         transactionMailService.sendEmailVerificationMail(email, token);
 
         verify(this.mockSender, times(1)).send(
-                eq(new String[] { email }),
-                eq(new String[] {}),
-                eq(new String[] {}),
-                anyString(),
-                argThat(str -> str.contains(name) && str.contains(token)),
-                argThat(str -> str.contains(name) && str.contains(token))
+            argThat(payload -> {
+                Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
+                Assertions.assertEquals(payload.getCc(), null);
+                Assertions.assertEquals(payload.getBcc(), null);
+
+                String[] mailContents = (new String[] {
+                    payload.getHtmlContent(),
+                    payload.getAlternativeContent()
+                });
+
+                for (String content : mailContents) {
+                    Assertions.assertTrue(content.contains(name) && content.contains(token));
+                }
+
+                return true;
+            })
         );
     }
 
@@ -136,12 +157,22 @@ public class TransactionMailServiceTest {
         transactionMailService.sendWelcomeOnBoardMail(email);
 
         verify(this.mockSender, times(1)).send(
-                eq(new String[] { email }),
-                eq(new String[] {}),
-                eq(new String[] {}),
-                anyString(),
-                argThat(str -> str.contains(name)),
-                argThat(str -> str.contains(name))
+            argThat(payload -> {
+                Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
+                Assertions.assertEquals(payload.getCc(), null);
+                Assertions.assertEquals(payload.getBcc(), null);
+
+                String[] mailContents = (new String[] {
+                    payload.getHtmlContent(),
+                    payload.getAlternativeContent()
+                });
+
+                for (String content : mailContents) {
+                    Assertions.assertTrue(content.contains(name));
+                }
+
+                return true;
+            })
         );
     }
 }
