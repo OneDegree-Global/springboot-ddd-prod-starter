@@ -22,8 +22,9 @@ public class ScheduleDo implements Serializable {
     @Column(name = "isActive")
     private Boolean isActive = true;
 
+
     @Column(name = "isOverwrite")
-    private Boolean isOverwrite = false;
+    private Boolean isReProducible = false;
 
     @Column(name = "effectiveTime")
     private Timestamp effectiveTime = null;
@@ -34,11 +35,11 @@ public class ScheduleDo implements Serializable {
     @Column(name = "args")
     private String cronExpression = "";
 
-    public ScheduleDo(String name, String command, Boolean isActive, Boolean isOverwrite, Timestamp effectiveTime, String args, String cronExpression) {
+    public ScheduleDo(String name, String command, Boolean isActive, Boolean isReProducible, Timestamp effectiveTime, String args, String cronExpression) {
         this.name = name;
         this.command = command;
         this.isActive = isActive;
-        this.isOverwrite = isOverwrite;
+        this.isReProducible = isReProducible;
         this.effectiveTime = effectiveTime;
         this.args = args;
         this.cronExpression = cronExpression;
@@ -57,8 +58,8 @@ public class ScheduleDo implements Serializable {
         return isActive;
     }
 
-    public Boolean getOverwrite() {
-        return isOverwrite;
+    public Boolean getIsReProducible() {
+        return isReProducible;
     }
 
     public Timestamp getEffectiveTime() {

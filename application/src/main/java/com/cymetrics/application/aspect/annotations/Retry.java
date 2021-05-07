@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Retry {
     long baseInterval() default 4;
+
     int retries() default 5;
 }

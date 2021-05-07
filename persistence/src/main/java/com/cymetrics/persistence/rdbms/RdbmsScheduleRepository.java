@@ -7,10 +7,8 @@ import com.cymetrics.persistence.rdbms.dao.ScheduleDao;
 import com.cymetrics.persistence.rdbms.entities.ScheduleDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.parameters.P;
 
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class RdbmsScheduleRepository implements ScheduleRepository {
         ScheduleDo scheduleDo = new ScheduleDo(s.getName(),
                 s.getCommand(),
                 s.isActive(),
-                s.isOverwrite(),
+                s.isReProducible(),
                 Timestamp.valueOf(s.getEffectiveTime().toLocalDateTime()),
                 String.join(" ",s.getArgs()),
                 s.getCronExpression().getStringExpression()
@@ -38,7 +36,7 @@ public class RdbmsScheduleRepository implements ScheduleRepository {
         try {
             Schedule schedule = new Schedule(scheduleDo.getName(), scheduleDo.getCommand(), scheduleDo.getCronExpression());
             schedule.setActive(scheduleDo.getActive());
-            schedule.setOverwrite(scheduleDo.getOverwrite());
+            schedule.setReProducible(scheduleDo.getIsReProducible());
             schedule.setArgs(scheduleDo.getArgs().split(" "));
             schedule.setEffectiveTime(scheduleDo.getEffectiveTime().toLocalDateTime().atZone(ZoneId.systemDefault()));
             return Optional.of(schedule);

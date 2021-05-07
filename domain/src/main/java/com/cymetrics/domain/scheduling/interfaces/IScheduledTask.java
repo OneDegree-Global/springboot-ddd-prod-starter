@@ -1,4 +1,5 @@
 package com.cymetrics.domain.scheduling.interfaces;
+
 import org.json.JSONObject;
 
 public interface IScheduledTask {

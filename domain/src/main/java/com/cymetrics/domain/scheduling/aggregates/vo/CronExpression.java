@@ -20,26 +20,30 @@ public class CronExpression {
 
     public CronExpression(String expression) throws InvalidCronException {
         CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
-        try{
+        try {
             cron = parser.parse(expression);
-        } catch(IllegalArgumentException e){
-            throw new InvalidCronException("Cron expression invalid! " + expression );
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCronException("Cron expression invalid! " + expression);
         }
     }
 
-    public String getDescription(){
-        return CronDescriptor.instance(Locale.TAIWAN).describe(this.cron);
+    public String getDescription() {
+        return CronDescriptor.instance(Locale.US).describe(this.cron);
     }
 
-    public String getStringExpression(){
+    public String getStringExpression() {
         return cron.asString();
     }
-    public Optional<ZonedDateTime> getNextExecutionTime(ZonedDateTime instant){
+
+    public Optional<ZonedDateTime> getNextExecutionTime(ZonedDateTime instant) {
         return ExecutionTime.forCron(this.cron).nextExecution(instant);
     }
 
-    public boolean isMatch(ZonedDateTime instant){
-        return ExecutionTime.forCron(cron).isMatch(instant);
+    public boolean isMatch(ZonedDateTime timestamp) {
+        return ExecutionTime.forCron(cron).isMatch(timestamp);
     }
 
+    public Optional<java.time.ZonedDateTime> getPrevExecution(ZonedDateTime timestamp) {
+        return ExecutionTime.forCron(cron).lastExecution(timestamp);
+    }
 }
