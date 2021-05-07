@@ -1,14 +1,14 @@
-package com.cymetrics.transactionmail.services;
+package com.cymetrics.domain.transactionmail.services;
 
 import javax.inject.Inject;
 
-import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transactionmail.exceptions.ReceiverNotFound;
-import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.transactionmail.interfaces.MailSender;
-import com.cymetrics.transactionmail.utils.TemplateRenderer;
-import com.cymetrics.transactionmail.aggregates.Receiver;
-import com.cymetrics.transactionmail.repository.ReceiverRepository;
+import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
+import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
+import com.cymetrics.domain.transactionmail.interfaces.MailSender;
+import com.cymetrics.domain.transactionmail.utils.TemplateRenderer;
+import com.cymetrics.domain.transactionmail.aggregates.Receiver;
+import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 
 import java.util.Optional;
 
@@ -68,6 +68,32 @@ public class TransactionEmailService {
             htmlContent,
             alternativeContent
         );
+    }
+
+    public void sendWelcomeOnBoardMail(String email) throws ReceiverNotFound, GenerateHtmlContentFailed, SendTransactionMailFailed {
+        Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
+
+        if (receiver.isEmpty()) {
+            logger.error(String.format("Unable to find receiver by email: %s", email));
+            throw new ReceiverNotFound("Welcome on board: Receiver not found");
+        }
+
+        String receiverName = receiver.get().getUserName();
+        String htmlContent = renderer.renderWelcomeOnBoardMailContent(receiverName);
+        String alternativeContent = String.format(
+                "Hello %s, welcome to Cymetrics. We've got you some useful tips, please follow this link to check them out.",
+                receiverName
+        );
+
+        this.sender.send(
+                new String[] { receiver.get().getEmail() },
+                new String[] {},
+                new String[] {},
+                String.format("Welcome to Cymetrics"),
+                htmlContent,
+                alternativeContent
+        );
+
     }
 
 }

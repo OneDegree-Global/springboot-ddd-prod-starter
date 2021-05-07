@@ -1,7 +1,7 @@
-package com.cymetrics.transactionmail.utils;
+package com.cymetrics.domain.transactionmail.utils;
 
-import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transactionmail.exceptions.InitTemplateRendererFailed;
+import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.domain.transactionmail.exceptions.InitTemplateRendererFailed;
 import freemarker.core.ParseException;
 import freemarker.template.*;
 
@@ -25,6 +25,7 @@ public class TemplateRenderer {
 
     private Template resetPasswordTemplate;
     private Template emailVerificationTemplate;
+    private Template welcomeOnBoardTemplate;
 
     private TemplateRenderer() throws InitTemplateRendererFailed {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
@@ -40,6 +41,7 @@ public class TemplateRenderer {
         try {
             this.resetPasswordTemplate = cfg.getTemplate("ResetPassword.ftl");
             this.emailVerificationTemplate = cfg.getTemplate("EmailVerification.ftl");
+            this.welcomeOnBoardTemplate = cfg.getTemplate("WelcomeOnBoard.ftl");
         } catch (TemplateNotFoundException e) {
             String errMessage = String.format("Unable to find template: %s", e.getTemplateName());
             logger.error(errMessage);
@@ -110,5 +112,24 @@ public class TemplateRenderer {
         }
         return result.toString();
     }
+
+    public String renderWelcomeOnBoardMailContent(String name) throws GenerateHtmlContentFailed {
+        Map<String, String> data = new HashMap();
+        data.put("name", name);
+        data.put("title", "Welcome to Cymetrics");
+        StringWriter result = new StringWriter();
+
+        try {
+            this.welcomeOnBoardTemplate.process(data, result);
+        } catch (TemplateException e) {
+            templateExceptionHandler(e);
+        } catch (IOException e) {
+            String errMessage = String.format("IO Exception for EmailVerification: %s", e.getMessage());
+            logger.error(errMessage);
+            throw new GenerateHtmlContentFailed(errMessage);
+        }
+        return result.toString();
+    }
+
 
 }

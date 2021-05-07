@@ -1,13 +1,13 @@
-package com.cymetrics.transactionmail.services;
+package com.cymetrics.domain.transactionmail.services;
 
-import com.cymetrics.transactionmail.TemplateRenderer;
-import com.cymetrics.transactionmail.exceptions.GenerateHtmlContentFailed;
-import com.cymetrics.transactionmail.exceptions.InvalidEmailFormat;
-import com.cymetrics.transactionmail.exceptions.ReceiverNotFound;
-import com.cymetrics.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.transactionmail.interfaces.MailSender;
-import com.cymetrics.transactionmail.aggregates.Receiver;
-import com.cymetrics.transactionmail.repository.ReceiverRepository;
+import com.cymetrics.domain.transactionmail.utils.TemplateRenderer;
+import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
+import com.cymetrics.domain.transactionmail.exceptions.InvalidEmailFormat;
+import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
+import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
+import com.cymetrics.domain.transactionmail.interfaces.MailSender;
+import com.cymetrics.domain.transactionmail.aggregates.Receiver;
+import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +48,9 @@ public class TransactionMailServiceTest {
         Assertions.assertThrows(ReceiverNotFound.class, () -> {
             transactionMailService.sendEmailVerificationMail(email, "H4sSqyJx");
         });
+        Assertions.assertThrows(ReceiverNotFound.class, () -> {
+            transactionMailService.sendWelcomeOnBoardMail(email);
+        });
         verifyNoInteractions(transactionMailService.sender);
     }
 
@@ -68,6 +71,11 @@ public class TransactionMailServiceTest {
         when(this.mockTemplateRenderer.renderEmailVerificationMailContent(any(), any())).thenThrow(GenerateHtmlContentFailed.class);
         Assertions.assertThrows(GenerateHtmlContentFailed.class, () -> {
             transactionMailService.sendEmailVerificationMail(email, "H4sSqyJx");
+        });
+
+        when(this.mockTemplateRenderer.renderWelcomeOnBoardMailContent(any())).thenThrow(GenerateHtmlContentFailed.class);
+        Assertions.assertThrows(GenerateHtmlContentFailed.class, () -> {
+            transactionMailService.sendWelcomeOnBoardMail(email);
         });
 
         verifyNoInteractions(transactionMailService.sender);
@@ -113,6 +121,27 @@ public class TransactionMailServiceTest {
                 anyString(),
                 argThat(str -> str.contains(name) && str.contains(token)),
                 argThat(str -> str.contains(name) && str.contains(token))
+        );
+    }
+
+
+    @Test
+    @DisplayName("Make sure 'welcome onboard' is sent correctly")
+    public void send_welcome_onboard_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
+        String email = "grogu@mandalorian.com";
+        String name = "Grogu";
+        Receiver user = new Receiver("1", email, name);
+        when(this.mockReceiverRepository.getReceiverByEmail(eq(email))).thenReturn(Optional.of(user));
+
+        transactionMailService.sendWelcomeOnBoardMail(email);
+
+        verify(this.mockSender, times(1)).send(
+                eq(new String[] { email }),
+                eq(new String[] {}),
+                eq(new String[] {}),
+                anyString(),
+                argThat(str -> str.contains(name)),
+                argThat(str -> str.contains(name))
         );
     }
 }
