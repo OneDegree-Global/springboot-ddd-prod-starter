@@ -4,8 +4,6 @@ import javax.inject.Inject;
 
 import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
 import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
-import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.domain.transactionmail.interfaces.MailSender;
 import com.cymetrics.domain.transactionmail.utils.TemplateRenderer;
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
@@ -15,18 +13,20 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cymetrics.domain.transactionmail.utils.EmailSender;
+
 // TODO: Handle domain url and project name
 //  It's not decided yet whether those information should be coming along with event payload,
 //  or we should query it inside of application layer.
 public class TransactionEmailService {
 
-    @Inject MailSender sender;
     @Inject ReceiverRepository receiverRepository;
     TemplateRenderer renderer = TemplateRenderer.getInstance();
+    EmailSender mailSender = new EmailSender();
 
     private static Logger logger = LoggerFactory.getLogger(TransactionEmailService.class);
 
-    public void sendResetPasswordMail(String email, String token) throws SendTransactionMailFailed, ReceiverNotFound, GenerateHtmlContentFailed {
+    public void sendResetPasswordMail(String email, String token) throws ReceiverNotFound, GenerateHtmlContentFailed {
         Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
 
         if (receiver.isEmpty()) {
@@ -43,11 +43,10 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        // TODO: failure cases handling
-        this.sender.send(payload);
+        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.HIGH, payload);
     }
 
-    public void sendEmailVerificationMail(String email, String verifyCode) throws SendTransactionMailFailed, ReceiverNotFound, GenerateHtmlContentFailed {
+    public void sendEmailVerificationMail(String email, String verifyCode) throws ReceiverNotFound, GenerateHtmlContentFailed {
         Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
 
         if (receiver.isEmpty()) {
@@ -65,10 +64,10 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        this.sender.send(payload);
+        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.HIGH, payload);
     }
 
-    public void sendWelcomeOnBoardMail(String email) throws ReceiverNotFound, GenerateHtmlContentFailed, SendTransactionMailFailed {
+    public void sendWelcomeOnboardMail(String email) throws ReceiverNotFound, GenerateHtmlContentFailed {
         Optional<Receiver> receiver = receiverRepository.getReceiverByEmail(email);
 
         if (receiver.isEmpty()) {
@@ -79,8 +78,8 @@ public class TransactionEmailService {
         String receiverName = receiver.get().getUserName();
         String htmlContent = renderer.renderWelcomeOnBoardMailContent(receiverName);
         String alternativeContent = String.format(
-                "Hello %s, welcome to Cymetrics. We've got you some useful tips, please follow this link to check them out.",
-                receiverName
+            "Hello %s, welcome to Cymetrics. We've got you some useful tips, please follow this link to check them out.",
+            receiverName
         );
 
         EmailSenderPayload payload = new EmailSenderPayload();
@@ -89,8 +88,7 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        this.sender.send(payload);
-
+        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.MEDIUM, payload);
     }
 
 }

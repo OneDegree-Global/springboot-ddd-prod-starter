@@ -49,7 +49,7 @@ public class TransactionMailServiceTest {
             transactionMailService.sendEmailVerificationMail(email, "H4sSqyJx");
         });
         Assertions.assertThrows(ReceiverNotFound.class, () -> {
-            transactionMailService.sendWelcomeOnBoardMail(email);
+            transactionMailService.sendWelcomeOnboardMail(email);
         });
         verifyNoInteractions(transactionMailService.sender);
     }
@@ -75,7 +75,7 @@ public class TransactionMailServiceTest {
 
         when(this.mockTemplateRenderer.renderWelcomeOnBoardMailContent(any())).thenThrow(GenerateHtmlContentFailed.class);
         Assertions.assertThrows(GenerateHtmlContentFailed.class, () -> {
-            transactionMailService.sendWelcomeOnBoardMail(email);
+            transactionMailService.sendWelcomeOnboardMail(email);
         });
 
         verifyNoInteractions(transactionMailService.sender);
@@ -153,7 +153,7 @@ public class TransactionMailServiceTest {
         Receiver user = new Receiver("1", email, name);
         when(this.mockReceiverRepository.getReceiverByEmail(eq(email))).thenReturn(Optional.of(user));
 
-        transactionMailService.sendWelcomeOnBoardMail(email);
+        transactionMailService.sendWelcomeOnboardMail(email);
 
         verify(this.mockSender, times(1)).send(
             argThat(payload -> {
