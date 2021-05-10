@@ -5,7 +5,7 @@ import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed
 import com.cymetrics.domain.transactionmail.exceptions.InvalidEmailFormat;
 import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
 import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.domain.transactionmail.interfaces.MailSender;
+import com.cymetrics.domain.transactionmail.utils.EmailSender;
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 public class TransactionMailServiceTest {
 
-    @Mock MailSender mockSender;
+    @Mock EmailSender mockSender;
     @Mock ReceiverRepository mockReceiverRepository;
     @Mock TemplateRenderer mockTemplateRenderer;
 
@@ -33,7 +33,7 @@ public class TransactionMailServiceTest {
     @BeforeEach
     public void setup() {
         transactionMailService = new TransactionEmailService();
-        transactionMailService.sender = this.mockSender;
+        transactionMailService.mailSender = this.mockSender;
         transactionMailService.receiverRepository = this.mockReceiverRepository;
     }
 
@@ -51,7 +51,7 @@ public class TransactionMailServiceTest {
         Assertions.assertThrows(ReceiverNotFound.class, () -> {
             transactionMailService.sendWelcomeOnboardMail(email);
         });
-        verifyNoInteractions(transactionMailService.sender);
+        verifyNoInteractions(transactionMailService.mailSender);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TransactionMailServiceTest {
             transactionMailService.sendWelcomeOnboardMail(email);
         });
 
-        verifyNoInteractions(transactionMailService.sender);
+        verifyNoInteractions(transactionMailService.mailSender);
     }
 
 
@@ -93,7 +93,7 @@ public class TransactionMailServiceTest {
 
         transactionMailService.sendResetPasswordMail(email, token);
 
-        verify(this.mockSender, times(1)).send(
+        verify(this.mockSender, times(1)).sendHighLevelMail(
             argThat(payload -> {
                 Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
                 Assertions.assertEquals(payload.getCc(), null);
@@ -124,7 +124,7 @@ public class TransactionMailServiceTest {
 
         transactionMailService.sendEmailVerificationMail(email, token);
 
-        verify(this.mockSender, times(1)).send(
+        verify(this.mockSender, times(1)).sendHighLevelMail(
             argThat(payload -> {
                 Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
                 Assertions.assertEquals(payload.getCc(), null);
@@ -155,7 +155,7 @@ public class TransactionMailServiceTest {
 
         transactionMailService.sendWelcomeOnboardMail(email);
 
-        verify(this.mockSender, times(1)).send(
+        verify(this.mockSender, times(1)).sendMediumLevelMail(
             argThat(payload -> {
                 Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
                 Assertions.assertEquals(payload.getCc(), null);

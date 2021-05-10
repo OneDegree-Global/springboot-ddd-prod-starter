@@ -43,7 +43,7 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.HIGH, payload);
+        mailSender.sendHighLevelMail(payload);
     }
 
     public void sendEmailVerificationMail(String email, String verifyCode) throws ReceiverNotFound, GenerateHtmlContentFailed {
@@ -64,7 +64,7 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.HIGH, payload);
+        mailSender.sendHighLevelMail(payload);
     }
 
     public void sendWelcomeOnboardMail(String email) throws ReceiverNotFound, GenerateHtmlContentFailed {
@@ -88,7 +88,7 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        mailSender.sendWithImportanceLevel(EmailSender.levelOfImportance.MEDIUM, payload);
+        mailSender.sendMediumLevelMail(payload);
     }
 
 }
