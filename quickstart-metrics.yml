@@ -1,0 +1,25 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  prometheus:
+    image: prom/prometheus:v2.12.0
+    ports:
+      - "9090:9090"
+    depends_on:
+      - spring-boot
+    command:
+      --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./quickstart/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:7.5.5
+    volumes:
+      - ./quickstart/grafana/provisioning:/etc/grafana/provisioning
+      - ./quickstart/grafana/grafana.ini:/etc/grafana/grafana.ini
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+
+
+

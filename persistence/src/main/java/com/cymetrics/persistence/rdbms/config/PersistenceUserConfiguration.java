@@ -22,8 +22,7 @@ import java.util.HashMap;
 @Configuration
 @ConditionalOnProperty(
         value="server.persistence.type",
-        havingValue = "rdbms",
-        matchIfMissing = false)
+        havingValue = "rdbms")
 @EnableJpaRepositories(
         basePackages = "com.cymetrics.persistence.rdbms.dao",
         entityManagerFactoryRef = "userEntityManager",

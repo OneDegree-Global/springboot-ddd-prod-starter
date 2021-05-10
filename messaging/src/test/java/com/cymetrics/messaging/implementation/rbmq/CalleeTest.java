@@ -15,6 +15,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.spy;
 
 @Testcontainers
+@Tag("slow")
 public class CalleeTest {
 
     MessageCalleeRBMQImp callee;

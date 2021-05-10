@@ -13,6 +13,7 @@ import java.time.Clock;
 import static org.mockito.Mockito.spy;
 
 @Testcontainers
+@Tag("slow")
 public class SubscriberTest {
 
     static Channel channel;

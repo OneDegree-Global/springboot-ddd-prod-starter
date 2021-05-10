@@ -1,8 +1,10 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
+import org.junit.jupiter.api.Tag;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
+@Tag("slow")
 public class RBMQTestcontainer {
 
     static GenericContainer rbmq;
