@@ -1,10 +1,10 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessagePublisher;
-import com.cymetrics.messaging.IMessageSubscriber;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessagePublisher;
+import com.cymetrics.domain.messaging.IMessageSubscriber;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -27,14 +27,12 @@ public class PublisherSubscriberTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception{
+    public static void createQueue() throws Exception{
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         proxy = new MessageProxyRBMQImp();
         proxy.createTopic("userAuthed");
         proxy.createTopic("mailSent");
@@ -45,7 +43,7 @@ public class PublisherSubscriberTest {
     }
 
     @AfterAll
-    static public void deleteQueue() throws Exception{
+    public static void deleteQueue() throws Exception{
         for(int i=1; i<=3;i++) {
             proxy.deleteQueue("userAuthedListener"+i);
             proxy.deleteQueue("mailSentListener"+i);
@@ -54,8 +52,8 @@ public class PublisherSubscriberTest {
 
 
     @Test
-    public void basicPublishSubscribe() {
-        try {
+    public void basicPublishSubscribe() throws InterruptedException {
+
             final int[] receiveCount = {0,0};
 
 
@@ -142,9 +140,6 @@ public class PublisherSubscriberTest {
             Assertions.assertEquals(4,receiveCount[0]);
             Assertions.assertEquals(3,receiveCount[1]);
 
-        } catch(InterruptedException e){
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        }
+
     }
 }

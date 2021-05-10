@@ -1,8 +1,8 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCaller;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCaller;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;

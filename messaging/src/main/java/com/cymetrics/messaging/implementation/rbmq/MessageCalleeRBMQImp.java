@@ -1,8 +1,8 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessageCallee;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageCallee;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -41,7 +41,6 @@ public class MessageCalleeRBMQImp extends MessageProxyRBMQImp implements IMessag
                 Object message = ObjectByteConverter.decodeObject(delivery.getBody());
                 response = callback.onCalled(message);
             } catch (RuntimeException | ClassNotFoundException e ) {
-                e.printStackTrace();
                 logger.error("Decode byte message body Error:"+e);
             } finally {
                 this.channel.queueDeclare(queueName,false,false,false,null);

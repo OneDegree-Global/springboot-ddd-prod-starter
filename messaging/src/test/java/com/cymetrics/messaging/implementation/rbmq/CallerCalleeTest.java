@@ -1,10 +1,10 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessageCallee;
-import com.cymetrics.messaging.IMessageCaller;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageCallee;
+import com.cymetrics.domain.messaging.IMessageCaller;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,20 +23,18 @@ public class CallerCalleeTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception{
+    public static void createQueue() throws Exception{
         rbmq = RBMQTestcontainer.getContainer();
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         proxy = new MessageProxyRBMQImp();
         proxy.createQueue("functionA");
         proxy.createQueue("functionB");
     }
 
     @AfterAll
-    static public void deleteQueue() throws Exception{
+    public static void deleteQueue() throws Exception{
         proxy.deleteQueue("functionA");
         proxy.deleteQueue("functionB");
     }

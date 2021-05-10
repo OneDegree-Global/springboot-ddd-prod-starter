@@ -1,10 +1,10 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
-import com.cymetrics.messaging.IMessageConsumer;
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
-import com.cymetrics.messaging.exceptions.QueueLifecycleException;
+import com.cymetrics.domain.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageConsumer;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,13 +27,11 @@ public class ConsumerProducerTest {
     }
 
     @BeforeAll
-    static public void createQueue() throws Exception{
+    public static void createQueue() throws Exception{
         rbmq = RBMQTestcontainer.getContainer();
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
 
         proxy = new MessageProxyRBMQImp();
         proxy.createQueue("auth");
@@ -41,7 +39,7 @@ public class ConsumerProducerTest {
     }
 
     @AfterAll
-    static public void deleteQueue() throws Exception{
+    public static void deleteQueue() throws Exception{
         proxy.deleteQueue("auth");
         proxy.deleteQueue("email");
     }

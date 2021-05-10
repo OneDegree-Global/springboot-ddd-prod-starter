@@ -1,8 +1,8 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
@@ -36,20 +36,18 @@ public class CallerTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         channel = ChannelFactory.getInstance().getChannel();
         channel.queueDeclare("test",false,false,false, null);
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 
@@ -82,9 +80,11 @@ public class CallerTest {
 
         if(failMessage[0]!=null)
             Assertions.fail(failMessage[0]);
+
         if(o.isEmpty())
             Assertions.fail("Get reply failed");
-        Assertions.assertEquals("reply", (String)o.get());
+        else
+            Assertions.assertEquals("reply", (String)o.get());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class CallerTest {
         hm.put("key1","value1");
         hm.put("key2","value2");
         JSONObject json = new JSONObject(hm);
-        JSONMessage message = new JSONMessage(json);
+        JsonMessage message = new JsonMessage(json);
 
         caller.sendAndGetReply("test",message,100);
         verify(caller).sendAndGetReply("test", ObjectByteConverter.encodeObject(message),100);

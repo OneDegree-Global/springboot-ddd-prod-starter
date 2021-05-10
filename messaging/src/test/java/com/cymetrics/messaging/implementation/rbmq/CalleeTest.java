@@ -1,6 +1,6 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageCallback;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -30,18 +30,16 @@ public class CalleeTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         channel = ChannelFactory.getInstance().getChannel();
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 
@@ -73,7 +71,9 @@ public class CalleeTest {
         Assertions.assertEquals(1,counter[0]);
         if(response==null)
             Assertions.fail("Callee did not reply message correctly");
-        Assertions.assertEquals("reply",(String)ObjectByteConverter.decodeObject(response.getBody()));
+        else {
+            Assertions.assertEquals("reply", (String) ObjectByteConverter.decodeObject(response.getBody()));
+        }
     }
 
     @Test

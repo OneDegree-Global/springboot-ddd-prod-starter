@@ -14,7 +14,6 @@ public class LoginService {
 
     @Inject
     TokenService tokenService;
-
     @Transactional("userTransactionManager")
     public Optional<String> getLoginToken(String email, String password) {
         Optional<User> result = this.authenticationService.authenticate(email, password);

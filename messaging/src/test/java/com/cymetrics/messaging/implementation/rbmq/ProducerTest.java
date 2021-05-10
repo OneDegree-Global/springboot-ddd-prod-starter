@@ -1,9 +1,9 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageProducer;
-import com.cymetrics.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.IMessageProducer;
+import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
+import com.cymetrics.domain.messaging.types.JsonMessage;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
-import com.cymetrics.messaging.messageTypes.JSONMessage;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -31,21 +31,19 @@ public class ProducerTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
 
         channel = ChannelFactory.getInstance().getChannel();
         channel.queueDeclare("test",false,false,false, null);
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 
@@ -89,12 +87,12 @@ public class ProducerTest {
         hm.put("key1","value1");
         hm.put("key2","value2");
         JSONObject json = new JSONObject(hm);
-        JSONMessage message = new JSONMessage(json);
+        JsonMessage message = new JsonMessage(json);
 
         producer.send("test", message);
         verify(producer).send("test", ObjectByteConverter.encodeObject(message));
 
-        message = (JSONMessage) ObjectByteConverter.decodeObject(channel.basicGet("test",false).getBody());
+        message = (JsonMessage) ObjectByteConverter.decodeObject(channel.basicGet("test",false).getBody());
         Assertions.assertEquals("value1", message.getJSON().get("key1"));
         Assertions.assertEquals("value2", message.getJSON().get("key2"));
     }

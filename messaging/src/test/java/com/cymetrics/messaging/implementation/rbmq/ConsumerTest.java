@@ -1,6 +1,6 @@
 package com.cymetrics.messaging.implementation.rbmq;
 
-import com.cymetrics.messaging.IMessageCallback;
+import com.cymetrics.domain.messaging.IMessageCallback;
 import com.cymetrics.messaging.implementation.utils.ObjectByteConverter;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
@@ -26,19 +26,17 @@ public class ConsumerTest {
     }
 
     @BeforeAll
-    static public void createChannel() throws Exception {
+    public static void createChannel() throws Exception {
         rbmq = RBMQTestcontainer.getContainer();
 
         Integer mappedPort = rbmq.getMappedPort(5672);
-        ChannelFactory.port = mappedPort;
-        ChannelFactory.userName = "guest";
-        ChannelFactory.password = "guest";
-        ChannelFactory.host = "127.0.0.1";
+        RBMQConfig config = new RBMQConfig("guest", "guest", "127.0.0.1", mappedPort);
+        ChannelFactory.config = config;
         channel = ChannelFactory.getInstance().getChannel();
     }
 
     @AfterAll
-    static public void deleteQueue () throws Exception {
+    public static void deleteQueue () throws Exception {
         channel.queueDelete("test");
     }
 
