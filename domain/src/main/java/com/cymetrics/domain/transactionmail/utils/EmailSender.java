@@ -13,17 +13,20 @@ import javax.inject.Inject;
 public class EmailSender {
 
     @Inject MailSender sender;
+
+     int HIGH_LEVEL_INTERVAL = 50;
+     int HIGH_LEVEL_RETRY_COUNT = 3;
+
     private static final Logger logger = LoggerFactory.getLogger(EmailSender.class);
 
     private Marker highLevelMarker = MarkerFactory.getMarker("SEND_FAIL_HIGH");
-    private Marker mediumLevelMarker = MarkerFactory.getMarker("SEND_FAIL_MEDIUM");
     private Marker lowLevelMarker = MarkerFactory.getMarker("SEND_FAIL_LOW");
 
 
-    public void sendWithAttempts(int attempts, int interval, EmailSenderPayload payload) throws SendTransactionMailFailed {
+    private void sendWithAttempts(int attempts, int interval, EmailSenderPayload payload) throws SendTransactionMailFailed {
 
         if (!(attempts > 0)) throw new SendTransactionMailFailed("Invalid attempt count");
-        if (!(interval > 0)) throw new SendTransactionMailFailed("Invalid interval amount");
+        if (interval < 0) throw new SendTransactionMailFailed("Invalid interval amount");
 
         int iterateCount = 0;
         while (iterateCount < attempts) {
@@ -33,11 +36,10 @@ public class EmailSender {
             } catch (SendTransactionMailFailed e) {
                 try {
                     Thread.interrupted();
-                    Thread.sleep(interval);
+                    Thread.sleep((long) Math.pow(interval, iterateCount));
                 } catch (InterruptedException interruptedException) {
                     Thread.currentThread().interrupt();
                     throw new SendTransactionMailFailed(
-
                         String.format(
                             "Mail sending process is terminated due to interruption. Attempt limit: %d, Current attempt: %d, Error: %s",
                             attempts,
@@ -56,20 +58,12 @@ public class EmailSender {
     // Mail with HIGH level should be retried multiple times with shorter period
     public void sendHighLevelMail(EmailSenderPayload payload) {
         try {
-            this.sendWithAttempts(5, 10, payload);
+            this.sendWithAttempts(this.HIGH_LEVEL_RETRY_COUNT, this.HIGH_LEVEL_INTERVAL, payload);
         } catch (SendTransactionMailFailed e) {
             logger.error(highLevelMarker, e.getMessage(), payload);
         }
     }
 
-    // Mail with MEDIUM level only retry once with longer period
-    public void sendMediumLevelMail(EmailSenderPayload payload) {
-        try {
-            this.sendWithAttempts(2, 10, payload);
-        } catch (SendTransactionMailFailed e) {
-            logger.error(mediumLevelMarker, e.getMessage(), payload);
-        }
-    }
 
     // LOW level mail does not require retry. It can be handled manually.
     public void sendLowLevelMail(EmailSenderPayload payload) {

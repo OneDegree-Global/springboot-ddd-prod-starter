@@ -88,7 +88,7 @@ public class TransactionEmailService {
         payload.setHtmlContent(htmlContent);
         payload.setAlternativeContent(alternativeContent);
 
-        mailSender.sendMediumLevelMail(payload);
+        mailSender.sendLowLevelMail(payload);
     }
 
 }

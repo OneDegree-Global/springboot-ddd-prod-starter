@@ -31,6 +31,7 @@ public class EmailSenderTest {
     @BeforeEach
     public void setup() {
         this.emailSender = new EmailSender();
+        this.emailSender.HIGH_LEVEL_INTERVAL = 0;
         this.emailSender.sender = mockSender;
         this.appender = new ListAppender<>();
         this.logger.addAppender(this.appender);
@@ -61,35 +62,17 @@ public class EmailSenderTest {
         Assertions.assertEquals("SEND_FAIL_LOW", log.getMarker().toString());
     }
 
-    @Test
-    @DisplayName("Sending MEDIUM level mail should attempts 2 times before termination")
-    public void medium_level_mail_send_failed() throws SendTransactionMailFailed {
-
-        doThrow(SendTransactionMailFailed.class).when(this.mockSender).send(any());
-
-        EmailSenderPayload payload = new EmailSenderPayload();
-        emailSender.sendMediumLevelMail(payload);
-
-        verify(this.mockSender, times(2)).send(any());
-        List<ILoggingEvent> logs = appender.list;
-        Assertions.assertEquals(1, logs.size());
-
-        ILoggingEvent log = logs.get(0);
-        Assertions.assertEquals(Level.ERROR, log.getLevel());
-        Assertions.assertEquals("SEND_FAIL_MEDIUM", log.getMarker().toString());
-    }
-
 
     @Test
-    @DisplayName("Sending HIGH level mail should attempts 5 times before termination")
-    public void high_mail_send_failed() throws SendTransactionMailFailed {
+    @DisplayName("Sending HIGH level mail should attempts 5 times before logging and termination")
+    public void high_level_mail_send_failed() throws SendTransactionMailFailed {
 
         doThrow(SendTransactionMailFailed.class).when(this.mockSender).send(any());
 
         EmailSenderPayload payload = new EmailSenderPayload();
         emailSender.sendHighLevelMail(payload);
 
-        verify(this.mockSender, times(5)).send(any());
+        verify(this.mockSender, times(3)).send(any());
 
         List<ILoggingEvent> logs = appender.list;
         Assertions.assertEquals(1, logs.size());
@@ -97,5 +80,23 @@ public class EmailSenderTest {
         ILoggingEvent log = logs.get(0);
         Assertions.assertEquals(Level.ERROR, log.getLevel());
         Assertions.assertEquals("SEND_FAIL_HIGH", log.getMarker().toString());
+    }
+
+    @Test
+    @DisplayName("If mail sending functionality resumes after retry, there should be no error log")
+    public void high_mail_send_success_after_retry() throws SendTransactionMailFailed {
+
+        doThrow(SendTransactionMailFailed.class)
+            .doNothing()
+            .when(this.mockSender).send(any());
+
+        EmailSenderPayload payload = new EmailSenderPayload();
+        emailSender.sendHighLevelMail(payload);
+
+        verify(this.mockSender, times(2)).send(any());
+
+        List<ILoggingEvent> logs = appender.list;
+        Assertions.assertEquals(0, logs.size());
+
     }
 }

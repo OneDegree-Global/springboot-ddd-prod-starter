@@ -84,7 +84,7 @@ public class TransactionMailServiceTest {
 
     @Test
     @DisplayName("Make sure 'reset password' is sent correctly")
-    public void send_reset_password_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
+    public void send_reset_password_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound {
         String email = "din.djarin@mandalorian.com";
         String name = "Din Djarin";
         String token = "H4sSqyJx";
@@ -115,7 +115,7 @@ public class TransactionMailServiceTest {
 
     @Test
     @DisplayName("Make sure 'email verification' is sent correctly")
-    public void send_email_verification_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
+    public void send_email_verification_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound {
         String email = "grogu@mandalorian.com";
         String name = "Grogu";
         String token = "H4sSqyJx";
@@ -147,7 +147,7 @@ public class TransactionMailServiceTest {
 
     @Test
     @DisplayName("Make sure 'welcome onboard' is sent correctly")
-    public void send_welcome_onboard_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound, SendTransactionMailFailed {
+    public void send_welcome_onboard_successfully() throws InvalidEmailFormat, GenerateHtmlContentFailed, ReceiverNotFound {
         String email = "grogu@mandalorian.com";
         String name = "Grogu";
         Receiver user = new Receiver("1", email, name);
@@ -155,7 +155,7 @@ public class TransactionMailServiceTest {
 
         transactionMailService.sendWelcomeOnboardMail(email);
 
-        verify(this.mockSender, times(1)).sendMediumLevelMail(
+        verify(this.mockSender, times(1)).sendLowLevelMail(
             argThat(payload -> {
                 Assertions.assertArrayEquals(payload.getRecipients(), new String[] { email });
                 Assertions.assertEquals(payload.getCc(), null);
