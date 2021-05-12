@@ -1,7 +1,7 @@
 package com.cymetrics.domain.transactionmail.utils;
 
 import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.domain.transactionmail.interfaces.MailSender;
+import com.cymetrics.domain.transactionmail.interfaces.IMailSender;
 import com.cymetrics.domain.transactionmail.services.EmailSenderPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,8 @@ import javax.inject.Inject;
 
 public class EmailSender {
 
-    @Inject MailSender sender;
+    @Inject
+    IMailSender sender;
 
      int HIGH_LEVEL_INTERVAL = 50;
      int HIGH_LEVEL_RETRY_COUNT = 3;

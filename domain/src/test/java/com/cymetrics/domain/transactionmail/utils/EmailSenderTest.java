@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.domain.transactionmail.interfaces.MailSender;
+import com.cymetrics.domain.transactionmail.interfaces.IMailSender;
 import com.cymetrics.domain.transactionmail.services.EmailSenderPayload;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EmailSenderTest {
 
-    @Mock MailSender mockSender;
+    @Mock
+    IMailSender mockSender;
     ListAppender<ILoggingEvent> appender;
     Logger logger = (Logger) LoggerFactory.getLogger(EmailSender.class);
 
