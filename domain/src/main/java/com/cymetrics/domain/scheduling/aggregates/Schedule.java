@@ -47,7 +47,7 @@ public class Schedule {
         this.command = command;
         this.isActive = true;
         this.effectiveTime = null;
-        this.args = null;
+        this.args = new String[]{};
     }
 
     public boolean shouldExecute() {

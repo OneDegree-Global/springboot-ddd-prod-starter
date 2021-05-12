@@ -1,5 +1,14 @@
 version: "3.9"  # optional since v1.27.0
 services:
+  message_queue:
+    image: ${mq_image:-rabbitmq}
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
   spring-boot:
     build:
       context: .
@@ -9,5 +18,27 @@ services:
     command: bash -c "java -jar /opt/ddd/web-*.jar --spring.config.location=/opt/ddd/properties/quickstart.properties"
     environment:
       - PERSISTENCE_TYPE=memory
+      - RBMQ_USER="${rbmq_user:-admin}"
+      - RBMQ_PASSWORD="${rbmq_password:-admin}"
+      - RBMQ_HOST="${rbmq_host:-127.0.0.1}"
+    depends_on:
+      - message_queue
 
+#  job_producer:
+#    image: "${CYBER_IMAGE}"
+#    depends_on:
+#      - "rabbitmq"
+#    restart: always
+#    environment:
+#      - APP=od_cyber
+#      - SERVICE=customer
+#      - DB_HOST=postgresql
+#      - DB_PORT=5432
+#      - DB_USER=od_cyber
+#      - DB_PASSWORD=od_cyber
+#      - MESSAGE_QUEUE_SERVICE_PROTOCOL=amqp
+#      - AMQP_JOB_QUEUE_NAME=local_job_queue
+#      - MESSAGE_QUEUE_HOST=rabbitmq
+#      - MESSAGE_QUEUE_SERVICE_KEY=admin
+#    command: [ "od", "job-producer" ]
 
