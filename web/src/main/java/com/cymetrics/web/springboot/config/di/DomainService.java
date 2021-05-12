@@ -5,6 +5,7 @@ import com.cymetrics.domain.auth.services.AuthenticationService;
 import com.cymetrics.domain.auth.services.TokenService;
 import com.cymetrics.domain.auth.services.UserAuthInfoService;
 import com.cymetrics.domain.scheduling.repository.ScheduleRepository;
+import com.cymetrics.persistence.mem.MemScheduleRepository;
 import com.cymetrics.persistence.mem.MemUserRepository;
 import com.cymetrics.persistence.rdbms.RdbmsScheduleRepository;
 import com.cymetrics.persistence.rdbms.RdbmsUserRepository;
@@ -63,5 +64,15 @@ public class DomainService {
     public ScheduleRepository rdbmsScheduleRepositoryBean (){
         RdbmsScheduleRepository rdbmsScheduleRepository = new RdbmsScheduleRepository();
         return rdbmsScheduleRepository;
+    }
+
+    @Bean
+    @ConditionalOnProperty(
+            value="server.persistence.type",
+            havingValue = "memory",
+            matchIfMissing = false)
+    public ScheduleRepository memScheduleRepositoryBean (){
+        MemScheduleRepository memScheduleRepository  = new MemScheduleRepository();
+        return memScheduleRepository;
     }
 }
