@@ -31,3 +31,6 @@ pr-check:
 	mvn -T 5 clean test
 	mvn jacoco:report
 	sonar-scanner -Dsonar.projectBaseDir=. -Dsonar.host.url=http://sonar.onedegree.hk/ -Dsonar.projectName=springboot-ddd-prod-starter:$(CUR_BRANCH) -Dsonar.projectKey=springboot-ddd-prod-starter:$(CUR_BRANCH) -Dsonar.java.binaries="**/target" -Dsonar.exclusions=**/src/test/java/**/*.* -Dsonar.coverage.jacoco.xmlReportPaths=$(JACOCO_RPORTS) -Dsonar.projectVersion=$(CUR_BRANCH)
+
+check-dependency:
+	mvn org.owasp:dependency-check-maven:check
