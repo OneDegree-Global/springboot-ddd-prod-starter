@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
 import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
-import com.cymetrics.domain.transactionmail.utils.TemplateRenderer;
+import com.cymetrics.domain.transactionmail.services.common.TemplateRenderer;
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cymetrics.domain.transactionmail.utils.EmailSender;
+import com.cymetrics.domain.transactionmail.services.common.EmailSender;
 
 // TODO: Handle domain url and project name
 //  It's not decided yet whether those information should be coming along with event payload,

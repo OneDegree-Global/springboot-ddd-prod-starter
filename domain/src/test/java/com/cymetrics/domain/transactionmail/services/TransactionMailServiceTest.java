@@ -1,11 +1,10 @@
 package com.cymetrics.domain.transactionmail.services;
 
-import com.cymetrics.domain.transactionmail.utils.TemplateRenderer;
+import com.cymetrics.domain.transactionmail.services.common.TemplateRenderer;
 import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed;
 import com.cymetrics.domain.transactionmail.exceptions.InvalidEmailFormat;
 import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
-import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
-import com.cymetrics.domain.transactionmail.utils.EmailSender;
+import com.cymetrics.domain.transactionmail.services.common.EmailSender;
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;

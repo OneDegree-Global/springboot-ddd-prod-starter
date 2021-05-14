@@ -1,4 +1,4 @@
-package com.cymetrics.domain.transactionmail.utils;
+package com.cymetrics.domain.transactionmail.services.common;
 
 import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed;
 import com.cymetrics.domain.transactionmail.interfaces.IMailSender;
@@ -27,7 +27,6 @@ public class EmailSender {
     private void sendWithAttempts(int attempts, int interval, EmailSenderPayload payload) throws SendTransactionMailFailed {
 
         if (!(attempts > 0)) throw new SendTransactionMailFailed("Invalid attempt count");
-        if (interval < 0) throw new SendTransactionMailFailed("Invalid interval amount");
 
         int iterateCount = 0;
         while (iterateCount < attempts) {
@@ -35,22 +34,23 @@ public class EmailSender {
                 this.sender.send(payload);
                 return;
             } catch (SendTransactionMailFailed e) {
-                try {
-                    Thread.interrupted();
-                    Thread.sleep((long) Math.pow(interval, iterateCount));
-                } catch (InterruptedException interruptedException) {
-                    Thread.currentThread().interrupt();
-                    throw new SendTransactionMailFailed(
-                        String.format(
-                            "Mail sending process is terminated due to interruption. Attempt limit: %d, Current attempt: %d, Error: %s",
-                            attempts,
-                            iterateCount,
-                            interruptedException.getMessage()
-                        )
-                    );
-                }
+                iterateCount++;
             }
-            iterateCount++;
+
+            try {
+                Thread.interrupted();
+                Thread.sleep((long) Math.pow(interval, iterateCount));
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+                throw new SendTransactionMailFailed(
+                        String.format(
+                                "Mail sending process terminated. Attempt limit: %d, Current attempt: %d, Error: %s",
+                                attempts,
+                                iterateCount,
+                                e.getMessage()
+                        )
+                );
+            }
         }
 
         throw new SendTransactionMailFailed(String.format("Unable to send email after %d attempts", iterateCount));
