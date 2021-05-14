@@ -5,6 +5,7 @@ import com.cymetrics.domain.transactionmail.exceptions.GenerateHtmlContentFailed
 import com.cymetrics.domain.transactionmail.exceptions.InvalidEmailFormat;
 import com.cymetrics.domain.transactionmail.exceptions.ReceiverNotFound;
 import com.cymetrics.domain.transactionmail.services.common.EmailSender;
+
 import com.cymetrics.domain.transactionmail.aggregates.Receiver;
 import com.cymetrics.domain.transactionmail.repository.ReceiverRepository;
 import org.junit.jupiter.api.Assertions;

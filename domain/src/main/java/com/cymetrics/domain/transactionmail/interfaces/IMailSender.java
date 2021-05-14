@@ -6,7 +6,6 @@ import com.cymetrics.domain.transactionmail.services.EmailSenderPayload;
 public interface IMailSender {
 
     // TODO: file attachment
-    public void send(EmailSenderPayload payload) throws SendTransactionMailFailed;
+    void send(EmailSenderPayload payload) throws SendTransactionMailFailed;
 
 }
-
