@@ -33,7 +33,7 @@ public class TemplateRenderer {
     Template emailVerificationTemplate;
     Template welcomeOnBoardTemplate;
 
-    private TemplateRenderer() throws InitTemplateRendererFailed {
+    TemplateRenderer() throws InitTemplateRendererFailed {
 
         cfg.setClassForTemplateLoading(TemplateRenderer.class, "/transaction_mail_templates");
 

@@ -42,7 +42,7 @@ public class TemplateRendererTest {
         this.appender = new ListAppender<>();
         this.logger.addAppender(this.appender);
         this.appender.start();
-        renderer = TemplateRenderer.getInstance();
+        renderer = new TemplateRenderer();
         renderer.resetPasswordTemplate = mockTemplate;
         renderer.emailVerificationTemplate = mockTemplate;
         renderer.welcomeOnBoardTemplate = mockTemplate;
