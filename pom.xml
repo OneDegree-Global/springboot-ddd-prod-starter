@@ -16,6 +16,7 @@
         <module>external</module>
         <module>search</module>
         <module>migration</module>
+        <module>storage</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -68,6 +69,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j-api.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-simple</artifactId>-->
+<!--            <version>${slf4j.version}</version>-->
+<!--        </dependency>-->
         <!-- test -->
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
         <dependency>
