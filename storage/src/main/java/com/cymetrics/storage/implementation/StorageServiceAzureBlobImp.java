@@ -25,14 +25,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
-public class StorageServiceAzureBlobImp implements IStorageService{
 
+public class StorageServiceAzureBlobImp implements IStorageService {
+
+    private static Logger logger = LoggerFactory.getLogger(StorageServiceAzureBlobImp.class);
     AzureBlobConfig config;
     BlobServiceClient serviceClient;
-    private static Logger logger = LoggerFactory.getLogger(StorageServiceAzureBlobImp.class);
 
     @Inject
-    public StorageServiceAzureBlobImp(AzureBlobConfig config){
+    public StorageServiceAzureBlobImp(AzureBlobConfig config) {
         this.config = config;
         ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
                 .clientId(this.config.getCLIENT_ID())
@@ -48,7 +49,7 @@ public class StorageServiceAzureBlobImp implements IStorageService{
     public ArrayList<String> listFiles(ResourceType type) {
         BlobContainerClient containerClient = serviceClient.getBlobContainerClient(type.name());
         ArrayList<String> resourceList = new ArrayList<>();
-        for(BlobItem blobItem : containerClient.listBlobs()){
+        for (BlobItem blobItem : containerClient.listBlobs()) {
             resourceList.add(blobItem.getName());
         }
         return resourceList;
@@ -66,13 +67,13 @@ public class StorageServiceAzureBlobImp implements IStorageService{
             client.downloadToFile(downloadPath);
             resource = StorageResourceFactory.getInstance().getEmptyResource(type);
             downloadedFile = new File(downloadPath);
-        }  catch(FileAlreadyExistsException e){
+        } catch (FileAlreadyExistsException e) {
             downloadedFile = new File(downloadPath);
-        } catch( IOException | TimeoutException e ){
-            logger.error("download file from azure blob fail:"+e.toString());
+        } catch (IOException | TimeoutException e) {
+            logger.error("download file from azure blob fail:" + e.toString());
             return Optional.empty();
         }
-        if(!downloadedFile.exists() || !resource.setResource(downloadedFile)){
+        if (!downloadedFile.exists() || !resource.setResource(downloadedFile)) {
             return Optional.empty();
         }
         return Optional.of(resource);
@@ -87,26 +88,26 @@ public class StorageServiceAzureBlobImp implements IStorageService{
 
     @Override
     public boolean createFile(IStorageResource resource, String fileName) throws ObjectAlreadyExistException {
-        if(resource.getResource().isEmpty())
+        if (resource.getResource().isEmpty())
             return false;
         BlobClient client = connectAndCheckNotExist(resource.getResourceType(), fileName);
         try {
             client.upload(Files.newInputStream(resource.getResource().get().toPath()), resource.getResource().get().length());
-        } catch( IOException e){
-            logger.error("upload file `"+fileName+"`to azure blob failed:"+e.toString());
+        } catch (IOException e) {
+            logger.error("upload file `" + fileName + "`to azure blob failed:" + e.toString());
         }
         return true;
     }
 
     @Override
     public boolean updateFile(IStorageResource resource, String fileName) throws ObjectNotFoundException {
-        if(resource.getResource().isEmpty())
+        if (resource.getResource().isEmpty())
             return false;
         BlobClient client = connectAndCheckExist(resource.getResourceType(), fileName);
         try {
             client.upload(Files.newInputStream(resource.getResource().get().toPath()), resource.getResource().get().length(), true);
-        } catch( IOException e){
-            logger.error("update file `"+fileName+"`to azure blob failed:"+e.toString());
+        } catch (IOException e) {
+            logger.error("update file `" + fileName + "`to azure blob failed:" + e.toString());
         }
         return true;
     }
@@ -114,16 +115,16 @@ public class StorageServiceAzureBlobImp implements IStorageService{
     private BlobClient connectAndCheckExist(ResourceType type, String fileName) throws ObjectNotFoundException {
         BlobContainerClient containerClient = serviceClient.getBlobContainerClient(type.name());
         BlobClient client = containerClient.getBlobClient(fileName);
-        if(!client.exists())
-            throw new ObjectNotFoundException("file: "+fileName+" type: "+type.name()+" does not exist");
+        if (!client.exists())
+            throw new ObjectNotFoundException("file: " + fileName + " type: " + type.name() + " does not exist");
         return client;
     }
 
-    private BlobClient connectAndCheckNotExist(ResourceType type, String fileName) throws  ObjectAlreadyExistException{
+    private BlobClient connectAndCheckNotExist(ResourceType type, String fileName) throws ObjectAlreadyExistException {
         BlobContainerClient containerClient = serviceClient.getBlobContainerClient(type.name());
         BlobClient client = containerClient.getBlobClient(fileName);
-        if(client.exists())
-            throw new ObjectAlreadyExistException("file: "+fileName+" type: "+type.name()+" aleady exist!");
+        if (client.exists())
+            throw new ObjectAlreadyExistException("file: " + fileName + " type: " + type.name() + " aleady exist!");
         return client;
     }
 

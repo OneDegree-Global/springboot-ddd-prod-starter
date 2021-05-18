@@ -9,24 +9,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-public class SmallImageResource implements IStorageResource{
+public class SmallImageResource implements IStorageResource {
 
-    File image;
     private static Logger logger = LoggerFactory.getLogger(SmallImageResource.class);
+    File image;
 
     @Override
     public boolean setResource(File image) {
 
-        if(image.length() > 104857600){
+        if (image.length() > 104857600) {
             return false;
         }
 
         try {
-            if (ImageIO.read(image)==null) {
+            if (ImageIO.read(image) == null) {
                 logger.error("small image resource cannot be read correctly!");
                 return false;
             }
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             logger.error("small image resource cannot be read correctly!");
             return false;
         }

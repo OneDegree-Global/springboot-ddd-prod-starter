@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>springboot-ddd-prod-starter</artifactId>
@@ -50,11 +50,11 @@
             <version>1.14.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.azure/azure-core -->
-<!--        <dependency>-->
-<!--            <groupId>com.azure</groupId>-->
-<!--            <artifactId>azure-core</artifactId>-->
-<!--            <version>1.15.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.azure</groupId>-->
+        <!--            <artifactId>azure-core</artifactId>-->
+        <!--            <version>1.15.0</version>-->
+        <!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/com.azure/azure-core-serializer-json-jackson -->
         <!-- https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk -->
         <dependency>
@@ -64,8 +64,6 @@
         </dependency>
 
     </dependencies>
-
-
 
 
 </project>

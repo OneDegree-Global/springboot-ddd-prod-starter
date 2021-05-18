@@ -12,9 +12,11 @@ public interface IStorageService {
 
     ArrayList<String> listFiles(ResourceType type);
 
-    Optional<IStorageResource> downloadFile(ResourceType type, String fileName, String downloadPath ) throws ObjectNotFoundException;
+    Optional<IStorageResource> downloadFile(ResourceType type, String fileName, String downloadPath) throws ObjectNotFoundException;
+
     void deleteFile(ResourceType type, String fileName) throws ObjectNotFoundException;
 
     boolean createFile(IStorageResource resource, String fileName) throws ObjectAlreadyExistException;
+
     boolean updateFile(IStorageResource resource, String fileName) throws ObjectNotFoundException;
 }

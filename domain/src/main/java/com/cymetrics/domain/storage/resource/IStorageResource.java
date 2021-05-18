@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface IStorageResource {
     boolean setResource(File file);
+
     Optional<File> getResource();
+
     ResourceType getResourceType();
 }
