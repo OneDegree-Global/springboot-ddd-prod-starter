@@ -7,6 +7,6 @@ public class SMTPConfig {
     private String userName;
     private String password;
     private String host;
+    private String senderAddress;
     private int port;
-
 }

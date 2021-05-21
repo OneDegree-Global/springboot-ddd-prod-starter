@@ -9,9 +9,9 @@ import com.cymetrics.domain.transactionmail.exceptions.SendTransactionMailFailed
 import javax.inject.Inject;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 public class MailSenderImpl implements IMailSender {
@@ -20,24 +20,28 @@ public class MailSenderImpl implements IMailSender {
     Transport transport;
     Session session;
 
-    public MailSenderImpl() throws MessagingException {
+    private static String getAddressList(String[] addresses) {
+        String addressList = "";
+        if (addresses != null) {
+            for (String recipient : addresses) {
+                addressList += String.format("%s,", recipient);
+            }
+        }
+        return addressList;
+    }
 
+    void connect() throws MessagingException {
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
-//        props.put("mail.transport.port", this.config.getPort());
-
-
-        // mailtrap test
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true"); //it’s optional in Mailtrap
-        props.put("mail.smtp.host", "smtp.mailtrap.io");
-        props.put("mail.smtp.port", "2525");// use one of the options in the SMTP settings tab in your Mailtrap Inbox
+        props.put("mail.smtp.host", config.getHost());
+        props.put("mail.smtp.port", config.getPort());
 
         this.session = Session.getInstance(
             props,
             new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("67eedaef0606e8", "7e9006014b0c92");
+                    return new PasswordAuthentication(config.getUserName(), config.getPassword());
                 }
             }
         );
@@ -46,77 +50,53 @@ public class MailSenderImpl implements IMailSender {
         this.transport.connect();
     }
 
+    public MailSenderImpl() throws MessagingException {
+        this.connect();
+    }
+
+
     public void send(EmailSenderPayload payload) throws SendTransactionMailFailed {
-
-        System.out.println("start");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        System.out.println(dtf.format(LocalDateTime.now()));
-
 
         try {
             if (!this.transport.isConnected()) {
-                System.out.println("connecting....");
                 this.transport.connect();
             }
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("from@gmail.com"));
+            message.setFrom(new InternetAddress(config.getSenderAddress()));
+
             message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse("to_username_a@gmail.com, to_username_b@yahoo.com")
+                Message.RecipientType.TO,
+                InternetAddress.parse(MailSenderImpl.getAddressList(payload.getRecipients()))
             );
-            message.setSubject("Testing Gmail TLS");
-            message.setText("Hello, I'm testing the mail");
+            message.setRecipients(
+                Message.RecipientType.CC,
+                InternetAddress.parse(MailSenderImpl.getAddressList(payload.getCc()))
+            );
+            message.setRecipients(
+                Message.RecipientType.BCC,
+                InternetAddress.parse(MailSenderImpl.getAddressList(payload.getBcc()))
+            );
+
+            message.setSubject(payload.getSubject());
+
+            Multipart multiPart = new MimeMultipart("alternative");
+            MimeBodyPart alternativeText = new MimeBodyPart();
+            alternativeText.setText(payload.getAlternativeContent(), "utf-8");
+            MimeBodyPart htmlContent = new MimeBodyPart();
+            htmlContent.setContent(payload.getHtmlContent(), "text/html; charset=utf-8");
+
+            multiPart.addBodyPart(alternativeText);
+            multiPart.addBodyPart(htmlContent);
+            message.setContent(multiPart);
+
             this.transport.sendMessage(message, message.getAllRecipients());
-            System.out.println(dtf.format(LocalDateTime.now()));
-
-            System.out.println("end");
 
         } catch (MessagingException e) {
             e.printStackTrace();
-            throw new SendTransactionMailFailed(String.format("Unable to establish connection, %s", e.getMessage()));
+            throw new SendTransactionMailFailed(String.format("Unable to send mail, %s", e.getMessage()));
         }
 
-
-    }
-
-    public void send2(EmailSenderPayload payload) throws SendTransactionMailFailed, NoSuchProviderException {
-
-        System.out.println("start");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        System.out.println(dtf.format(LocalDateTime.now()));
-
-        Transport transport = this.session.getTransport();
-
-        try {
-            if (!transport.isConnected()) {
-                System.out.println("connecting....");
-                transport.connect();
-            }
-
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("from@gmail.com"));
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse("to_username_a@gmail.com, to_username_b@yahoo.com")
-            );
-            message.setSubject("Testing Gmail TLS");
-            message.setText("Hello, I'm testing the mail");
-            transport.sendMessage(message, message.getAllRecipients());
-            System.out.println(dtf.format(LocalDateTime.now()));
-
-            System.out.println("end");
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new SendTransactionMailFailed(String.format("Unable to establish connection, %s", e.getMessage()));
-        }
-
-
-    }
-
-    public void testSend() throws SendTransactionMailFailed, NoSuchProviderException {
-        this.send2(new EmailSenderPayload());
     }
 
 }
