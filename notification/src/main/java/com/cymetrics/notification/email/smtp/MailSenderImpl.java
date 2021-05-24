@@ -14,6 +14,14 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
+
+/*
+    TODO: Implement connection pool for Transport object
+    There will be a potential bottle neck if we have large amount of emails with only few "Transport" instances.
+    "Transport" instance sends email one at a time to achieve thread-safe, which also implies that sending bulk mail is going to be inefficient.
+    We can't even leverage multiple threads unless each thread has its own Transport instance but it takes about 2~4 seconds to create a new instance.
+    Hence, a dynamic-sized connection pool will be needed when we're required to send large amount of mails.
+ */
 public class MailSenderImpl implements IMailSender {
 
     @Inject SMTPConfig config;
