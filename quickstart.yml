@@ -9,6 +9,7 @@ services:
       - ./quickstart/properties:/opt/ddd/properties
       - ./web/target:/opt/ddd
     environment:
+      - LAUNCH_TYPE=QUICKSTART
       - PERSISTENCE_TYPE=memory
 
 

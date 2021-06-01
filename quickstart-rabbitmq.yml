@@ -2,16 +2,26 @@ version: "3.9"  # optional since v1.27.0
 services:
   message_queue:
     image: ${mq_image:-rabbitmq}
-      restart: always
-      ports:
-        - "5672:5672"
-        - "15672:15672"
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   spring-boot:
+    image: openjdk:11.0.11-9-jre
+    restart: always
+    ports:
+      - "8080:8080"
+    command: bash -c "java -jar /opt/ddd/web-*.jar --spring.config.location=/opt/ddd/properties/quickstart.properties"
+    volumes:
+      - ./quickstart/properties:/opt/ddd/properties
+      - ./web/target:/opt/ddd
     environment:
       - LAUNCH_TYPE=QUICKSTART_RABBITMQ
-      - PERSISTENCE_TYPE=rdbms
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=admin
-      - RABBITMQ_HOST=127.0.0.1
+      - PERSISTENCE_TYPE=memory
+      - RBMQ_USER=admin
+      - RBMQ_PASSWORD=admin
+      - RBMQ_HOST=127.0.0.1
     depends_on:
       - message_queue
+
+

@@ -4,13 +4,11 @@ package com.cymetrics.web.springboot.config.di;
 import com.cymetrics.application.aspect.AuthorizeAspect;
 import com.cymetrics.application.services.LoginService;
 import com.cymetrics.application.services.UserService;
+import com.cymetrics.domain.messaging.*;
 import com.cymetrics.domain.scheduling.services.ScheduleService;
-import com.cymetrics.domain.messaging.IMessageConsumer;
-import com.cymetrics.domain.messaging.IMessageProducer;
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
-import com.cymetrics.messaging.implementation.rbmq.MessageConsumerRBMQImp;
-import com.cymetrics.messaging.implementation.rbmq.MessageProducerRBMQImp;
+import com.cymetrics.messaging.implementation.rbmq.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -55,8 +53,8 @@ public class ApplicationService {
             IMessageConsumer consumer = new MessageConsumerRBMQImp();
             return consumer;
         } catch(ProtocolIOException | QueueLifecycleException e){
-            logger.error("instantiate MessageProducer failed:"+e.toString());
-            throw new QueueLifecycleException("instantiate MessageProducer failed");
+            logger.error("instantiate MessageConsumer failed:"+e.toString());
+            throw new QueueLifecycleException("instantiate MessageConsumer failed");
         }
     }
 
@@ -69,6 +67,42 @@ public class ApplicationService {
         } catch(ProtocolIOException | QueueLifecycleException e){
             logger.error("instantiate MessageProducer failed:"+e.toString());
             throw new QueueLifecycleException("instantiate MessageProducer failed");
+        }
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IMessagePublisher messagePublisherBean() throws QueueLifecycleException{
+        try {
+            IMessagePublisher publisher = new MessagePublisherRBMQImp();
+            return publisher;
+        } catch(QueueLifecycleException e){
+            logger.error("instantiate MessagePublisher failed:"+e.toString());
+            throw new QueueLifecycleException("instantiate MessagePublisher failed");
+        }
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IMessageSubscriber messageSubscriberBean() throws QueueLifecycleException{
+        try {
+            IMessageSubscriber subscriber = new MessageSubscriberRBMQImp();
+            return subscriber;
+        } catch(ProtocolIOException | QueueLifecycleException e){
+            logger.error("instantiate MessageSubscriber failed:"+e.toString());
+            throw new QueueLifecycleException("instantiate MessageSubscriber failed");
+        }
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IMessageQueueProxy messageQueueProxyBean() throws QueueLifecycleException{
+        try {
+            IMessageQueueProxy proxy = new MessageProxyRBMQImp();
+            return proxy;
+        } catch( QueueLifecycleException e){
+            logger.error("instantiate MessageQueue Proxy failed:"+e.toString());
+            throw new QueueLifecycleException("instantiate MessageQueue Proxy failed");
         }
     }
 

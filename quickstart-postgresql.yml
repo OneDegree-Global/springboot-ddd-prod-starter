@@ -18,6 +18,7 @@ services:
       - postgre
   spring-boot:
     environment:
+      - LAUNCH_TYPE=QUICKSTART_POSTGRESQL
       - PERSISTENCE_TYPE=rdbms
       - DATASOURCE_USER_JDBCURL=jdbc:postgresql://postgre:5432/ddd
       - DATASOURCE_USER_USERNAME=ddd

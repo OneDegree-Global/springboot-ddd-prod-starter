@@ -1,4 +1,4 @@
-package com.cymetrics.web.springboot.controller;
+package com.cymetrics.web.springboot.controller.quickstart;
 
 import com.cymetrics.application.exception.CreateUserFailsException;
 import com.cymetrics.application.exception.RetrieveUserInfoFailsException;
@@ -21,21 +21,32 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+
+@RestController
 @ConditionalOnProperty(
         value="launch.type",
         havingValue = "QUICKSTART_MESSAGING")
 public class MessagingController {
 
-    @Inject
     IMessageProducer producer;
-    @Inject
     IMessagePublisher publisher;
-    @Inject
     IMessageQueueProxy proxy;
-    @Inject
     IMessageConsumer consumer;
-    @Inject
     IMessageSubscriber subscriber;
+
+    @Inject
+    public MessagingController(IMessageProducer producer,
+                               IMessagePublisher publisher,
+                               IMessageQueueProxy proxy,
+                               IMessageConsumer consumer,
+                               IMessageSubscriber subscriber) {
+        this.producer = producer;
+        this.publisher = publisher;
+        this.proxy = proxy;
+        this.consumer = consumer;
+        this.subscriber = subscriber;
+    }
+
 
     @PostConstruct
     public void InitQueue() throws QueueLifecycleException {
