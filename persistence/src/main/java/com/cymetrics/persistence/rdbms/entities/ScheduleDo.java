@@ -32,7 +32,7 @@ public class ScheduleDo implements Serializable {
     @Column(name = "args")
     private String args = "";
 
-    @Column(name = "args")
+    @Column(name = "cronExpression")
     private String cronExpression = "";
 
     public ScheduleDo(String name, String command, Boolean isActive, Boolean isReProducible, Timestamp effectiveTime, String args, String cronExpression) {
