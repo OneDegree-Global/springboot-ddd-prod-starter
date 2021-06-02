@@ -16,11 +16,6 @@ services:
       - ./migration/sql:/flyway/sql
     depends_on:
       - postgre
-  message_queue:
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin
-      - RABBITMQ_DEFAULT_HOST=127.0.0.1
 
   spring-boot:
     environment:
@@ -32,7 +27,6 @@ services:
     depends_on:
       - postgre
       - migration
-      - message_queue
 
 
 

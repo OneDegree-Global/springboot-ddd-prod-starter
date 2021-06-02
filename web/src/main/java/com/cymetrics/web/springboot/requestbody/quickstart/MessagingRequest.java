@@ -5,8 +5,5 @@ import lombok.Data;
 
 @Data
 public class MessagingRequest {
-    String queueName;
-    String exchangeName;
     String message;
-    String type;
 }

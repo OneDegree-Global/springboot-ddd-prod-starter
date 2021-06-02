@@ -1,77 +1,75 @@
 package com.cymetrics.web.springboot.controller.quickstart;
 
-import com.cymetrics.application.exception.CreateUserFailsException;
-import com.cymetrics.application.exception.RetrieveUserInfoFailsException;
 import com.cymetrics.domain.messaging.*;
 import com.cymetrics.domain.messaging.exceptions.ProtocolIOException;
 import com.cymetrics.domain.messaging.exceptions.QueueLifecycleException;
 import com.cymetrics.domain.messaging.types.JsonMessage;
-import com.cymetrics.web.springboot.controller.error.ErrorCode;
 import com.cymetrics.web.springboot.controller.utils.ResponseUtils;
-import com.cymetrics.web.springboot.dto.User;
-import com.cymetrics.web.springboot.requestbody.RegisterRequest;
 import com.cymetrics.web.springboot.requestbody.quickstart.MessagingRequest;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 
 
 @RestController
 @ConditionalOnProperty(
-        value="launch.type",
+        value = "launch.type",
         havingValue = "QUICKSTART_MESSAGING")
 public class MessagingController {
 
+    @Autowired
+    @Qualifier("mqProducer")
     IMessageProducer producer;
+    @Autowired
+    @Qualifier("mqPublisher")
     IMessagePublisher publisher;
+    @Autowired
+    @Qualifier("mqProxy")
     IMessageQueueProxy proxy;
+    @Autowired
+    @Qualifier("mqConsumer")
     IMessageConsumer consumer;
+    @Autowired
+    @Qualifier("mqSubscriber")
     IMessageSubscriber subscriber;
-
-    @Inject
-    public MessagingController(IMessageProducer producer,
-                               IMessagePublisher publisher,
-                               IMessageQueueProxy proxy,
-                               IMessageConsumer consumer,
-                               IMessageSubscriber subscriber) {
-        this.producer = producer;
-        this.publisher = publisher;
-        this.proxy = proxy;
-        this.consumer = consumer;
-        this.subscriber = subscriber;
-    }
 
 
     @PostConstruct
     public void InitQueue() throws QueueLifecycleException {
-        proxy.createQueue("quickstart_testing_queue");
+        proxy.createQueue("quickstart_testing_queue1");
+        proxy.createQueue("quickstart_testing_queue2");
         proxy.createTopic("quickstart_testing_topic");
-        consumer.consume("quickstart_testing_queue", new IMessageCallback() {
+
+        consumer.consume("quickstart_testing_queue1", new IMessageCallback() {
             @Override
             public void onDelivered(Object message) {
                 JsonMessage jsonMessage = (JsonMessage) message;
-                System.out.println("consumer receive message:"+jsonMessage.getJSON().get("message"));
+                System.out.println("queue1 consumer receive message:" + jsonMessage.getJSON().get("message"));
             }
         });
 
-        subscriber.subscribe("quickstart_testing_topic", "quickstart_testing_queue",new IMessageCallback() {
+        subscriber.subscribe("quickstart_testing_topic", "quickstart_testing_queue1", new IMessageCallback() {
             @Override
             public void onDelivered(Object message) {
                 JsonMessage jsonMessage = (JsonMessage) message;
-                System.out.println("subscriber1 receive message:"+jsonMessage.getJSON().get("message"));
+                System.out.println("queue1 consumer receive message:" + jsonMessage.getJSON().get("message"));
             }
         });
-        subscriber.subscribe("quickstart_testing_topic", "quickstart_testing_queue",new IMessageCallback() {
+        subscriber.subscribe("quickstart_testing_topic", "quickstart_testing_queue2", new IMessageCallback() {
             @Override
             public void onDelivered(Object message) {
                 JsonMessage jsonMessage = (JsonMessage) message;
-                System.out.println("subscriber2 receive message:"+jsonMessage.getJSON().get("message"));
+                System.out.println("queue2 consumer receive message:" + jsonMessage.getJSON().get("message"));
             }
         });
 
@@ -84,29 +82,29 @@ public class MessagingController {
     }
 
     @PostMapping("/messaging/{queueName}")
-    public ResponseEntity produceMessage(@RequestBody MessagingRequest request) {
+    public ResponseEntity produceMessage(@RequestBody MessagingRequest request, @PathVariable("queueName") String queueName) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message",request.getMessage());
-        JsonMessage message =  new JsonMessage(jsonObject);
+        jsonObject.put("message", request.getMessage());
+        JsonMessage message = new JsonMessage(jsonObject);
 
         try {
-            producer.send(request.getQueueName(), message);
-        } catch(ProtocolIOException e) {
-            return ResponseUtils.wrapFailResponse("error when producing message to mq "+request.getQueueName(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            producer.send(queueName, message);
+        } catch (ProtocolIOException e) {
+            return ResponseUtils.wrapFailResponse("error when producing message to mq " + queueName, HttpStatus.INTERNAL_SERVER_ERROR.toString());
         }
         return ResponseUtils.wrapSuccessResponse("produce to mq successfully");
     }
 
     @PostMapping("/messaging/publish/{queueName}")
-    public ResponseEntity publishMessage(@RequestBody MessagingRequest request) {
+    public ResponseEntity publishMessage(@RequestBody MessagingRequest request, @PathVariable("queueName") String queueName) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("message",request.getMessage());
-        JsonMessage message =  new JsonMessage(jsonObject);
+        jsonObject.put("message", request.getMessage());
+        JsonMessage message = new JsonMessage(jsonObject);
 
         try {
-            publisher.publish(request.getExchangeName(),message);
-        } catch(ProtocolIOException e) {
-            return ResponseUtils.wrapFailResponse("error when producing message to mq "+request.getQueueName(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            publisher.publish(queueName, message);
+        } catch (ProtocolIOException e) {
+            return ResponseUtils.wrapFailResponse("error when producing message to mq " + queueName, HttpStatus.INTERNAL_SERVER_ERROR.toString());
         }
         return ResponseUtils.wrapSuccessResponse("publish to mq successfully");
     }
