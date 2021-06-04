@@ -1,9 +1,9 @@
 package com.cymetrics.storage.implementation;
 
-import com.cymetrics.domain.storage.enumeration.ResourceType;
+import com.cymetrics.domain.storage.enumeration.ResourceTypeEnum;
 import com.cymetrics.domain.storage.exception.ObjectAlreadyExistException;
 import com.cymetrics.domain.storage.exception.ObjectNotFoundException;
-import com.cymetrics.domain.storage.resource.SmallImageResource;
+import com.cymetrics.domain.storage.resource.StorageResource;
 import com.cymetrics.storage.implementation.configs.AzureBlobConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -27,13 +27,15 @@ public class AzureBlobTest {
     public static void init() {
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
 
+        // TODO: find a better way to get key list
         AzureBlobConfig config = new AzureBlobConfig(
                 System.getenv("AZURE_TENANT_ID"),
                 System.getenv("AZURE_CLIENT_ID"),
                 System.getenv("AZURE_CLIENT_SECRET"),
                 System.getenv("AZURE_KEYVAULT_URL"),
                 System.getenv("AZURE_STORAGEACCOUNT_CONNECTIONSTRING_NAME"),
-                System.getenv("AZURE_STORAGEACCOUNT_CONNECTIONSTRING_VERSION"), System.getenv("AZURE_CONNECTION_STRING")
+                System.getenv("AZURE_STORAGEACCOUNT_CONNECTIONSTRING_VERSION"),
+                System.getenv("AZURE_CONNECTION_STRING")
         );
         azureBlob = new StorageServiceAzureBlobImp(config);
 
@@ -43,7 +45,8 @@ public class AzureBlobTest {
     public static void clean() {
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
         try {
-            azureBlob.deleteFile(ResourceType.smallimage, "test_cymetrics2.png");
+            StorageResource resource = new StorageResource("test_cymetrics2.png", ResourceTypeEnum.smallImage);
+            azureBlob.deleteFile(resource);
         } catch (ObjectNotFoundException e) {
             logger.info("file to be delete not exist");
         }
@@ -60,14 +63,16 @@ public class AzureBlobTest {
 
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
 
-        SmallImageResource resource = new SmallImageResource();
-        File image = new File("./src/test/java/com/cymetrics/storage/implementation/resource/cymetrics.png");
-        resource.setResource(image);
+        StorageResource resource1 = new StorageResource("./src/test/java/com/cymetrics/storage/implementation/resource/cymetrics.png",
+                "test_cymetrics1.png", ResourceTypeEnum.smallImage);
+        StorageResource resource2 = new StorageResource("./src/test/java/com/cymetrics/storage/implementation/resource/cymetrics.png",
+                "test_cymetrics2.png", ResourceTypeEnum.smallImage);
 
-        azureBlob.createFile(resource, "test_cymetrics1.png");
-        azureBlob.createFile(resource, "test_cymetrics2.png");
 
-        ArrayList<String> fileList = azureBlob.listFiles(resource.getResourceType());
+        azureBlob.createFile(resource1);
+        azureBlob.createFile(resource2);
+
+        ArrayList<String> fileList = azureBlob.listFiles(resource1.getResourceType());
         Assertions.assertEquals(2, fileList.size());
         Assertions.assertEquals("test_cymetrics1.png", fileList.get(0));
         Assertions.assertEquals("test_cymetrics2.png", fileList.get(1));
@@ -79,8 +84,10 @@ public class AzureBlobTest {
     public void getBlob() throws ObjectNotFoundException, IOException {
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
 
-        azureBlob.downloadFile(ResourceType.smallimage, "test_cymetrics1.png", "./src/test/java/com/cymetrics/storage/implementation/resource/test_get_blob.png");
-        File downloadedFile = new File("./src/test/java/com/cymetrics/storage/implementation/resource/test_get_blob.png");
+        StorageResource resource = new StorageResource("./src/test/java/com/cymetrics/storage/implementation/resource/test_get_blob.png",
+                "test_cymetrics1.png", ResourceTypeEnum.smallImage);
+        azureBlob.downloadFile(resource);
+        File downloadedFile = new File(resource.getLocalFileName());
         File originFile = new File("./src/test/java/com/cymetrics/storage/implementation/resource/cymetrics.png");
         if (!downloadedFile.exists())
             Assertions.fail("file not download correctly!");
@@ -93,13 +100,16 @@ public class AzureBlobTest {
     public void updateBlob() throws ObjectNotFoundException, IOException {
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
 
-        SmallImageResource resource = new SmallImageResource();
-        File fileToUpdate = new File("./src/test/java/com/cymetrics/storage/implementation/resource/onedegree.png");
-        resource.setResource(fileToUpdate);
-        azureBlob.updateFile(resource, "test_cymetrics1.png");
-        azureBlob.downloadFile(ResourceType.smallimage, "test_cymetrics1.png", "./src/test/java/com/cymetrics/storage/implementation/resource/test_update_blob.png");
+        StorageResource resource1 = new StorageResource("./src/test/java/com/cymetrics/storage/implementation/resource/onedegree.png"
+                , "test_cymetrics1.png", ResourceTypeEnum.smallImage);
+        StorageResource resource2 = new StorageResource("./src/test/java/com/cymetrics/storage/implementation/resource/test_update_blob.png"
+                , "test_cymetrics1.png", ResourceTypeEnum.smallImage);
 
-        File updatedFile = new File("./src/test/java/com/cymetrics/storage/implementation/resource/test_update_blob.png");
+        azureBlob.updateFile(resource1);
+        azureBlob.downloadFile(resource2);
+
+        File fileToUpdate = new File(resource1.getLocalFileName());
+        File updatedFile = new File(resource2.getLocalFileName());
 
         Assertions.assertTrue(FileUtils.contentEquals(fileToUpdate, updatedFile));
     }
@@ -109,8 +119,9 @@ public class AzureBlobTest {
     public void deleteBlob() throws ObjectNotFoundException {
         Assumptions.assumeTrue(System.getenv("AZURE_CONNECTION_STRING") != null);
 
-        azureBlob.deleteFile(ResourceType.smallimage, "test_cymetrics1.png");
-        ArrayList<String> fileList = azureBlob.listFiles(ResourceType.smallimage);
+        StorageResource resource = new StorageResource("test_cymetrics1.png", ResourceTypeEnum.smallImage);
+        azureBlob.deleteFile(resource);
+        ArrayList<String> fileList = azureBlob.listFiles(ResourceTypeEnum.smallImage);
         Assertions.assertEquals(1, fileList.size());
     }
 

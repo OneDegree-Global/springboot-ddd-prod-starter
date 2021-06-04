@@ -4,12 +4,14 @@ import com.cymetrics.storage.implementation.configs.AzureBlobConfig;
 import org.apache.commons.lang.NullArgumentException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 @Configuration
+@Lazy
 public class Storage {
     @Bean
     public AzureBlobConfig azureBlobConfigBean() throws IOException {
@@ -20,7 +22,7 @@ public class Storage {
         Properties properties = new Properties();
         properties.load(input);
 
-
+        // TODO: find a better way to wrap the key checking function
         if( properties.getProperty("AZURE_TENANT_ID")== null ||
                 properties.getProperty("AZURE_CLIENT_ID") == null ||
                 properties.getProperty("AZURE_CLIENT_SECRET") == null ||
