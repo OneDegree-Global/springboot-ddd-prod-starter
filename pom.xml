@@ -16,6 +16,7 @@
         <module>external</module>
         <module>search</module>
         <module>migration</module>
+        <module>storage</module>
     </modules>
 
     <packaging>pom</packaging>
