@@ -17,34 +17,33 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainService {
 
-
     @Bean
-    public AuthenticationService authenticationServiceBean(){
+    public AuthenticationService authenticationServiceBean() {
         AuthenticationService authenticationServiceBean = new AuthenticationService();
         return authenticationServiceBean;
     }
 
     @Bean
-    public TokenService tokenServiceBean(){
-        TokenService tokenService  = new TokenService();
+    public TokenService tokenServiceBean() {
+        TokenService tokenService = new TokenService();
         return tokenService;
     }
 
     @Bean
     @ConditionalOnProperty(
-            value="server.persistence.type",
+            value = "server.persistence.type",
             havingValue = "memory")
-    public UserRepository memUserRepositoryBean (){
-        MemUserRepository memUserRepository  = new MemUserRepository();
+    public UserRepository memUserRepositoryBean() {
+        MemUserRepository memUserRepository = new MemUserRepository();
         return memUserRepository;
     }
 
     @Bean
     @ConditionalOnProperty(
-            value="server.persistence.type",
+            value = "server.persistence.type",
             havingValue = "rdbms",
             matchIfMissing = false)
-    public UserRepository rdbmsUserRepositoryBean (){
+    public UserRepository rdbmsUserRepositoryBean() {
         RdbmsUserRepository rdbmsUserRepository = new RdbmsUserRepository();
         return rdbmsUserRepository;
     }
@@ -57,21 +56,21 @@ public class DomainService {
 
     @Bean
     @ConditionalOnProperty(
-            value="server.persistence.type",
+            value = "server.persistence.type",
             havingValue = "rdbms",
             matchIfMissing = false)
-    public ScheduleRepository rdbmsScheduleRepositoryBean (){
+    public ScheduleRepository rdbmsScheduleRepositoryBean() {
         RdbmsScheduleRepository rdbmsScheduleRepository = new RdbmsScheduleRepository();
         return rdbmsScheduleRepository;
     }
 
     @Bean
     @ConditionalOnProperty(
-            value="server.persistence.type",
+            value = "server.persistence.type",
             havingValue = "memory",
             matchIfMissing = false)
-    public ScheduleRepository memScheduleRepositoryBean (){
-        MemScheduleRepository memScheduleRepository  = new MemScheduleRepository();
+    public ScheduleRepository memScheduleRepositoryBean() {
+        MemScheduleRepository memScheduleRepository = new MemScheduleRepository();
         return memScheduleRepository;
     }
 }

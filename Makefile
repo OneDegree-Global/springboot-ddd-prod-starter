@@ -3,7 +3,7 @@ JACOCO_RPORTS := "application/target/site/jacoco/jacoco.xml,domain/target/site/j
 
 clean:
 	mvn clean
-	docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-metrics.yml down
+	docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-metrics.yml -f quickstart-rabbitmq.yml down
 
 fast-test: clean
 	mvn -T 5 -DexcludedGroups="slow" clean test
@@ -18,7 +18,7 @@ package: clean
 	mvn package -DskipTests=true
 
 quick-start: package
-	docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-metrics.yml up
+	docker-compose -f quickstart.yml -f quickstart-postgresql.yml -f quickstart-rabbitmq -f quickstart-metrics.yml up
 
 pr-check:
 	git reset --hard

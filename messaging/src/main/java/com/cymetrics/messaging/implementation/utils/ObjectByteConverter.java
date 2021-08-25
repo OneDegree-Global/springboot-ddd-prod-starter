@@ -7,8 +7,8 @@ import java.io.*;
 
 public class ObjectByteConverter {
 
-    private ObjectByteConverter(){};
-    synchronized public static byte[] encodeObject(Object obj) throws IOException {
+    private ObjectByteConverter(){}
+    public static byte[] encodeObject(Object obj) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bos);
         out.writeObject(obj);
@@ -16,7 +16,7 @@ public class ObjectByteConverter {
     }
 
 
-    synchronized public static Object decodeObject(byte[] bytes) throws IOException, ClassNotFoundException {
+    public static Object decodeObject(byte[] bytes) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ValidatingObjectInputStream vois = new ValidatingObjectInputStream(bis);
         vois.accept(
